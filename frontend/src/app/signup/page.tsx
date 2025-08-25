@@ -60,6 +60,7 @@ export default function SignUpPage() {
     watch,
     setError,
     clearErrors,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -262,16 +263,26 @@ export default function SignUpPage() {
         <div><strong>Option</strong></div>
         {toggles.map((key) => (
           <>
-            <button type="button" className="pill" onClick={() => {
-              const current = watch("disclosures")[key] || false;
-              // @ts-ignore
-              (document.getElementsByName(`disclosures.${key}`)[0] as any).checked = !current;
-            }}>Toggle</button>
-            <button type="button" className="pill" onClick={() => {
-              const current = watch("accepts")[key] || false;
-              // @ts-ignore
-              (document.getElementsByName(`accepts.${key}`)[0] as any).checked = !current;
-            }}>Toggle</button>
+            <button
+              type="button"
+              className="pill"
+              onClick={() => {
+                const current = Boolean(watch("disclosures")[key]);
+                setValue(`disclosures.${key}` as const, !current, { shouldDirty: true });
+              }}
+            >
+              Toggle
+            </button>
+            <button
+              type="button"
+              className="pill"
+              onClick={() => {
+                const current = Boolean(watch("accepts")[key]);
+                setValue(`accepts.${key}` as const, !current, { shouldDirty: true });
+              }}
+            >
+              Toggle
+            </button>
             <div>{key}</div>
             <input type="checkbox" hidden {...register(`disclosures.${key}` as const)} />
             <input type="checkbox" hidden {...register(`accepts.${key}` as const)} />
