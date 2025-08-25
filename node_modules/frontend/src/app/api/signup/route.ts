@@ -29,17 +29,14 @@ export async function POST(request: NextRequest) {
     });
 
     const smtpHost = process.env.SMTP_HOST;
-    const smtpPort = process.env.SMTP_PORT
-      ? parseInt(process.env.SMTP_PORT, 10)
-      : 587;
-    const smtpSecure = String(process.env.SMTP_SECURE || "false").toLowerCase() ===
-      "true";
+    const smtpPort = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
+    const smtpSecure = String(process.env.SMTP_SECURE || "false").toLowerCase() === "true";
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
     const fromAddress = process.env.SMTP_FROM;
-    const toAddress = process.env.SMTP_TO || process.env.SMTP_FROM;
+    const toAddress = email; // populate "to" from user data
 
-    if (!smtpHost || !smtpUser || !smtpPass || !fromAddress || !toAddress) {
+    if (!smtpHost || !smtpUser || !smtpPass || !fromAddress) {
       return new Response(
         JSON.stringify({ error: "SMTP env variables are not fully set" }),
         { status: 500 }
@@ -59,8 +56,8 @@ export async function POST(request: NextRequest) {
     await transporter.sendMail({
       from: fromAddress,
       to: toAddress,
-      subject: `New CHOPPED signup: ${email}`,
-      text: `A new user signed up.\nEmail: ${email}\nName: ${name || "-"}`,
+      subject: `Welcome to CHOPPED`,
+      text: `Thanks for signing up!\nEmail: ${email}\nName: ${name || "-"}`,
     });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
