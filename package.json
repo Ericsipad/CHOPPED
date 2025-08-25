@@ -1,0 +1,20 @@
+{
+  "name": "chopped",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "description": "CHOPPED monorepo",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run dev -w frontend",
+    "build": "npm run build -w frontend",
+    "start": "npm run start -w frontend",
+    "lint": "npm run lint -w frontend",
+    "test": "echo \"No tests yet\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
