@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getSupabaseClient } from "@/lib/supabaseClient";
 import LocationSelect from "@/components/LocationSelect";
+import Image from "next/image";
 
 const passwordSchema = z
   .string()
@@ -59,7 +60,6 @@ export default function SignUpPage() {
     handleSubmit,
     watch,
     setError,
-    clearErrors,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
@@ -208,18 +208,10 @@ export default function SignUpPage() {
       </label>
       <LocationSelect
         value={{ country: watch("country"), state: watch("state"), city: watch("city") }}
-        onChange={(next, labels) => {
-          // Imperatively set via synthetic events as RHF control is basic here
-          const set = (name: string, value?: string) => {
-            const input = document.createElement("input");
-            input.name = name;
-            input.value = value || "";
-            (document.querySelector(`input[name="${name}"]`) as HTMLInputElement | null)?.dispatchEvent(new Event("input", { bubbles: true }));
-          };
-          // Fallback to direct mutation using register is avoided; instead rely on POST payload using next + labels
-          (document.getElementsByName("country")[0] as HTMLInputElement | undefined)!.value = next.country || "";
-          (document.getElementsByName("state")[0] as HTMLInputElement | undefined)!.value = next.state || "";
-          (document.getElementsByName("city")[0] as HTMLInputElement | undefined)!.value = next.city || "";
+        onChange={(next) => {
+          setValue("country", next.country || "", { shouldDirty: true });
+          setValue("state", next.state || "", { shouldDirty: true });
+          setValue("city", next.city || "", { shouldDirty: true });
         }}
       />
       <label>Tell us about yourself (500 chars)
@@ -244,7 +236,7 @@ export default function SignUpPage() {
       <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); }} />
       {uploading && <p>Uploading...</p>}
       {imageId && (
-        <img src={`/api/profile/image/${imageId}`} alt="Profile preview" style={{ width: 160, height: 160, borderRadius: 12 }} />
+        <Image src={`/api/profile/image/${imageId}`} alt="Profile preview" width={160} height={160} style={{ borderRadius: 12 }} />
       )}
       <div className="actions">
         <button type="button" onClick={() => setStep(2)}>Back</button>
@@ -259,7 +251,7 @@ export default function SignUpPage() {
       <p>These are kept private but help align users that match so you know the people youre seeing are more likely to be on the same wave as you.</p>
       <div className="grid">
         <div><strong>I am/have</strong></div>
-        <div><strong>I'll accept in a match</strong></div>
+        <div><strong>I&apos;ll accept in a match</strong></div>
         <div><strong>Option</strong></div>
         {toggles.map((key) => (
           <>
