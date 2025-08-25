@@ -16,13 +16,15 @@ async function uploadToBunny(path: string, body: Buffer, contentType: string) {
     throw new Error("Bunny env not set");
   }
   const url = `https://${regionHost}/${zone}/${path}`;
+  // Convert Node Buffer to ArrayBuffer for fetch BodyInit compatibility
+  const arrayBufferBody = body.buffer.slice(body.byteOffset, body.byteOffset + body.byteLength);
   const res = await fetch(url, {
     method: "PUT",
     headers: {
       AccessKey: accessKey,
       "Content-Type": contentType,
     } as Record<string, string>,
-    body,
+    body: arrayBufferBody,
   });
   if (!res.ok) {
     throw new Error(`Bunny upload failed: ${res.status} ${await res.text()}`);
