@@ -14,7 +14,7 @@ async function streamFromBunny(path: string) {
   }
   const url = `https://${regionHost}/${zone}/${path}`;
   const res = await fetch(url, {
-    headers: { AccessKey: accessKey } as any,
+    headers: { AccessKey: accessKey } as Record<string, string>,
   });
   if (!res.ok) {
     throw new Error(`Bunny fetch failed: ${res.status}`);
@@ -63,7 +63,7 @@ export async function GET(_req: NextRequest, { params }: { params: { imageId: st
 
     // Fallback to proxy streaming from Storage
     return await streamFromBunny(fetchPath);
-  } catch (e: any) {
+  } catch (e) {
     return new Response(JSON.stringify({ error: "Failed to fetch image", details: String(e) }), {
       status: 500,
     });

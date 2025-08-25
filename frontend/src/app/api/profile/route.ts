@@ -59,9 +59,10 @@ export async function POST(req: NextRequest) {
     }
 
     return new Response(JSON.stringify(sanitizeProfileForClient(result.value)), { status: 200 });
-  } catch (e: any) {
+  } catch (e) {
     // Handle duplicate displayName gracefully
-    if (e?.code === 11000 && e?.keyPattern?.displayName) {
+    const err = e as { code?: number; keyPattern?: { displayName?: number } };
+    if (err?.code === 11000 && err?.keyPattern?.displayName) {
       return new Response(JSON.stringify({ error: "Display name not available" }), { status: 409 });
     }
     return new Response(JSON.stringify({ error: "Unexpected error", details: String(e) }), {

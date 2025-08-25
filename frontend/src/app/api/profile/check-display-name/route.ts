@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     const profiles = await getProfilesCollection(db);
     const existing = await profiles.findOne({ displayName: name }, { projection: { _id: 1 } });
     return new Response(JSON.stringify({ available: !existing }), { status: 200 });
-  } catch (e) {
+  } catch {
     return new Response(JSON.stringify({ available: false }), { status: 200 });
   }
 }
