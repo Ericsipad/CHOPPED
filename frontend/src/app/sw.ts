@@ -9,7 +9,7 @@ self.addEventListener("activate", (event: any) => {
   event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener("fetch", (_event: any) => {
+self.addEventListener("fetch", () => {
   // No-op: auth-gated content should not be cached here by default
 });
 
