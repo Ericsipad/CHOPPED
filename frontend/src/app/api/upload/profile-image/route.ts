@@ -21,7 +21,7 @@ async function uploadToBunny(path: string, body: Buffer, contentType: string) {
     headers: {
       AccessKey: accessKey,
       "Content-Type": contentType,
-    } as any,
+    } as Record<string, string>,
     body,
   });
   if (!res.ok) {
@@ -47,13 +47,13 @@ export async function POST(req: NextRequest) {
     }
 
     const arrayBuffer = await file.arrayBuffer();
-    let inputBuffer = Buffer.from(arrayBuffer);
+    const inputBuffer = Buffer.from(arrayBuffer);
     const inputType = file.type || "application/octet-stream";
 
     // Convert non-web formats (e.g., HEIC/HEIF) to webp for delivery; keep original too
     let derivedBuffer: Buffer | null = null;
-    let derivedExt = "webp";
-    let derivedMime = "image/webp";
+    const derivedExt = "webp";
+    const derivedMime = "image/webp";
     try {
       // Sharp can handle HEIC/HEIF if libvips supports; fallback is to keep only original
       derivedBuffer = await sharp(inputBuffer).rotate().webp({ quality: 85 }).toBuffer();
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
       JSON.stringify({ image: { id: imageId, primary: update.value?.images?.length === 1 } }),
       { status: 200 }
     );
-  } catch (e: any) {
+  } catch (e) {
     return new Response(JSON.stringify({ error: "Upload failed", details: String(e) }), { status: 500 });
   }
 }

@@ -25,7 +25,7 @@ export default function Home() {
       setMessage("Thanks! We'll be in touch.");
       setEmail("");
       setName("");
-    } catch (err) {
+    } catch {
       setStatus("error");
       setMessage("Something went wrong. Please try again later.");
     }
