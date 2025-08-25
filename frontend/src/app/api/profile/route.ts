@@ -45,20 +45,21 @@ export async function POST(req: NextRequest) {
     const db = await getMongoDb();
     const profiles = await getProfilesCollection(db);
 
-    const result = await profiles.findOneAndUpdate(
+    await profiles.updateOne(
       { supabaseUserId: userId },
       {
         $setOnInsert: { supabaseUserId: userId, createdAt: new Date() },
         $set: payload,
       },
-      { upsert: true, returnDocument: "after" }
+      { upsert: true }
     );
 
-    if (!result || !result.value) {
+    const saved = await profiles.findOne({ supabaseUserId: userId });
+    if (!saved) {
       return new Response(JSON.stringify({ error: "Failed to save profile" }), { status: 500 });
     }
 
-    return new Response(JSON.stringify(sanitizeProfileForClient(result.value)), { status: 200 });
+    return new Response(JSON.stringify(sanitizeProfileForClient(saved)), { status: 200 });
   } catch (e) {
     // Handle duplicate displayName gracefully
     const err = e as { code?: number; keyPattern?: { displayName?: number } };
