@@ -30,8 +30,9 @@ async function streamFromBunny(path: string) {
   });
 }
 
-export async function GET(_req: NextRequest, { params }: { params: { imageId: string } }) {
+export async function GET(_req: NextRequest, context: { params: Promise<{ imageId: string }> }) {
   try {
+    const { imageId } = await context.params;
     const userId = await getSessionUserId();
     if (!userId) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
@@ -39,12 +40,12 @@ export async function GET(_req: NextRequest, { params }: { params: { imageId: st
 
     const db = await getMongoDb();
     const profiles = await getProfilesCollection(db);
-    const profile = await profiles.findOne({ "images.id": params.imageId }, { projection: { images: 1 } });
+    const profile = await profiles.findOne({ "images.id": imageId }, { projection: { images: 1 } });
     if (!profile) {
       return new Response(JSON.stringify({ error: "Not found" }), { status: 404 });
     }
 
-    const image = (profile.images || []).find((i) => i.id === params.imageId);
+    const image = (profile.images || []).find((i) => i.id === imageId);
     if (!image) {
       return new Response(JSON.stringify({ error: "Not found" }), { status: 404 });
     }
