@@ -1,0 +1,19 @@
+import type { MetadataRoute } from "next";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "CHOPPED",
+    short_name: "CHOPPED",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#0a0a0a",
+    theme_color: "#1e90ff",
+    description: "CHOPPED progressive web app",
+    icons: [
+      { src: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      { src: "/vercel.svg", sizes: "192x192", type: "image/svg+xml" }
+    ],
+  };
+}
+
+

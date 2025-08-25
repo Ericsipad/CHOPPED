@@ -1,0 +1,16 @@
+/// <reference lib="webworker" />
+export type {}
+
+self.addEventListener("install", () => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event: any) => {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener("fetch", (_event: any) => {
+  // No-op: auth-gated content should not be cached here by default
+});
+
+

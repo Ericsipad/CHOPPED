@@ -1,6 +1,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --brand-blue: #1e90ff;
+  --brand-magenta: #ff2db2;
+  --brand-green: #00c853;
+  --brand-gradient: linear-gradient(135deg, var(--brand-blue), var(--brand-magenta), var(--brand-green));
 }
 
 @media (prefers-color-scheme: dark) {
