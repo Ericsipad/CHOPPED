@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     // Save image metadata into profile (append, primary if first)
     const db = await getMongoDb();
     const profiles = await getProfilesCollection(db);
-    const { value: updatedProfile } = await profiles.findOneAndUpdate(
+    const updatedProfile = await profiles.findOneAndUpdate(
       { supabaseUserId: userId },
       {
         $setOnInsert: { supabaseUserId: userId, createdAt: new Date() },
