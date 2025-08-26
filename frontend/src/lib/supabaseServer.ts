@@ -11,17 +11,14 @@ export async function getSessionUserId(): Promise<string | null> {
 
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
-      getAll() {
-        return cookieStore.getAll().map((c) => ({ name: c.name, value: c.value }));
+      get(name: string) {
+        return cookieStore.get(name)?.value;
       },
-      setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options as CookieOptions);
-          });
-        } catch {
-          // ignore in edge runtimes
-        }
+      set(name: string, value: string, options: CookieOptions) {
+        cookieStore.set({ name, value, ...options });
+      },
+      remove(name: string, options: CookieOptions) {
+        cookieStore.set({ name, value: "", ...options });
       },
     },
   });
