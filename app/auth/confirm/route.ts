@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
+import { getUsersCollection } from '@/lib/mongo'
 
 export async function GET(req: Request) {
   const url = new URL(req.url)
@@ -18,6 +19,22 @@ export async function GET(req: Request) {
   const { error } = await supabase.auth.verifyOtp({ type: otpType, token_hash })
   if (error) {
     return NextResponse.redirect(new URL('/auth/error?reason=verify_failed', req.url))
+  }
+  // Link Mongo and Supabase IDs on verification (server-side, once)
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user?.email) {
+    const users = await getUsersCollection()
+    const now = new Date()
+    await users.updateOne(
+      { email: user.email },
+      { $setOnInsert: { createdAt: now }, $set: { supabaseUserId: user.id, updatedAt: now } },
+      { upsert: true },
+    )
+    const doc = await users.findOne({ email: user.email })
+    const mongoIdString = doc?._id?.toString()
+    if (mongoIdString) {
+      await supabase.auth.updateUser({ data: { mongoUserId: mongoIdString } })
+    }
   }
   const frontendUrl = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_FRONTEND_URL
   return NextResponse.redirect(`${frontendUrl || ''}/account`)

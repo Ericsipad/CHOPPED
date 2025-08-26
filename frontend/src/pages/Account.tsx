@@ -19,7 +19,6 @@ export default function Account() {
           return
         }
         const { user } = await sessionRes.json()
-        await fetch(`${backend}/auth/link-user`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
         setUserEmail(user?.email ?? null)
       } catch (e: any) {
         setError(e?.message || 'Failed to load account')
