@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { Box, Button, Container, Heading, Input, Stack, Text } from '@chakra-ui/react'
-import { getBackendUrl, getFrontendUrl } from './lib/config'
+import { getBackendUrl } from './lib/config'
 import { z } from 'zod'
 import Account from './pages/Account'
 import './App.css'
@@ -50,7 +50,6 @@ function App() {
           message: 'Passwords must match',
         })
       schema.parse({ email, password, repeatPassword })
-      const frontendBase = getFrontendUrl()
       const backend = getBackendUrl()
       const res = await fetch(`${backend}/auth/sign-up`, {
         method: 'POST',
