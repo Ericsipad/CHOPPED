@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // import { getSupabaseClient } from "@/lib/supabaseClient";
 import LocationSelect from "@/components/LocationSelect";
 import Image from "next/image";
-import { apiFetch, apiUrl } from "@/lib/api";
+import { apiFetch, apiUrl } from "../../lib/api";
 
 const passwordSchema = z
   .string()
