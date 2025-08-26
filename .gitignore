@@ -1,0 +1,35 @@
+﻿# Environment
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Builds and caches
+build/
+dist/
+.out/
+out/
+.cache/
+coverage/
+
+# Framework outputs
+.next/
+.vercel/
+.turbo/
+
+# IDE/editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+logs/
+*.log
+.tmp/
+tmp/
