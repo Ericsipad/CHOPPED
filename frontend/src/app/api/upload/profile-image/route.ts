@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import type { ModifyResult, WithId } from "mongodb";
 import { getMongoDb } from "@/lib/mongodb";
 import { getProfilesCollection } from "@/lib/profile";
 import { getSessionUserId } from "@/lib/supabaseServer";
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
     // Save image metadata into profile (append, primary if first)
     const db = await getMongoDb();
     const profiles = await getProfilesCollection(db);
-    const updatedProfile = await profiles.findOneAndUpdate(
+    const resultUnknown: unknown = await profiles.findOneAndUpdate(
       { supabaseUserId: userId },
       {
         $setOnInsert: { supabaseUserId: userId, createdAt: new Date() },
@@ -100,7 +101,16 @@ export async function POST(req: NextRequest) {
       { upsert: true, returnDocument: "after" }
     );
 
-    const primary = updatedProfile?.images?.length === 1;
+    function hasValueProperty<T>(obj: unknown): obj is { value: T | null } {
+      return !!obj && typeof obj === "object" && "value" in obj;
+    }
+
+    const updatedProfileDoc: (WithId<import("@/lib/mongodb").ProfileDoc> | import("@/lib/mongodb").ProfileDoc | null) =
+      hasValueProperty<import("@/lib/mongodb").ProfileDoc>(resultUnknown)
+        ? resultUnknown.value
+        : (resultUnknown as WithId<import("@/lib/mongodb").ProfileDoc> | null);
+
+    const primary = updatedProfileDoc?.images?.length === 1;
     return new Response(
       JSON.stringify({ image: { id: imageId, primary } }),
       { status: 200 }
