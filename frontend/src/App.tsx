@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Box, Button, Container, Field, Heading, Input, List, ListItem, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, Container, Field, Heading, Input, List, Stack, Text } from '@chakra-ui/react'
 import { supabase } from './lib/supabaseClient'
 import { getFrontendUrl } from './lib/config'
 import Account from './pages/Account'
@@ -69,13 +69,13 @@ function App() {
           <Field.Label>Password</Field.Label>
           <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           <Field.HelperText>
-            <List mt={2} listStyleType="none">
-              <ListItem color={checks.length ? 'green.500' : 'red.500'}>8+ characters</ListItem>
-              <ListItem color={checks.upper ? 'green.500' : 'red.500'}>uppercase letter</ListItem>
-              <ListItem color={checks.lower ? 'green.500' : 'red.500'}>lowercase letter</ListItem>
-              <ListItem color={checks.number ? 'green.500' : 'red.500'}>number</ListItem>
-              <ListItem color={checks.special ? 'green.500' : 'red.500'}>special character</ListItem>
-            </List>
+            <List.Root mt={2} listStyleType="none">
+              <List.Item color={checks.length ? 'green.500' : 'red.500'}>8+ characters</List.Item>
+              <List.Item color={checks.upper ? 'green.500' : 'red.500'}>uppercase letter</List.Item>
+              <List.Item color={checks.lower ? 'green.500' : 'red.500'}>lowercase letter</List.Item>
+              <List.Item color={checks.number ? 'green.500' : 'red.500'}>number</List.Item>
+              <List.Item color={checks.special ? 'green.500' : 'red.500'}>special character</List.Item>
+            </List.Root>
           </Field.HelperText>
         </Field.Root>
         <Field.Root>
@@ -93,7 +93,7 @@ function App() {
         {message && (
           <Box color="green.600">{message}</Box>
         )}
-        <Button colorScheme="teal" onClick={handleSignUp} disabled={!allValid || submitting} isLoading={submitting}>
+        <Button colorScheme="teal" onClick={handleSignUp} disabled={!allValid || submitting} loading={submitting}>
           Sign up
         </Button>
           </>
