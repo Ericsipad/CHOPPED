@@ -36,7 +36,7 @@
     "concurrently": "^9.1.2"
   },
   "engines": {
-    "node": ">=22 <23"
+    "node": "22.x"
   },
   "packageManager": "npm@10.9.3"
 }
