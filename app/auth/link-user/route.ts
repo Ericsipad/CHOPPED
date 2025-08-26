@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getUsersCollection } from '@/lib/mongo'
-import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
+import { createSupabaseRouteClient } from '@/utils/supabase/server'
 
 const ALLOWED_METHODS = ['POST', 'OPTIONS'] as const
 
@@ -56,16 +56,6 @@ export async function POST(req: Request) {
       { status: 403, headers: buildCorsHeaders(allowedOrigins, null) },
     )
   }
-
-  const authHeader = req.headers.get('authorization') || req.headers.get('Authorization')
-  if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
-    return NextResponse.json(
-      { error: 'Missing bearer token' },
-      { status: 401, headers: buildCorsHeaders(allowedOrigins, requestOrigin) },
-    )
-  }
-
-  const accessToken = authHeader.split(' ')[1]
   // Validate body shape even if unused (future fields)
   try {
     const body = await req.json().catch(() => ({}))
@@ -76,23 +66,9 @@ export async function POST(req: Request) {
       { status: 400, headers: buildCorsHeaders(allowedOrigins, requestOrigin) },
     )
   }
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return NextResponse.json(
-      { error: 'Supabase env vars not configured' },
-      { status: 500, headers: buildCorsHeaders(allowedOrigins, requestOrigin) },
-    )
-  }
+  const supabase = createSupabaseRouteClient()
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    global: { headers: { Authorization: `Bearer ${accessToken}` } },
-  })
-
-  const {
-    data: { user },
-    error: getUserError,
-  } = await supabase.auth.getUser()
+  const { data: { user }, error: getUserError } = await supabase.auth.getUser()
   if (getUserError || !user) {
     return NextResponse.json(
       { error: 'Invalid or expired session' },
