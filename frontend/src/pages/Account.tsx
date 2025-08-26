@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Box, Container, Heading, Stack, Text } from '@chakra-ui/react'
-import { getSupabase } from '../lib/supabaseClient'
 import { getBackendUrl } from '../lib/config'
 
 export default function Account() {
@@ -13,24 +12,15 @@ export default function Account() {
     async function init() {
       setLoading(true)
       try {
-        const supabase = getSupabase()
-        const { data: { session } } = await supabase.auth.getSession()
-        if (!session) {
+        const backend = getBackendUrl()
+        const sessionRes = await fetch(`${backend}/auth/session`, { credentials: 'include' })
+        if (!sessionRes.ok) {
           setError('Not logged in')
           return
         }
-        const accessToken = session.access_token
-        const linkUrl = `${getBackendUrl()}/auth/link-user`
-        await fetch(linkUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-          },
-          credentials: 'include',
-          body: JSON.stringify({}),
-        })
-        setUserEmail(session.user?.email ?? null)
+        const { user } = await sessionRes.json()
+        await fetch(`${backend}/auth/link-user`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
+        setUserEmail(user?.email ?? null)
       } catch (e: any) {
         setError(e?.message || 'Failed to load account')
       } finally {

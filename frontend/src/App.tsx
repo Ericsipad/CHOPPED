@@ -1,7 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { Box, Button, Container, Heading, Input, Stack, Text } from '@chakra-ui/react'
-import { getSupabase } from './lib/supabaseClient'
-import { getFrontendUrl } from './lib/config'
+import { getBackendUrl, getFrontendUrl } from './lib/config'
 import { z } from 'zod'
 import Account from './pages/Account'
 import './App.css'
@@ -52,15 +51,17 @@ function App() {
         })
       schema.parse({ email, password, repeatPassword })
       const frontendBase = getFrontendUrl()
-      const supabase = getSupabase()
-      const {
-        error: signUpError,
-      } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: `${frontendBase}/account` },
+      const backend = getBackendUrl()
+      const res = await fetch(`${backend}/auth/sign-up`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
       })
-      if (signUpError) throw signUpError
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data?.error || 'Sign up failed')
+      }
       setMessage('Please check your email for the verification link to log in.')
     } catch (e: any) {
       setError(e?.message || 'Sign up failed')
