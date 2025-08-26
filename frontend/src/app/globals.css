@@ -44,3 +44,20 @@ a {
     color-scheme: dark;
   }
 }
+
+/* Signup page styles */
+.signup { padding: 16px; max-width: 560px; margin: 0 auto; }
+.signup input,
+.signup textarea,
+.signup button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #ccc; }
+.signup button { background: var(--brand-gradient); color: #fff; border: none; }
+.signup .checklist li.ok { color: var(--brand-green); }
+.signup .ok { color: var(--brand-green); }
+.signup .error { color: #ff3b30; }
+.signup .pill { border: 1px solid #ccc; background: #111; color: #eee; box-shadow: none; }
+.signup .pill:active,
+.signup .pill:focus { box-shadow: 0 0 0 6px rgba(0,200,83,0.25); }
+.signup .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: center; }
+.signup .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.signup .muted { color: #888; font-size: 14px; }
+.signup .actions { display: flex; gap: 12px; }
