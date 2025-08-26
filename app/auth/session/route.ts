@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 
 function buildCorsHeaders(origin: string | null) {
-  const allowed = (process.env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean)
+  const raw = process.env.ALLOWED_ORIGINS ?? process.env.ALLOWED_ORIGIN ?? ''
+  const allowed = raw.split(',').map((s) => s.trim()).filter(Boolean)
   const allow = origin && allowed.includes(origin) ? origin : 'null'
   return {
     'Access-Control-Allow-Origin': allow,
