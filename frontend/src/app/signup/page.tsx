@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import type { Resolver } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getSupabaseClient } from "@/lib/supabaseClient";
+// import { getSupabaseClient } from "@/lib/supabaseClient";
 import LocationSelect from "@/components/LocationSelect";
 import Image from "next/image";
 
@@ -110,11 +110,15 @@ export default function SignUpPage() {
   }, [password]);
 
   const onSubmit = async (values: FormValues) => {
-    // Create supabase auth user first
-    const supabase = getSupabaseClient();
-    const { error: signUpError } = await supabase.auth.signUp({ email: values.email, password: values.password });
-    if (signUpError) {
-      setError("email", { message: signUpError.message });
+    // Create supabase auth user via server API (sets cookies server-side)
+    const authRes = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: values.email, password: values.password }),
+    });
+    if (!authRes.ok) {
+      const data = await authRes.json().catch(() => ({ error: "Signup failed" }));
+      setError("email", { message: data.error || "Signup failed" });
       return;
     }
 
