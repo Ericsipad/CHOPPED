@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // import { getSupabaseClient } from "@/lib/supabaseClient";
 import LocationSelect from "@/components/LocationSelect";
 import Image from "next/image";
+import { apiFetch, apiUrl } from "@/lib/api";
 
 const passwordSchema = z
   .string()
@@ -51,6 +52,7 @@ const formSchema = z
 type FormValues = z.infer<typeof formSchema>;
 
 export default function SignUpPage() {
+  const skipProfileCreate = String(process.env.NEXT_PUBLIC_SKIP_PROFILE || "false").toLowerCase() === "true";
   const [step, setStep] = useState(1);
   const [availability, setAvailability] = useState<"checking" | "available" | "unavailable" | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -111,7 +113,7 @@ export default function SignUpPage() {
 
   const onSubmit = async (values: FormValues) => {
     // Create supabase auth user via server API (sets cookies server-side)
-    const authRes = await fetch("/api/auth/signup", {
+    const authRes = await apiFetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: values.email, password: values.password }),
@@ -122,33 +124,35 @@ export default function SignUpPage() {
       return;
     }
 
-    // Save profile (without email)
-    const profileRes = await fetch("/api/profile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        displayName: values.displayName,
-        age: values.age,
-        location: {
-          countryCode: values.country,
-          countryName: values.country,
-          stateCode: values.state,
-          stateName: values.state,
-          city: values.city,
-        },
-        bio: values.bio,
-        disclosures: values.disclosures,
-        accepts: values.accepts,
-        gender: values.gender,
-        termsAcceptedAt: new Date().toISOString(),
-      }),
-    });
-    if (!profileRes.ok) {
-      const data = await profileRes.json();
-      if (String(data.error || "").toLowerCase().includes("display name")) {
-        setError("displayName", { message: "Display name not available" });
+    // Optionally skip profile creation to simplify deployment
+    if (!skipProfileCreate) {
+      const profileRes = await apiFetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          displayName: values.displayName,
+          age: values.age,
+          location: {
+            countryCode: values.country,
+            countryName: values.country,
+            stateCode: values.state,
+            stateName: values.state,
+            city: values.city,
+          },
+          bio: values.bio,
+          disclosures: values.disclosures,
+          accepts: values.accepts,
+          gender: values.gender,
+          termsAcceptedAt: new Date().toISOString(),
+        }),
+      });
+      if (!profileRes.ok) {
+        const data = await profileRes.json();
+        if (String(data.error || "").toLowerCase().includes("display name")) {
+          setError("displayName", { message: "Display name not available" });
+        }
+        return;
       }
-      return;
     }
     setStep(3);
   };
@@ -162,7 +166,7 @@ export default function SignUpPage() {
     fd.append("file", f);
     setUploading(true);
     try {
-      const res = await fetch("/api/upload/profile-image", { method: "POST", body: fd });
+      const res = await apiFetch("/api/upload/profile-image", { method: "POST", body: fd });
       const data = await res.json();
       if (res.ok) {
         setImageId(data.image.id);
@@ -241,7 +245,7 @@ export default function SignUpPage() {
       <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); }} />
       {uploading && <p>Uploading...</p>}
       {imageId && (
-        <Image src={`/api/profile/image/${imageId}`} alt="Profile preview" width={160} height={160} style={{ borderRadius: 12 }} />
+        <Image src={apiUrl(`/api/profile/image/${imageId}`)} alt="Profile preview" width={160} height={160} style={{ borderRadius: 12 }} />
       )}
       <div className="actions">
         <button type="button" onClick={() => setStep(2)}>Back</button>
