@@ -22,8 +22,9 @@ export async function POST(req: Request) {
     const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo } })
     if (error) return NextResponse.json({ error: error.message }, { status: 400, headers })
     return NextResponse.json({ ok: true, message: 'Please check your email for the verification link to log in.' }, { headers })
-  } catch (e: any) {
-    return NextResponse.json({ error: e?.message || 'Invalid payload' }, { status: 400, headers })
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Invalid payload'
+    return NextResponse.json({ error: message }, { status: 400, headers })
   }
 }
 

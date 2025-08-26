@@ -10,7 +10,13 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL('/auth/error?reason=missing_token', req.url))
   }
   const supabase = createSupabaseRouteClient()
-  const { error } = await supabase.auth.verifyOtp({ type: type as any, token_hash })
+  const emailOtpTypes = ['email', 'recovery', 'email_change', 'magiclink'] as const
+  type EmailOtpType = typeof emailOtpTypes[number]
+  function isEmailOtpType(t: string): t is EmailOtpType {
+    return (emailOtpTypes as readonly string[]).includes(t)
+  }
+  const otpType: EmailOtpType = isEmailOtpType(type) ? type : 'email'
+  const { error } = await supabase.auth.verifyOtp({ type: otpType, token_hash })
   if (error) {
     return NextResponse.redirect(new URL('/auth/error?reason=verify_failed', req.url))
   }
