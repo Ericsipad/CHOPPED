@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { Box, Button, Container, Field, Heading, Input, List, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, Container, Heading, Input, Stack, Text } from '@chakra-ui/react'
 import { supabase } from './lib/supabaseClient'
 import { getFrontendUrl } from './lib/config'
 import { z } from 'zod'
@@ -83,32 +83,28 @@ function App() {
         <Text color="gray.600">
           We do not collect any personal information. We do need an email for communicating with you, so please consider making a dedicated email that is not used anywhere else.
         </Text>
-        <Field.Root ref={formRef as any}>
-          <Field.Label>Email</Field.Label>
+        <Box ref={formRef as any}>
+          <Text mb={2} fontWeight="medium">Email</Text>
           <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
-        </Field.Root>
-        <Field.Root>
-          <Field.Label>Password</Field.Label>
+        </Box>
+        <Box>
+          <Text mb={2} fontWeight="medium">Password</Text>
           <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <Field.HelperText>
-            <List.Root mt={2} listStyleType="none">
-              <List.Item color={checks.length ? 'green.500' : 'red.500'}>8+ characters</List.Item>
-              <List.Item color={checks.upper ? 'green.500' : 'red.500'}>uppercase letter</List.Item>
-              <List.Item color={checks.lower ? 'green.500' : 'red.500'}>lowercase letter</List.Item>
-              <List.Item color={checks.number ? 'green.500' : 'red.500'}>number</List.Item>
-              <List.Item color={checks.special ? 'green.500' : 'red.500'}>special character</List.Item>
-            </List.Root>
-          </Field.HelperText>
-        </Field.Root>
-        <Field.Root>
-          <Field.Label>Repeat password</Field.Label>
+          <Box mt={2}>
+            <Text color={checks.length ? 'green.500' : 'red.500'}>8+ characters</Text>
+            <Text color={checks.upper ? 'green.500' : 'red.500'}>uppercase letter</Text>
+            <Text color={checks.lower ? 'green.500' : 'red.500'}>lowercase letter</Text>
+            <Text color={checks.number ? 'green.500' : 'red.500'}>number</Text>
+            <Text color={checks.special ? 'green.500' : 'red.500'}>special character</Text>
+          </Box>
+        </Box>
+        <Box>
+          <Text mb={2} fontWeight="medium">Repeat password</Text>
           <Input type="password" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} />
-          <Field.HelperText>
-            <Text color={checks.match ? 'green.500' : 'red.500'}>
-              {checks.match ? 'Passwords match' : 'Passwords must match'}
-            </Text>
-          </Field.HelperText>
-        </Field.Root>
+          <Text mt={2} color={checks.match ? 'green.500' : 'red.500'}>
+            {checks.match ? 'Passwords match' : 'Passwords must match'}
+          </Text>
+        </Box>
         {error && (
           <Box color="red.600">{error}</Box>
         )}
