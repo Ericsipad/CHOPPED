@@ -14,7 +14,8 @@
     "lint": "npm run lint -w frontend",
     "test": "echo \"No tests yet\"",
     "prebuild": "npm install -w frontend",
-    "heroku-prebuild": "npm install -w frontend"
+    "heroku-prebuild": "npm install -w frontend",
+    "heroku-postbuild": "npm install -w frontend --omit=dev"
   },
   "keywords": [],
   "author": "",
