@@ -40,7 +40,7 @@ const formSchema = z
       digitalNomad: z.boolean().optional(),
     }),
     gender: z.object({ iAm: z.string(), matchWith: z.string() }),
-    terms: z.literal(true, { errorMap: () => ({ message: "Please accept" }) }),
+    terms: z.literal(true, { message: "Please accept" }),
   })
   .refine((v) => v.password === v.confirmPassword, {
     message: "Passwords do not match",
