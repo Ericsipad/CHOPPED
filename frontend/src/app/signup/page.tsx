@@ -52,7 +52,6 @@ const formSchema = z
 type FormValues = z.infer<typeof formSchema>;
 
 export default function SignUpPage() {
-  const skipProfileCreate = String(process.env.NEXT_PUBLIC_SKIP_PROFILE || "false").toLowerCase() === "true";
   const [step, setStep] = useState(1);
   const [availability, setAvailability] = useState<"checking" | "available" | "unavailable" | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -124,35 +123,33 @@ export default function SignUpPage() {
       return;
     }
 
-    // Optionally skip profile creation to simplify deployment
-    if (!skipProfileCreate) {
-      const profileRes = await apiFetch("/api/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          displayName: values.displayName,
-          age: values.age,
-          location: {
-            countryCode: values.country,
-            countryName: values.country,
-            stateCode: values.state,
-            stateName: values.state,
-            city: values.city,
-          },
-          bio: values.bio,
-          disclosures: values.disclosures,
-          accepts: values.accepts,
-          gender: values.gender,
-          termsAcceptedAt: new Date().toISOString(),
-        }),
-      });
-      if (!profileRes.ok) {
-        const data = await profileRes.json();
-        if (String(data.error || "").toLowerCase().includes("display name")) {
-          setError("displayName", { message: "Display name not available" });
-        }
-        return;
+    // Always create profile (no skipping)
+    const profileRes = await apiFetch("/api/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        displayName: values.displayName,
+        age: values.age,
+        location: {
+          countryCode: values.country,
+          countryName: values.country,
+          stateCode: values.state,
+          stateName: values.state,
+          city: values.city,
+        },
+        bio: values.bio,
+        disclosures: values.disclosures,
+        accepts: values.accepts,
+        gender: values.gender,
+        termsAcceptedAt: new Date().toISOString(),
+      }),
+    });
+    if (!profileRes.ok) {
+      const data = await profileRes.json();
+      if (String(data.error || "").toLowerCase().includes("display name")) {
+        setError("displayName", { message: "Display name not available" });
       }
+      return;
     }
     setStep(3);
   };
@@ -234,7 +231,7 @@ export default function SignUpPage() {
       </div>
       <div className="actions">
         <button type="button" onClick={() => setStep(1)}>Back</button>
-        <button type="button" onClick={handleSubmit(onSubmit)} disabled={availability !== "available"}>Continue</button>
+        <button type="button" onClick={() => setStep(3)} disabled={availability !== "available"}>Continue</button>
       </div>
     </section>
   );
