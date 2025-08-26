@@ -4,9 +4,6 @@
   "private": true,
   "description": "CHOPPED backend (Next.js) with separate frontend app",
   "main": "index.js",
-  "workspaces": [
-    "frontend"
-  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
