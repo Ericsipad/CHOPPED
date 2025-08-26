@@ -23,7 +23,14 @@ export async function getMongoClient(): Promise<MongoClient> {
 
 export async function getUsersCollection() {
   const client = await getMongoClient()
-  const db = client.db()
+  // Require database name in MONGODB_URI
+  const uri = process.env.MONGODB_URI as string
+  const parsed = new URL(uri)
+  const dbName = (parsed.pathname || '').replace(/^\//, '')
+  if (!dbName) {
+    throw new Error('MONGODB_URI must include a database name (e.g., mongodb+srv://.../mydb)')
+  }
+  const db = client.db(dbName)
   const collection = db.collection('users')
   // Ensure unique index on Supabase user ID (primary linkage), not on email
   await collection.createIndex({ supabaseUserId: 1 }, { unique: true })
