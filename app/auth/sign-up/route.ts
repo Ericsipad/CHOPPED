@@ -44,11 +44,12 @@ export async function POST(req: Request) {
     const schema = z.object({ email: z.string().email(), password: z.string().min(8) })
     const { email, password } = schema.parse(body)
     const supabase = createSupabaseRouteClient()
-    const envBackend = (process.env.NEXT_PUBLIC_API_BASE_URL || process.env.BACKEND_URL || '').replace(/\/+$/g, '')
-    if (!envBackend) {
+    const rawBackendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+    const backendBaseUrl = rawBackendUrl.replace(/\/+$/g, '')
+    if (!backendBaseUrl) {
       return NextResponse.json({ error: 'Backend public URL not configured' }, { status: 500, headers })
     }
-    const emailRedirectTo = `${envBackend}/auth/confirm`
+    const emailRedirectTo = `${backendBaseUrl}/auth/confirm`
     const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo } })
     if (error) return NextResponse.json({ error: error.message }, { status: 400, headers })
     return NextResponse.json({ ok: true, message: 'Please check your email for the verification link to log in.' }, { headers })
