@@ -13,11 +13,16 @@
     "start": "npm run start -w frontend",
     "lint": "npm run lint -w frontend",
     "test": "echo \"No tests yet\"",
+    "prebuild": "npm install -w frontend",
     "heroku-prebuild": "npm install -w frontend"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  }
   ,
   "engines": {
     "node": ">=20 <21"
