@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import type { Resolver } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getSupabaseClient } from "@/lib/supabaseClient";
@@ -63,7 +64,7 @@ export default function SignUpPage() {
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as Resolver<FormValues>,
     defaultValues: {
       disclosures: {},
       accepts: {},
