@@ -6,9 +6,9 @@
     "node": ">=20 <21"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
-    "start": "next start -p 8080 -H 0.0.0.0",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "node .next/standalone/frontend/server.js",
     "lint": "eslint"
   },
   "dependencies": {
@@ -19,6 +19,8 @@
     "mongodb": "^6.18.0",
     "nanoid": "^3.3.11",
     "next": "15.5.0",
+    "client-only": "^0.0.1",
+    "server-only": "^0.0.1",
     "nodemailer": "^7.0.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -38,8 +40,5 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.0",
     "typescript": "^5"
-  },
-  "engines": {
-    "node": ">=20 <21"
   }
 }
