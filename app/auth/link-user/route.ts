@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getUsersCollection } from '@/lib/mongo'
 import { createClient } from '@supabase/supabase-js'
+import { z } from 'zod'
 
 const ALLOWED_METHODS = ['POST', 'OPTIONS'] as const
 
@@ -65,6 +66,16 @@ export async function POST(req: Request) {
   }
 
   const accessToken = authHeader.split(' ')[1]
+  // Validate body shape even if unused (future fields)
+  try {
+    const body = await req.json().catch(() => ({}))
+    z.object({}).passthrough().parse(body)
+  } catch {
+    return NextResponse.json(
+      { error: 'Invalid request body' },
+      { status: 400, headers: buildCorsHeaders(allowedOrigins, requestOrigin) },
+    )
+  }
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   if (!supabaseUrl || !supabaseAnonKey) {

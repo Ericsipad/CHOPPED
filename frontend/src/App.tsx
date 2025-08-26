@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Box, Button, Container, Field, Heading, Input, List, Stack, Text } from '@chakra-ui/react'
 import { supabase } from './lib/supabaseClient'
 import { getFrontendUrl } from './lib/config'
+import { z } from 'zod'
 import Account from './pages/Account'
 import './App.css'
 
@@ -12,6 +13,7 @@ function App() {
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const formRef = useRef<HTMLDivElement | null>(null)
 
   const checks = useMemo(() => {
     return {
@@ -32,6 +34,23 @@ function App() {
     setError(null)
     setMessage(null)
     try {
+      const schema = z
+        .object({
+          email: z.string().email(),
+          password: z
+            .string()
+            .min(8)
+            .regex(/[A-Z]/, 'Needs uppercase')
+            .regex(/[a-z]/, 'Needs lowercase')
+            .regex(/\d/, 'Needs number')
+            .regex(/[^A-Za-z0-9]/, 'Needs special'),
+          repeatPassword: z.string(),
+        })
+        .refine((v) => v.password === v.repeatPassword, {
+          path: ['repeatPassword'],
+          message: 'Passwords must match',
+        })
+      schema.parse({ email, password, repeatPassword })
       const frontendBase = getFrontendUrl()
       const {
         error: signUpError,
@@ -57,11 +76,14 @@ function App() {
           <Account />
         ) : (
           <>
+        <Button colorScheme="teal" onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+          Sign up
+        </Button>
         <Heading size="lg">Create your account</Heading>
         <Text color="gray.600">
           We do not collect any personal information. We do need an email for communicating with you, so please consider making a dedicated email that is not used anywhere else.
         </Text>
-        <Field.Root>
+        <Field.Root ref={formRef as any}>
           <Field.Label>Email</Field.Label>
           <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
         </Field.Root>
