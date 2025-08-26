@@ -1,4 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export async function getSessionUserId(): Promise<string | null> {
@@ -11,14 +11,18 @@ export async function getSessionUserId(): Promise<string | null> {
 
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
-      get(name: string) {
-        return cookieStore.get(name)?.value;
+      getAll() {
+        return cookieStore.getAll().map((c) => ({ name: c.name, value: c.value }));
       },
-      set(name: string, value: string, options: { path?: string; domain?: string; maxAge?: number; httpOnly?: boolean; secure?: boolean; sameSite?: "lax" | "strict" | "none" }) {
-        cookieStore.set({ name, value, ...options });
+      set(name: string, value: string, options: CookieOptions) {
+        try {
+          cookieStore.set({ name, value, ...options });
+        } catch {}
       },
-      remove(name: string, options: { path?: string; domain?: string }) {
-        cookieStore.set({ name, value: "", ...options });
+      delete(name: string, options: CookieOptions) {
+        try {
+          cookieStore.set({ name, value: "", ...options });
+        } catch {}
       },
     },
   });
