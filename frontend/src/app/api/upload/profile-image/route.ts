@@ -1,10 +1,11 @@
 import { NextRequest } from "next/server";
-import type { ModifyResult, WithId } from "mongodb";
+import type { WithId } from "mongodb";
 import { getMongoDb } from "@/lib/mongodb";
 import { getProfilesCollection } from "@/lib/profile";
 import { getSessionUserId } from "@/lib/supabaseServer";
 import sharp from "sharp";
 import { nanoid } from "nanoid";
+import type { ProfileDoc } from "@/lib/profile";
 
 const MAX_UPLOAD_MB = Number(process.env.MAX_UPLOAD_MB || 20);
 
@@ -105,10 +106,10 @@ export async function POST(req: NextRequest) {
       return !!obj && typeof obj === "object" && "value" in obj;
     }
 
-    const updatedProfileDoc: (WithId<import("@/lib/mongodb").ProfileDoc> | import("@/lib/mongodb").ProfileDoc | null) =
-      hasValueProperty<import("@/lib/mongodb").ProfileDoc>(resultUnknown)
+    const updatedProfileDoc: (WithId<ProfileDoc> | ProfileDoc | null) =
+      hasValueProperty<ProfileDoc>(resultUnknown)
         ? resultUnknown.value
-        : (resultUnknown as WithId<import("@/lib/mongodb").ProfileDoc> | null);
+        : (resultUnknown as WithId<ProfileDoc> | null);
 
     const primary = updatedProfileDoc?.images?.length === 1;
     return new Response(
