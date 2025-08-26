@@ -105,7 +105,7 @@ export async function POST(req: Request) {
       $set: { email, supabaseUserId: user.id, updatedAt: now },
     }
 
-    const result = await users.updateOne({ email }, update, { upsert: true })
+    await users.updateOne({ email }, update, { upsert: true })
     const doc = await users.findOne({ email })
     const mongoIdString = doc?._id?.toString()
 
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
       { ok: true, mongoUserId: mongoIdString ?? null, supabaseUserId: user.id },
       { headers: buildCorsHeaders(allowedOrigins, requestOrigin) },
     )
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Internal error' },
       { status: 500, headers: buildCorsHeaders(allowedOrigins, requestOrigin) },

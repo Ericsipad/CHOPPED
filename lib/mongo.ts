@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb'
 let globalMongoClient: MongoClient | null = null
 
 export async function getMongoClient(): Promise<MongoClient> {
-  if (globalMongoClient && globalMongoClient.topology && globalMongoClient.topology.isConnected()) {
+  if (globalMongoClient) {
     return globalMongoClient
   }
 

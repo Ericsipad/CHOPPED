@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const { action, data } = payload as { action?: string; data?: unknown }
+  const { action } = payload as { action?: string; data?: unknown }
 
   if (!action) {
     return NextResponse.json(
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
         )
       }
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Internal error' },
       { status: 500, headers: buildCorsHeaders(allowedOrigins, requestOrigin) },
@@ -143,7 +143,7 @@ export async function GET(req: Request) {
         )
       }
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Internal error' },
       { status: 500, headers: buildCorsHeaders(allowedOrigins, requestOrigin) },
