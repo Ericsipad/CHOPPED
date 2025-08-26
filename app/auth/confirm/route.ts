@@ -31,15 +31,15 @@ export async function GET(req: Request) {
   }
   // Link Mongo and Supabase IDs on verification (server-side, once)
   const { data: { user } } = await supabase.auth.getUser()
-  if (user?.email) {
+  if (user?.id) {
     const users = await getUsersCollection()
     const now = new Date()
     await users.updateOne(
-      { email: user.email },
-      { $setOnInsert: { createdAt: now }, $set: { supabaseUserId: user.id, updatedAt: now } },
+      { supabaseUserId: user.id },
+      { $setOnInsert: { createdAt: now, supabaseUserId: user.id }, $set: { updatedAt: now } },
       { upsert: true },
     )
-    const doc = await users.findOne({ email: user.email })
+    const doc = await users.findOne({ supabaseUserId: user.id })
     const mongoIdString = doc?._id?.toString()
     if (mongoIdString) {
       await supabase.auth.updateUser({ data: { mongoUserId: mongoIdString } })

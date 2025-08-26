@@ -25,7 +25,8 @@ export async function getUsersCollection() {
   const client = await getMongoClient()
   const db = client.db()
   const collection = db.collection('users')
-  await collection.createIndex({ email: 1 }, { unique: true })
+  // Ensure unique index on Supabase user ID (primary linkage), not on email
+  await collection.createIndex({ supabaseUserId: 1 }, { unique: true })
   return collection
 }
 

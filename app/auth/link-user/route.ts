@@ -78,22 +78,14 @@ export async function POST(req: Request) {
 
   try {
     const users = await getUsersCollection()
-    const email = user.email
-    if (!email) {
-      return NextResponse.json(
-        { error: 'User email missing' },
-        { status: 400, headers: buildCorsHeaders(allowedOrigins, requestOrigin) },
-      )
-    }
-
     const now = new Date()
     const update = {
-      $setOnInsert: { createdAt: now },
-      $set: { email, supabaseUserId: user.id, updatedAt: now },
+      $setOnInsert: { createdAt: now, supabaseUserId: user.id },
+      $set: { updatedAt: now },
     }
 
-    await users.updateOne({ email }, update, { upsert: true })
-    const doc = await users.findOne({ email })
+    await users.updateOne({ supabaseUserId: user.id }, update, { upsert: true })
+    const doc = await users.findOne({ supabaseUserId: user.id })
     const mongoIdString = doc?._id?.toString()
 
     if (mongoIdString) {
