@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { Box, Button, Container, Heading, Input, Stack, Text } from '@chakra-ui/react'
-import { supabase } from './lib/supabaseClient'
+import { getSupabase } from './lib/supabaseClient'
 import { getFrontendUrl } from './lib/config'
 import { z } from 'zod'
 import Account from './pages/Account'
@@ -52,6 +52,7 @@ function App() {
         })
       schema.parse({ email, password, repeatPassword })
       const frontendBase = getFrontendUrl()
+      const supabase = getSupabase()
       const {
         error: signUpError,
       } = await supabase.auth.signUp({

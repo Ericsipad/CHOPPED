@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Box, Container, Heading, Stack, Text } from '@chakra-ui/react'
-import { supabase } from '../lib/supabaseClient'
+import { getSupabase } from '../lib/supabaseClient'
 import { getBackendUrl } from '../lib/config'
 
 export default function Account() {
@@ -13,6 +13,7 @@ export default function Account() {
     async function init() {
       setLoading(true)
       try {
+        const supabase = getSupabase()
         const { data: { session } } = await supabase.auth.getSession()
         if (!session) {
           setError('Not logged in')
