@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Country, State, City } from "country-state-city";
+import type { IState, ICity } from "country-state-city";
 
 type Props = {
   value: { country?: string; state?: string; city?: string };
@@ -10,8 +11,8 @@ type Props = {
 
 export default function LocationSelect({ value, onChange }: Props) {
   const countries = useMemo(() => Country.getAllCountries(), []);
-  const [states, setStates] = useState<State[]>([]);
-  const [cities, setCities] = useState<City[]>([]);
+  const [states, setStates] = useState<IState[]>([]);
+  const [cities, setCities] = useState<ICity[]>([]);
 
   useEffect(() => {
     if (value.country) {
