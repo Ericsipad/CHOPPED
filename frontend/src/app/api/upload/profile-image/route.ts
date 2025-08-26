@@ -16,8 +16,10 @@ async function uploadToBunny(path: string, body: Buffer, contentType: string) {
     throw new Error("Bunny env not set");
   }
   const url = `https://${regionHost}/${zone}/${path}`;
-  // Convert Node Buffer to Blob for fetch BodyInit compatibility (avoids SharedArrayBuffer typing)
-  const blob = new Blob([body], { type: contentType });
+  // Convert Buffer to a fresh Uint8Array copy (guaranteed ArrayBuffer-backed) for Blob
+  const copy = new Uint8Array(body.byteLength);
+  copy.set(body);
+  const blob = new Blob([copy], { type: contentType });
   const res = await fetch(url, {
     method: "PUT",
     headers: {
