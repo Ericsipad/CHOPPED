@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 // import { getSupabaseClient } from "@/lib/supabaseClient";
 import LocationSelect from "@/components/LocationSelect";
+import styles from "./signup.module.css";
 import Image from "next/image";
 import { apiFetch, apiUrl } from "../../lib/api";
 
@@ -176,7 +177,7 @@ export default function SignUpPage() {
   };
 
   const Section1 = () => (
-    <section>
+    <section className={styles.signup}>
       <p className="muted">
         We do not need to collect any personal info at this point and you should create a unique email you use ony for this site. Later, you can opt to verify your account with our Fully OFFLINE unhackable IDentity verfication before meeting a person in real life- See details on the home page
       </p>
@@ -187,15 +188,15 @@ export default function SignUpPage() {
       <label>Password
         <input type="password" {...register("password")} placeholder="••••••••" />
       </label>
-      <ul className="checklist">
+      <ul className={styles.checklist}>
         {passwordChecklist.map((c) => (
-          <li key={c.label} className={c.pass ? "ok" : ""}>{c.label}</li>
+          <li key={c.label} className={c.pass ? styles.ok : ""}>{c.label}</li>
         ))}
       </ul>
       <label>Confirm password
         <input type="password" {...register("confirmPassword")} placeholder="••••••••" />
       </label>
-      {errors.confirmPassword && <span className="error">{errors.confirmPassword.message}</span>}
+      {errors.confirmPassword && <span className={styles.error}>{errors.confirmPassword.message}</span>}
       <button type="button" onClick={() => setStep(2)} disabled={passwordChecklist.some((c) => !c.pass)}>
         Continue
       </button>
@@ -203,12 +204,12 @@ export default function SignUpPage() {
   );
 
   const Section2 = () => (
-    <section>
+    <section className={styles.signup}>
       <label>Display name
         <input type="text" {...register("displayName")} placeholder="Your name" />
       </label>
-      {availability === "available" && <span className="ok">Available ✓</span>}
-      {availability === "unavailable" && <span className="error">Not available</span>}
+      {availability === "available" && <span className={styles.ok}>Available ✓</span>}
+      {availability === "unavailable" && <span className={styles.error}>Not available</span>}
       <label>Age
         <input type="number" min={18} max={120} {...register("age", { valueAsNumber: true })} />
       </label>
@@ -223,13 +224,13 @@ export default function SignUpPage() {
       <label>Tell us about yourself (500 chars)
         <textarea maxLength={500} {...register("bio")} />
       </label>
-      <div className="terms">
+      <div className={styles.terms}>
         <label>
           <input type="checkbox" {...register("terms")} /> I agree to the <a href="/terms" target="_blank" rel="noreferrer">Terms and Conditions</a>
         </label>
         {errors.terms && <span className="error">{errors.terms.message}</span>}
       </div>
-      <div className="actions">
+      <div className={styles.actions}>
         <button type="button" onClick={() => setStep(1)}>Back</button>
         <button type="button" onClick={() => setStep(3)} disabled={availability !== "available"}>Continue</button>
       </div>
@@ -237,14 +238,14 @@ export default function SignUpPage() {
   );
 
   const Section3 = () => (
-    <section>
+    <section className={styles.signup}>
       <p>Upload a profile picture (max 20 MB). We accept most phone image formats. If a format is not supported on web, we will convert it for display.</p>
       <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); }} />
       {uploading && <p>Uploading...</p>}
       {imageId && (
         <Image src={apiUrl(`/api/profile/image/${imageId}`)} alt="Profile preview" width={160} height={160} style={{ borderRadius: 12 }} />
       )}
-      <div className="actions">
+      <div className={styles.actions}>
         <button type="button" onClick={() => setStep(2)}>Back</button>
         <button type="button" onClick={() => setStep(4)} disabled={!imageId}>Continue</button>
       </div>
@@ -253,9 +254,9 @@ export default function SignUpPage() {
 
   const toggles = ["herpes", "hiv", "handicap", "autism", "digitalNomad"] as const;
   const Section4 = () => (
-    <section>
+    <section className={styles.signup}>
       <p>These are kept private but help align users that match so you know the people youre seeing are more likely to be on the same wave as you.</p>
-      <div className="grid">
+      <div className={styles.grid}>
         <div><strong>I am/have</strong></div>
         <div><strong>I&apos;ll accept in a match</strong></div>
         <div><strong>Option</strong></div>
@@ -287,7 +288,7 @@ export default function SignUpPage() {
           </>
         ))}
       </div>
-      <div className="actions">
+      <div className={styles.actions}>
         <button type="button" onClick={() => setStep(3)}>Back</button>
         <button type="button" onClick={() => setStep(5)}>Continue</button>
       </div>
@@ -295,9 +296,9 @@ export default function SignUpPage() {
   );
 
   const Section5 = () => (
-    <section>
+    <section className={styles.signup}>
       <p>Ummmm.... this is a hard one but we need to narrow down the database so this needs to be somewhat generic to start.</p>
-      <div className="grid2">
+      <div className={styles.grid2}>
         <div>
           <h3>I AM</h3>
           {[
@@ -325,7 +326,7 @@ export default function SignUpPage() {
           ))}
         </div>
       </div>
-      <div className="actions">
+      <div className={styles.actions}>
         <button type="button" onClick={() => setStep(4)}>Back</button>
         <button type="submit" disabled={isSubmitting}>Finish</button>
       </div>
@@ -333,7 +334,7 @@ export default function SignUpPage() {
   );
 
   return (
-    <main className="signup">
+    <main className={styles.signup}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {step === 1 && <Section1 />}
         {step === 2 && <Section2 />}
@@ -341,20 +342,6 @@ export default function SignUpPage() {
         {step === 4 && <Section4 />}
         {step === 5 && <Section5 />}
       </form>
-      <style jsx>{`
-        .signup { padding: 16px; max-width: 560px; margin: 0 auto; }
-        input, textarea, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #ccc; }
-        button { background: linear-gradient(135deg, #1e90ff, #ff2db2, #00c853); color: white; border: none; }
-        .checklist li.ok { color: #00c853; }
-        .ok { color: #00c853; }
-        .error { color: #ff3b30; }
-        .pill { border: 1px solid #ccc; background: #111; color: #eee; box-shadow: none; }
-        .pill:active, .pill:focus { box-shadow: 0 0 0 6px rgba(0,200,83,0.25); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: center; }
-        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .muted { color: #888; font-size: 14px; }
-        .actions { display: flex; gap: 12px; }
-      `}</style>
     </main>
   );
 }
