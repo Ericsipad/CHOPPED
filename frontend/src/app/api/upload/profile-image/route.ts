@@ -100,8 +100,9 @@ export async function POST(req: NextRequest) {
       { upsert: true, returnDocument: "after" }
     );
 
+    const primary = Boolean(update && (update as any).value && Array.isArray((update as any).value.images) && (update as any).value.images.length === 1);
     return new Response(
-      JSON.stringify({ image: { id: imageId, primary: update.value?.images?.length === 1 } }),
+      JSON.stringify({ image: { id: imageId, primary } }),
       { status: 200 }
     );
   } catch (e) {
