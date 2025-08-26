@@ -46,7 +46,7 @@ function App() {
             .regex(/[^A-Za-z0-9]/, 'Needs special'),
           repeatPassword: z.string(),
         })
-        .refine((v) => v.password === v.repeatPassword, {
+        .refine((v: { password: string; repeatPassword: string }) => v.password === v.repeatPassword, {
           path: ['repeatPassword'],
           message: 'Passwords must match',
         })
