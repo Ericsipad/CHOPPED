@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     // Save image metadata into profile (append, primary if first)
     const db = await getMongoDb();
     const profiles = await getProfilesCollection(db);
-    const update = await profiles.findOneAndUpdate(
+    const { value: updatedProfile } = await profiles.findOneAndUpdate(
       { supabaseUserId: userId },
       {
         $setOnInsert: { supabaseUserId: userId, createdAt: new Date() },
@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
       { upsert: true, returnDocument: "after" }
     );
 
-    const primary = Boolean(update && (update as any).value && Array.isArray((update as any).value.images) && (update as any).value.images.length === 1);
+    const primary = updatedProfile?.images?.length === 1;
     return new Response(
       JSON.stringify({ image: { id: imageId, primary } }),
       { status: 200 }
