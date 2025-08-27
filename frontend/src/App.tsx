@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, Button, Container, Input, Stack, Text, useDisclosure, DialogRoot, DialogBackdrop, DialogContent, DialogHeader, DialogBody, DialogFooter, DialogTitle, CloseButton } from '@chakra-ui/react'
-import { getBackendUrl } from './lib/config'
+import { getBackendUrl, getBunnyAuthQuery } from './lib/config'
 import { z } from 'zod'
 import Account from './pages/Account'
 import './App.css'
@@ -16,6 +16,7 @@ function App() {
   const [suEmail, setSuEmail] = useState('')
   const [suPassword, setSuPassword] = useState('')
   const [suRepeat, setSuRepeat] = useState('')
+  const bunnyQuery = getBunnyAuthQuery()
 
   async function handleLogin() {
     setSubmitting(true)
@@ -97,7 +98,7 @@ function App() {
         h="100vh"
         style={{
           backgroundImage:
-            "url('https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_jw22ljw22ljw22lj.png')",
+            `url('https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_jw22ljw22ljw22lj.png${bunnyQuery ? `?${bunnyQuery}` : ''}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -121,7 +122,7 @@ function App() {
       {/* Lower section full-width image */}
       <Box as="section" w="100%">
         <img
-          src="https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_defddcdefddcdefd.png"
+          src={`https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_defddcdefddcdefd.png${bunnyQuery ? `?${bunnyQuery}` : ''}`}
           alt="Chopped.dating lower section"
           style={{ display: 'block', width: '100%', height: 'auto' }}
           loading="eager"
