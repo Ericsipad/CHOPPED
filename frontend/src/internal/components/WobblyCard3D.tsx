@@ -1,4 +1,4 @@
-import { Box, type BoxProps, useColorModeValue } from '@chakra-ui/react'
+import { Box, type BoxProps } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import {
 	useMotionValue as createMotionValue,
@@ -15,8 +15,7 @@ export type WobblyLayer = {
 
 export type WobblyCard3DProps = BoxProps & {
 	children?: ReactNode
-	bgLight?: string
-	bgDark?: string
+	bg?: BoxProps['bg']
 	color?: string
 	p?: BoxProps['p']
 	borderRadius?: BoxProps['borderRadius']
@@ -35,8 +34,7 @@ export type WobblyCard3DProps = BoxProps & {
 export function WobblyCard3D(props: WobblyCard3DProps) {
 	const {
 		children,
-		bgLight = 'teal.500',
-		bgDark = 'teal.700',
+		bg = 'teal.500',
 		color = 'white',
 		p = 6,
 		borderRadius = 'lg',
@@ -68,12 +66,10 @@ export function WobblyCard3D(props: WobblyCard3DProps) {
 		mouseY.set(Math.min(1, Math.max(0, y)))
 	}
 
-	const bgColor = useColorModeValue(bgLight, bgDark)
-
 	return (
 		<MotionBox
 			ref={ref}
-			bg={bgColor}
+			bg={bg}
 			color={color}
 			p={p}
 			borderRadius={borderRadius}
@@ -84,8 +80,7 @@ export function WobblyCard3D(props: WobblyCard3DProps) {
 				mouseX.set(0.5)
 				mouseY.set(0.5)
 			}}
-			whileHover={{ scale }}
-			transition={{ duration }}
+			whileHover={{ scale, transition: { duration } }}
 			position="relative"
 			overflow="hidden"
 			sx={{ transformStyle: 'preserve-3d', perspective: `${perspective}px` }}
