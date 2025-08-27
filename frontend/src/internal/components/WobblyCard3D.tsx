@@ -1,12 +1,14 @@
-import { Box, type BoxProps } from '@chakra-ui/react'
-import { motion } from 'framer-motion'
+import { Box, chakra, shouldForwardProp, type BoxProps } from '@chakra-ui/react'
+import { isValidMotionProp, motion } from 'framer-motion'
 import {
 	useMotionValue as createMotionValue,
 	useTransform as transformMotionValue,
 } from 'framer-motion'
 import { useRef, type ReactNode } from 'react'
 
-const MotionBox = motion(Box)
+const MotionBox = chakra(motion.div, {
+	shouldForwardProp: (prop) => isValidMotionProp(prop) || shouldForwardProp(prop),
+})
 
 export type WobblyLayer = {
 	content: ReactNode
