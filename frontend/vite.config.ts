@@ -5,6 +5,12 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    watch: {
+      usePolling: true,
+      interval: 300,
+    },
+  },
   preview: {
     allowedHosts: [
       'chopped-frontend-3kvyp.ondigitalocean.app',
