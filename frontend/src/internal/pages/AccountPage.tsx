@@ -6,9 +6,12 @@ import '../styles/internal.css'
 export default function AccountPage() {
 	return (
 		<PageFrame>
-			<Container>
-				<HeroImage />
-			</Container>
+			{/* Offset content by header height so image starts under the overlay header without gap */}
+			<div style={{ paddingTop: 48 }}>
+				<Container>
+					<HeroImage />
+				</Container>
+			</div>
 		</PageFrame>
 	)
 }

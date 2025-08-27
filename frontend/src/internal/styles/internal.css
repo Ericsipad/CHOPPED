@@ -3,11 +3,23 @@ html, body, #root {
 	padding: 0;
 	height: 100%;
 	width: 100%;
-	background-color: #ffffff;
+	background-color: #000000;
 }
 
+/* Header overlays hero */
 .internal-top-header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
 	height: 48px;
+	background-color: #000000; /* black bars on the sides */
+	z-index: 10;
+}
+
+/* Gradient bar constrained to the container width */
+.internal-top-header-inner {
+	height: 100%;
 	background: linear-gradient(to top, #3a3a3a 0%, #dcdcdc 60%, #ffffff 100%);
 	border-bottom: 1px solid rgba(0,0,0,0.06);
 }
@@ -21,7 +33,7 @@ html, body, #root {
 
 .internal-hero {
 	width: 100%;
-	background-color: #ffffff;
+	background-color: #000000; /* black beyond the container */
 }
 
 .internal-hero-img {
