@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
 html, body, #root {
 	margin: 0;
 	padding: 0;
@@ -22,6 +24,41 @@ html, body, #root {
 	height: 100%;
 	background: linear-gradient(to top, #3a3a3a 0%, #dcdcdc 60%, #ffffff 100%);
 	border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Nav layout inside header */
+.internal-nav {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	gap: 32px;
+	padding: 0 12px;
+}
+
+/* Text-only links with calligraphy styling */
+.internal-nav-link {
+	font-family: 'Great Vibes', cursive;
+	font-weight: 400;
+	letter-spacing: 0.5px;
+	color: #ffffff;
+	text-decoration: none;
+	line-height: 1;
+	display: inline-block;
+	transform-origin: center;
+	transition: transform 160ms ease, text-shadow 160ms ease, opacity 160ms ease;
+}
+
+.internal-nav-link:hover,
+.internal-nav-link:focus-visible {
+	text-shadow: 0 0 6px rgba(255,255,255,0.85), 0 0 14px rgba(255,255,255,0.6);
+	transform: scale(1.12);
+}
+
+/* Active page gets slightly larger and subtle glow by default */
+.internal-nav-link.is-active,
+.internal-nav-link[aria-current="page"] {
+	text-shadow: 0 0 4px rgba(255,255,255,0.6);
+	transform: scale(1.18);
 }
 
 .internal-container {

@@ -22,6 +22,8 @@ export default defineConfig({
         index: path.resolve(__dirname, 'index.html'),
         mobile: path.resolve(__dirname, 'mobile.html'),
         account: path.resolve(__dirname, 'account.html'),
+        'chopping-board': path.resolve(__dirname, 'chopping-board.html'),
+        profile: path.resolve(__dirname, 'profile.html'),
       },
     },
   },
