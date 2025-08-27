@@ -30,8 +30,7 @@ export default function ProfileGrid(props: ProfileGridProps) {
 							p={0}
 							borderRadius="xl"
 							boxShadow="xl"
-							bgLight="gray.800"
-							bgDark="gray.900"
+							bg="gray.800"
 							maxRotate={12}
 							perspective={900}
 						>

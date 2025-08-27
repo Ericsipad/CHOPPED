@@ -74,7 +74,12 @@ export function WobblyCard3D(props: WobblyCard3DProps) {
 			p={p}
 			borderRadius={borderRadius}
 			boxShadow={boxShadow}
-			style={{ rotateX, rotateY }}
+			style={{
+				rotateX,
+				rotateY,
+				transformStyle: 'preserve-3d',
+				perspective: `${perspective}px`,
+			}}
 			onMouseMove={handleMouseMove}
 			onMouseLeave={() => {
 				mouseX.set(0.5)
@@ -83,7 +88,7 @@ export function WobblyCard3D(props: WobblyCard3DProps) {
 			whileHover={{ scale, transition: { duration } }}
 			position="relative"
 			overflow="hidden"
-			sx={{ transformStyle: 'preserve-3d', perspective: `${perspective}px` }}
+			
 			{...rest}
 		>
 			<Box position="relative" zIndex={2}>
