@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Button, Container, Input, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, useDisclosure, Modal } from '@chakra-ui/react'
+import { Box, Button, Container, Input, Stack, Text, useDisclosure, DialogRoot, DialogBackdrop, DialogContent, DialogHeader, DialogBody, DialogFooter, DialogTitle, CloseButton } from '@chakra-ui/react'
 import { getBackendUrl } from './lib/config'
 import { z } from 'zod'
 import Account from './pages/Account'
@@ -175,13 +175,15 @@ function App() {
         </Stack>
       </Container>
 
-      {/* Sign in modal */}
-      <Modal open={login.open} onClose={login.onClose} motionPreset="scale">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Sign in</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+      {/* Sign in dialog */}
+      <DialogRoot open={login.open}>
+        <DialogBackdrop />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign in</DialogTitle>
+            <CloseButton position="absolute" top="2" right="2" onClick={login.onClose} />
+          </DialogHeader>
+          <DialogBody>
             <Stack gap={4}>
               <Box>
                 <Text mb={2} fontWeight="medium">Email</Text>
@@ -193,21 +195,23 @@ function App() {
               </Box>
               {error && <Box color="red.600">{error}</Box>}
             </Stack>
-          </ModalBody>
-          <ModalFooter>
+          </DialogBody>
+          <DialogFooter>
             <Button mr={3} onClick={login.onClose} variant="ghost">Cancel</Button>
             <Button colorScheme="teal" onClick={handleLogin} loading={submitting}>Sign in</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
 
-      {/* Sign up modal */}
-      <Modal open={signUp.open} onClose={signUp.onClose} motionPreset="scale">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Create your account</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+      {/* Sign up dialog */}
+      <DialogRoot open={signUp.open}>
+        <DialogBackdrop />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create your account</DialogTitle>
+            <CloseButton position="absolute" top="2" right="2" onClick={signUp.onClose} />
+          </DialogHeader>
+          <DialogBody>
             <Stack gap={4}>
               <Box>
                 <Text mb={2} fontWeight="medium">Email</Text>
@@ -222,13 +226,13 @@ function App() {
                 <Input type="password" value={suRepeat} onChange={(e) => setSuRepeat(e.target.value)} />
               </Box>
             </Stack>
-          </ModalBody>
-          <ModalFooter>
+          </DialogBody>
+          <DialogFooter>
             <Button mr={3} onClick={signUp.onClose} variant="ghost">Cancel</Button>
             <Button colorScheme="teal" onClick={handleSignUp} loading={submitting}>Sign up</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   )
 }
