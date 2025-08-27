@@ -84,46 +84,7 @@ function App() {
     }
   }
 
-  async function handleSignUp() {
-    setSubmitting(true)
-    setError(null)
-    setMessage(null)
-    try {
-      const schema = z
-        .object({
-          email: z.string().email(),
-          password: z
-            .string()
-            .min(8)
-            .regex(/[A-Z]/, 'Needs uppercase')
-            .regex(/[a-z]/, 'Needs lowercase')
-            .regex(/\d/, 'Needs number')
-            .regex(/[^A-Za-z0-9]/, 'Needs special'),
-          repeatPassword: z.string(),
-        })
-        .refine((v: { password: string; repeatPassword: string }) => v.password === v.repeatPassword, {
-          path: ['repeatPassword'],
-          message: 'Passwords must match',
-        })
-      schema.parse({ email, password, repeatPassword })
-      const backend = getBackendUrl()
-      const res = await fetch(`${backend}/auth/sign-up`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data?.error || 'Sign up failed')
-      }
-      setMessage('Please check your email for the verification link to log in.')
-    } catch (e: any) {
-      setError(e?.message || 'Sign up failed')
-    } finally {
-      setSubmitting(false)
-    }
-  }
+  
 
   const isAccount = typeof window !== 'undefined' && window.location.pathname.startsWith('/account')
   return (
