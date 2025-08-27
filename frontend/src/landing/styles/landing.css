@@ -36,7 +36,7 @@ html, body, #root, .landing-root {
 }
 
 .landing-btn-signup { left: 25%; }
-.landing-btn-signin { left: 75%; }
+.landing-btn-signin { right: 25%; }
 
 .pill-button {
 	background-color: #ffffff;
@@ -44,14 +44,21 @@ html, body, #root, .landing-root {
 	border: none;
 	border-radius: 9999px;
 	padding: 10px 22px;
-	font-size: 16px;
+	font-size: 20px;
 	font-family: "Brush Script MT", "Lucida Handwriting", "Segoe Script", cursive;
 	cursor: pointer;
 	box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+	transition: transform 160ms ease, box-shadow 160ms ease;
+	transform-origin: center;
 }
 
-.pill-button:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.16); }
-.pill-button:active { transform: translateY(-50%) scale(0.98); }
+.pill-button:hover {
+	transform: scale(1.08);
+	box-shadow:
+		0 0 42px 14px rgba(255,255,255,0.85),
+		0 6px 16px rgba(0,0,0,0.18);
+}
+.pill-button:active { transform: scale(0.98); }
 
 .landing-infinite {
 	width: 100%;
