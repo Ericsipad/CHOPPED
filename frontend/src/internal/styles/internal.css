@@ -1,0 +1,31 @@
+html, body, #root {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+	background-color: #ffffff;
+}
+
+.internal-top-header {
+	height: 48px;
+	background: linear-gradient(to top, #3a3a3a 0%, #dcdcdc 60%, #ffffff 100%);
+	border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.internal-container {
+	max-width: 1440px;
+	margin: 0 auto;
+	padding: 0 16px;
+	position: relative;
+}
+
+.internal-hero {
+	width: 100%;
+	background-color: #ffffff;
+}
+
+.internal-hero-img {
+	width: 100%;
+	height: auto;
+	display: block;
+}

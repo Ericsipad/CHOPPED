@@ -21,6 +21,7 @@ export default defineConfig({
       input: {
         index: path.resolve(__dirname, 'index.html'),
         mobile: path.resolve(__dirname, 'mobile.html'),
+        account: path.resolve(__dirname, 'account.html'),
       },
     },
   },
