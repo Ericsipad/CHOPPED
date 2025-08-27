@@ -6,8 +6,7 @@ import '../styles/internal.css'
 export default function ChoppingBoardPage() {
 	return (
 		<PageFrame>
-			{/* Offset content by header height so image starts under the overlay header without gap */}
-			<div style={{ paddingTop: 48 }}>
+			<div>
 				<Container>
 					<HeroImage />
 				</Container>

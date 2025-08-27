@@ -22,8 +22,8 @@ html, body, #root {
 /* Gradient bar constrained to the container width */
 .internal-top-header-inner {
 	height: 100%;
-	background: linear-gradient(to top, #3a3a3a 0%, #dcdcdc 60%, #ffffff 100%);
-	border-bottom: 1px solid rgba(0,0,0,0.06);
+	background: #000000;
+	border-bottom: none;
 }
 
 /* Nav layout inside header */
@@ -32,12 +32,13 @@ html, body, #root {
 	display: flex;
 	align-items: center;
 	gap: 32px;
-	padding: 0 12px;
+	padding: 0;
 }
 
 /* Text-only links with calligraphy styling */
 .internal-nav-link {
 	font-family: 'Great Vibes', cursive;
+	font-size: 24px;
 	font-weight: 400;
 	letter-spacing: 0.5px;
 	color: #ffffff;
