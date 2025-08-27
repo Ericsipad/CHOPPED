@@ -30,32 +30,57 @@ export function getFrontendUrl(): string {
 
 export function getBunnyAuthQuery(): string {
   const w = window as any
-  const candidates = [
-    // Common patterns used across apps
-    w.BUNNY_AUTH_QUERY,
-    w.BUNNY_AUTH,
-    w.CDN_AUTH_QUERY,
-    w.CDN_AUTH,
-    w.BUNNY_QUERY,
-    w.CDN_QUERY,
-    // window.env fallbacks if provided by platform
-    w.env?.BUNNY_AUTH_QUERY,
-    w.env?.BUNNY_AUTH,
-    w.env?.CDN_AUTH_QUERY,
-    w.env?.CDN_AUTH,
-    w.env?.BUNNY_QUERY,
-    w.env?.CDN_QUERY,
-    w.env?.VITE_BUNNY_AUTH_QUERY,
-    w.env?.NEXT_PUBLIC_BUNNY_AUTH_QUERY,
-  ]
-  let query = candidates.find((v: unknown) => typeof v === 'string' && v.trim().length > 0) as string | undefined
-  if (!query) return ''
-  query = query.trim()
-  // Normalize to not include a leading ? or &
-  if (query.startsWith('?') || query.startsWith('&')) {
-    query = query.slice(1)
+  // Prefer explicit values matching Bunny docs
+  const token = (w.env?.BUNNY_TOKEN ?? w.BUNNY_TOKEN) as string | undefined
+  const expires = (w.env?.BUNNY_EXPIRES ?? w.BUNNY_EXPIRES) as string | undefined
+  const ip = (w.env?.BUNNY_IP ?? w.BUNNY_IP) as string | undefined
+  const tokenPath = (w.env?.BUNNY_TOKEN_PATH ?? w.BUNNY_TOKEN_PATH) as string | undefined
+
+  const params: string[] = []
+  if (typeof token === 'string' && token.trim()) params.push(`token=${encodeURIComponent(token.trim())}`)
+  if (typeof expires === 'string' && expires.trim()) params.push(`expires=${encodeURIComponent(expires.trim())}`)
+  if (typeof ip === 'string' && ip.trim()) params.push(`ip=${encodeURIComponent(ip.trim())}`)
+  if (typeof tokenPath === 'string' && tokenPath.trim()) params.push(`token_path=${encodeURIComponent(tokenPath.trim())}`)
+
+  if (params.length === 0) {
+    // Fallback to a prebuilt query, if provided
+    const prebuilt = (w.env?.BUNNY_AUTH_QUERY ?? w.BUNNY_AUTH_QUERY) as string | undefined
+    if (typeof prebuilt === 'string' && prebuilt.trim()) {
+      const clean = prebuilt.trim().replace(/^[?&]/, '')
+      return clean
+    }
+    return ''
   }
-  return query
+  // Maintain documented param names; order does not affect correctness of appending
+  return params.join('&')
+}
+
+export function appendBunnyAuth(baseUrl: string): string {
+  try {
+    const w = window as any
+    // Optional per-path map: { "/Gemini_Generated_Image_...png": "token=...&expires=...", ... }
+    const authMap = (w.BUNNY_AUTH_MAP || w.env?.BUNNY_AUTH_MAP) as Record<string, string> | undefined
+    if (authMap && typeof authMap === 'object') {
+      try {
+        const urlObj = new URL(baseUrl)
+        const pathKey = urlObj.pathname // e.g. /Gemini_Generated_Image_....png
+        const mapped = authMap[pathKey] || authMap[pathKey.replace(/^\/+/, '/')]
+        if (typeof mapped === 'string' && mapped.trim()) {
+          const clean = mapped.trim().replace(/^[?&]/, '')
+          return `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${clean}`
+        }
+      } catch {
+        // fallback below
+      }
+    }
+
+    const query = getBunnyAuthQuery()
+    if (!query) return baseUrl
+    const clean = query.replace(/^[?&]/, '')
+    return `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${clean}`
+  } catch {
+    return baseUrl
+  }
 }
 
 
