@@ -71,99 +71,106 @@ function App() {
 
   const isAccount = typeof window !== 'undefined' && window.location.pathname.startsWith('/account')
   return (
-    <Container maxW="container.sm" py={16}>
-      <Stack gap={6}>
-        {isAccount ? (
-          <Account />
-        ) : (
-          <>
-        {/* Hero background image */}
-        <Box
-          as="section"
-          w="100%"
-          h="100vh"
-          bgImage={"url('https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_jw22ljw22ljw22lj.png')"}
-          bgSize="cover"
-          bgPos="center"
-          bgRepeat="no-repeat"
-          aria-label="Chopped.dating landing background"
+    <>
+      {/* Hero background image (full-bleed) */}
+      <Box
+        as="section"
+        w="100%"
+        h="100vh"
+        style={{
+          backgroundImage:
+            "url('https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_jw22ljw22ljw22lj.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundColor: '#000',
+        }}
+        aria-label="Chopped.dating landing background"
+      />
+
+      {/* Lower section full-width image */}
+      <Box as="section" w="100%">
+        <img
+          src="https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_defddcdefddcdefd.png"
+          alt="Chopped.dating lower section"
+          style={{ display: 'block', width: '100%', height: 'auto' }}
+          loading="eager"
         />
+      </Box>
 
-        {/* Lower section full-width image */}
-        <Box as="section" w="100%">
-          <img
-            src="https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_defddcdefddcdefd.png"
-            alt="Chopped.dating lower section"
-            style={{ display: 'block', width: '100%', height: 'auto' }}
-          />
-        </Box>
-
-        <Box textAlign="center">
-          <Button colorScheme="teal" onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
-            Sign up
-          </Button>
-        </Box>
-        <Box
-          ref={formRef as any}
-          maxW="md"
-          mx="auto"
-          w="full"
-          bg="white"
-          _dark={{ bg: 'gray.800' }}
-          borderWidth="1px"
-          borderRadius="lg"
-          boxShadow="sm"
-          p={6}
-        >
-          <Stack gap={4}>
-            <Box>
-              <Heading size="md">Create your account</Heading>
-              <Text mt={2} color="gray.600" _dark={{ color: 'gray.300' }}>
-                We do not collect any personal information. We do need an email for communicating with you, so please consider making a dedicated email that is not used anywhere else.
-              </Text>
+      <Container maxW="container.sm" py={16}>
+        <Stack gap={6}>
+          {isAccount ? (
+            <Account />
+          ) : (
+            <>
+            <Box textAlign="center">
+              <Button colorScheme="teal" onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                Sign up
+              </Button>
             </Box>
+            <Box
+              ref={formRef as any}
+              maxW="md"
+              mx="auto"
+              w="full"
+              bg="white"
+              _dark={{ bg: 'gray.800' }}
+              borderWidth="1px"
+              borderRadius="lg"
+              boxShadow="sm"
+              p={6}
+            >
+              <Stack gap={4}>
+                <Box>
+                  <Heading size="md">Create your account</Heading>
+                  <Text mt={2} color="gray.600" _dark={{ color: 'gray.300' }}>
+                    We do not collect any personal information. We do need an email for communicating with you, so please consider making a dedicated email that is not used anywhere else.
+                  </Text>
+                </Box>
 
-            <Box>
-              <Text mb={2} fontWeight="medium">Email</Text>
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+                <Box>
+                  <Text mb={2} fontWeight="medium">Email</Text>
+                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+                </Box>
+
+                <Box>
+                  <Text mb={2} fontWeight="medium">Password</Text>
+                  <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <Box mt={2} fontSize="sm">
+                    <Text color={checks.length ? 'green.500' : 'red.500'}>8+ characters</Text>
+                    <Text color={checks.upper ? 'green.500' : 'red.500'}>uppercase letter</Text>
+                    <Text color={checks.lower ? 'green.500' : 'red.500'}>lowercase letter</Text>
+                    <Text color={checks.number ? 'green.500' : 'red.500'}>number</Text>
+                    <Text color={checks.special ? 'green.500' : 'red.500'}>special character</Text>
+                  </Box>
+                </Box>
+
+                <Box>
+                  <Text mb={2} fontWeight="medium">Repeat password</Text>
+                  <Input type="password" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} />
+                  <Text mt={2} fontSize="sm" color={checks.match ? 'green.500' : 'red.500'}>
+                    {checks.match ? 'Passwords match' : 'Passwords must match'}
+                  </Text>
+                </Box>
+
+                {error && (
+                  <Box color="red.600">{error}</Box>
+                )}
+                {message && (
+                  <Box color="green.600">{message}</Box>
+                )}
+
+                <Button colorScheme="teal" onClick={handleSignUp} disabled={!allValid || submitting} loading={submitting}>
+                  Sign up
+                </Button>
+              </Stack>
             </Box>
-
-            <Box>
-              <Text mb={2} fontWeight="medium">Password</Text>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-              <Box mt={2} fontSize="sm">
-                <Text color={checks.length ? 'green.500' : 'red.500'}>8+ characters</Text>
-                <Text color={checks.upper ? 'green.500' : 'red.500'}>uppercase letter</Text>
-                <Text color={checks.lower ? 'green.500' : 'red.500'}>lowercase letter</Text>
-                <Text color={checks.number ? 'green.500' : 'red.500'}>number</Text>
-                <Text color={checks.special ? 'green.500' : 'red.500'}>special character</Text>
-              </Box>
-            </Box>
-
-            <Box>
-              <Text mb={2} fontWeight="medium">Repeat password</Text>
-              <Input type="password" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} />
-              <Text mt={2} fontSize="sm" color={checks.match ? 'green.500' : 'red.500'}>
-                {checks.match ? 'Passwords match' : 'Passwords must match'}
-              </Text>
-            </Box>
-
-            {error && (
-              <Box color="red.600">{error}</Box>
-            )}
-            {message && (
-              <Box color="green.600">{message}</Box>
-            )}
-
-            <Button colorScheme="teal" onClick={handleSignUp} disabled={!allValid || submitting} loading={submitting}>
-              Sign up
-            </Button>
-          </Stack>
-        </Box>
-          </>
-        )}
-      </Stack>
-    </Container>
+            </>
+          )}
+        </Stack>
+      </Container>
+    </>
   )
 }
 
