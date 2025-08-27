@@ -15,7 +15,9 @@ export default function ChoppingBoardPage() {
 			<div>
 				<Container>
 					<HeroImage />
-					<ProfileGrid images={images} />
+					<div style={{ position: 'relative', marginTop: 16 }}>
+						<ProfileGrid images={images} />
+					</div>
 				</Container>
 			</div>
 		</PageFrame>

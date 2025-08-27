@@ -8,16 +8,17 @@ export default function ProfileGrid(props: ProfileGridProps) {
 	const { images } = props
 	const items = images.slice(0, 10)
 
-	const cardSize = { base: '160px', md: '190px', lg: '210px', xl: '240px' }
+	// 20% smaller than previous card sizes
+	const cardSize = { base: '128px', md: '152px', lg: '168px', xl: '192px' }
 
 	return (
-		<Box w="100%" display="flex" justifyContent="center">
+		<Box w="100%" display="flex" justifyContent="center" position="relative" zIndex={5}>
 			<Grid
 				templateColumns={{
-					base: 'repeat(5, 160px)',
-					md: 'repeat(5, 190px)',
-					lg: 'repeat(5, 210px)',
-					xl: 'repeat(5, 240px)',
+					base: 'repeat(5, 128px)',
+					md: 'repeat(5, 152px)',
+					lg: 'repeat(5, 168px)',
+					xl: 'repeat(5, 192px)',
 				}}
 				gap="15px"
 				justifyContent="center"
