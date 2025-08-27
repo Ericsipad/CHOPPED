@@ -2,6 +2,7 @@ import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import ChoppingBoardPage from '../pages/ChoppingBoardPage'
 import '../styles/internal.css'
+import { ChakraProvider } from '@chakra-ui/react'
 
 function DesktopGate() {
 	useEffect(() => {
@@ -15,7 +16,9 @@ function DesktopGate() {
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
-		<DesktopGate />
+		<ChakraProvider>
+			<DesktopGate />
+		</ChakraProvider>
 	</StrictMode>
 )
 
