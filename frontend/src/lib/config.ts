@@ -30,13 +30,7 @@ export function getFrontendUrl(): string {
 
 export function getBunnyAuthQuery(): string {
   const w = window as any
-  // Use existing runtime-exported prebuilt query used across apps
-  const prebuilt = (w.env?.NEXT_PUBLIC_BUNNY_AUTH_QUERY
-    ?? w.env?.VITE_BUNNY_AUTH_QUERY
-    ?? w.NEXT_PUBLIC_BUNNY_AUTH_QUERY
-    ?? w.VITE_BUNNY_AUTH_QUERY
-    ?? w.env?.BUNNY_AUTH_QUERY
-    ?? w.BUNNY_AUTH_QUERY) as string | undefined
+  const prebuilt = (w.env?.BUNNY_AUTH_QUERY ?? w.BUNNY_AUTH_QUERY) as string | undefined
   if (typeof prebuilt !== 'string' || !prebuilt.trim()) return ''
   return prebuilt.trim().replace(/^[?&]/, '')
 }
