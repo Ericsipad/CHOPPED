@@ -30,29 +30,15 @@ export function getFrontendUrl(): string {
 
 export function getBunnyAuthQuery(): string {
   const w = window as any
-  // Prefer explicit values matching Bunny docs
-  const token = (w.env?.BUNNY_TOKEN ?? w.BUNNY_TOKEN) as string | undefined
-  const expires = (w.env?.BUNNY_EXPIRES ?? w.BUNNY_EXPIRES) as string | undefined
-  const ip = (w.env?.BUNNY_IP ?? w.BUNNY_IP) as string | undefined
-  const tokenPath = (w.env?.BUNNY_TOKEN_PATH ?? w.BUNNY_TOKEN_PATH) as string | undefined
-
-  const params: string[] = []
-  if (typeof token === 'string' && token.trim()) params.push(`token=${encodeURIComponent(token.trim())}`)
-  if (typeof expires === 'string' && expires.trim()) params.push(`expires=${encodeURIComponent(expires.trim())}`)
-  if (typeof ip === 'string' && ip.trim()) params.push(`ip=${encodeURIComponent(ip.trim())}`)
-  if (typeof tokenPath === 'string' && tokenPath.trim()) params.push(`token_path=${encodeURIComponent(tokenPath.trim())}`)
-
-  if (params.length === 0) {
-    // Fallback to a prebuilt query, if provided
-    const prebuilt = (w.env?.BUNNY_AUTH_QUERY ?? w.BUNNY_AUTH_QUERY) as string | undefined
-    if (typeof prebuilt === 'string' && prebuilt.trim()) {
-      const clean = prebuilt.trim().replace(/^[?&]/, '')
-      return clean
-    }
-    return ''
-  }
-  // Maintain documented param names; order does not affect correctness of appending
-  return params.join('&')
+  // Use existing runtime-exported prebuilt query used across apps
+  const prebuilt = (w.env?.NEXT_PUBLIC_BUNNY_AUTH_QUERY
+    ?? w.env?.VITE_BUNNY_AUTH_QUERY
+    ?? w.NEXT_PUBLIC_BUNNY_AUTH_QUERY
+    ?? w.VITE_BUNNY_AUTH_QUERY
+    ?? w.env?.BUNNY_AUTH_QUERY
+    ?? w.BUNNY_AUTH_QUERY) as string | undefined
+  if (typeof prebuilt !== 'string' || !prebuilt.trim()) return ''
+  return prebuilt.trim().replace(/^[?&]/, '')
 }
 
 export function appendBunnyAuth(baseUrl: string): string {
