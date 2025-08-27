@@ -29,10 +29,8 @@ export function getFrontendUrl(): string {
 
 
 export function getBunnyAuthQuery(): string {
-  const fromVite = (import.meta as any).env?.VITE_BUNNY_AUTH_QUERY
-  const fromNext = (import.meta as any).env?.NEXT_PUBLIC_BUNNY_AUTH_QUERY
   const fromWindow = (window as any).env?.VITE_BUNNY_AUTH_QUERY || (window as any).env?.NEXT_PUBLIC_BUNNY_AUTH_QUERY
-  const query = (fromVite || fromNext || fromWindow || '') as string
+  const query = (fromWindow || '') as string
   return query
 }
 
