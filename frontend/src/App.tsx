@@ -77,6 +77,27 @@ function App() {
           <Account />
         ) : (
           <>
+        {/* Hero background image */}
+        <Box
+          as="section"
+          w="100%"
+          h="100vh"
+          bgImage={"url('https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_jw22ljw22ljw22lj.png')"}
+          bgSize="cover"
+          bgPos="center"
+          bgRepeat="no-repeat"
+          aria-label="Chopped.dating landing background"
+        />
+
+        {/* Lower section full-width image */}
+        <Box as="section" w="100%">
+          <img
+            src="https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_defddcdefddcdefd.png"
+            alt="Chopped.dating lower section"
+            style={{ display: 'block', width: '100%', height: 'auto' }}
+          />
+        </Box>
+
         <Box textAlign="center">
           <Button colorScheme="teal" onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
             Sign up
