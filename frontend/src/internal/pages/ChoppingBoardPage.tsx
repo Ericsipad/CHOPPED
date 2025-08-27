@@ -14,9 +14,23 @@ export default function ChoppingBoardPage() {
 		<PageFrame>
 			<div>
 				<Container>
-					<HeroImage />
-					<div style={{ position: 'relative', marginTop: 16 }}>
-						<ProfileGrid images={images} />
+					<div style={{ position: 'relative' }}>
+						<HeroImage />
+						<div
+							style={{
+								position: 'absolute',
+								top: 0,
+								left: 0,
+								right: 0,
+								bottom: 0,
+								display: 'flex',
+								justifyContent: 'center',
+								alignItems: 'center',
+								zIndex: 100,
+							}}
+						>
+							<ProfileGrid images={images} />
+						</div>
 					</div>
 				</Container>
 			</div>
