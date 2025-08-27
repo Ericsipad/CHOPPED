@@ -29,6 +29,17 @@ html, body, #root, .landing-root {
 	display: block;
 }
 
+.landing-brand {
+	position: absolute;
+	left: 10%;
+	top: 15%;
+	color: #ffffff;
+	font-size: 24px;
+	line-height: 1.1;
+	font-family: "Brush Script MT", "Lucida Handwriting", "Segoe Script", cursive;
+	text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+
 .landing-btn {
 	position: absolute;
 	top: 50%;
