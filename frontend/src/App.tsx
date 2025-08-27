@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Box, Button, Container, Input, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, useDisclosure, Modal } from '@chakra-ui/react'
-import { supabase } from './lib/supabase'
 import { getBackendUrl } from './lib/config'
 import { z } from 'zod'
 import Account from './pages/Account'
@@ -23,8 +22,17 @@ function App() {
     setError(null)
     setMessage(null)
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPassword })
-      if (signInError) throw new Error(signInError.message)
+      const backend = getBackendUrl()
+      const res = await fetch(`${backend}/auth/sign-in`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data?.error || 'Sign in failed')
+      }
       setMessage('Signed in successfully.')
       login.onClose()
     } catch (e: any) {
