@@ -29,8 +29,32 @@ export function getFrontendUrl(): string {
 
 
 export function getBunnyAuthQuery(): string {
-  const fromWindow = (window as any).env?.VITE_BUNNY_AUTH_QUERY || (window as any).env?.NEXT_PUBLIC_BUNNY_AUTH_QUERY
-  const query = (fromWindow || '') as string
+  const w = window as any
+  const candidates = [
+    // Common patterns used across apps
+    w.BUNNY_AUTH_QUERY,
+    w.BUNNY_AUTH,
+    w.CDN_AUTH_QUERY,
+    w.CDN_AUTH,
+    w.BUNNY_QUERY,
+    w.CDN_QUERY,
+    // window.env fallbacks if provided by platform
+    w.env?.BUNNY_AUTH_QUERY,
+    w.env?.BUNNY_AUTH,
+    w.env?.CDN_AUTH_QUERY,
+    w.env?.CDN_AUTH,
+    w.env?.BUNNY_QUERY,
+    w.env?.CDN_QUERY,
+    w.env?.VITE_BUNNY_AUTH_QUERY,
+    w.env?.NEXT_PUBLIC_BUNNY_AUTH_QUERY,
+  ]
+  let query = candidates.find((v: unknown) => typeof v === 'string' && v.trim().length > 0) as string | undefined
+  if (!query) return ''
+  query = query.trim()
+  // Normalize to not include a leading ? or &
+  if (query.startsWith('?') || query.startsWith('&')) {
+    query = query.slice(1)
+  }
   return query
 }
 

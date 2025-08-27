@@ -17,6 +17,10 @@ function App() {
   const [suPassword, setSuPassword] = useState('')
   const [suRepeat, setSuRepeat] = useState('')
   const bunnyQuery = getBunnyAuthQuery()
+  const topHeroBase = 'https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_jw22ljw22ljw22lj.png'
+  const lowerHeroBase = 'https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_defddcdefddcdefd.png'
+  const topHeroUrl = `${topHeroBase}${bunnyQuery ? (topHeroBase.includes('?') ? '&' : '?') + bunnyQuery : ''}`
+  const lowerHeroUrl = `${lowerHeroBase}${bunnyQuery ? (lowerHeroBase.includes('?') ? '&' : '?') + bunnyQuery : ''}`
 
   async function handleLogin() {
     setSubmitting(true)
@@ -97,8 +101,7 @@ function App() {
         w="100%"
         h="100vh"
         style={{
-          backgroundImage:
-            `url('https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_jw22ljw22ljw22lj.png${bunnyQuery ? `?${bunnyQuery}` : ''}')`,
+          backgroundImage: `url('${topHeroUrl}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -122,7 +125,7 @@ function App() {
       {/* Lower section full-width image */}
       <Box as="section" w="100%">
         <img
-          src={`https://choppedthumbs.b-cdn.net/Gemini_Generated_Image_defddcdefddcdefd.png${bunnyQuery ? `?${bunnyQuery}` : ''}`}
+          src={lowerHeroUrl}
           alt="Chopped.dating lower section"
           style={{ display: 'block', width: '100%', height: 'auto' }}
           loading="eager"
