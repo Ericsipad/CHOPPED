@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { Box, Button, Container, Heading, Input, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, Container, Heading, Input, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, useDisclosure, Modal } from '@chakra-ui/react'
 import { getBackendUrl } from './lib/config'
 import { z } from 'zod'
 import Account from './pages/Account'
@@ -13,6 +13,9 @@ function App() {
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLDivElement | null>(null)
+  const login = useDisclosure()
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
 
   const checks = useMemo(() => {
     return {
@@ -27,6 +30,30 @@ function App() {
   }, [password, repeatPassword, email])
 
   const allValid = checks.length && checks.upper && checks.lower && checks.number && checks.special && checks.match && checks.email
+  async function handleLogin() {
+    setSubmitting(true)
+    setError(null)
+    setMessage(null)
+    try {
+      const backend = getBackendUrl()
+      const res = await fetch(`${backend}/auth/sign-in`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data?.error || 'Sign in failed')
+      }
+      setMessage('Signed in successfully.')
+      login.onClose()
+    } catch (e: any) {
+      setError(e?.message || 'Sign in failed')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   async function handleSignUp() {
     setSubmitting(true)
@@ -105,8 +132,8 @@ function App() {
           ) : (
             <>
             <Box textAlign="center">
-              <Button colorScheme="teal" onClick={() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
-                Sign up
+              <Button colorScheme="teal" onClick={login.onOpen}>
+                Sign in
               </Button>
             </Box>
             <Box
@@ -170,6 +197,32 @@ function App() {
           )}
         </Stack>
       </Container>
+
+      {/* Sign in modal */}
+      <Modal open={login.open} onClose={login.onClose} motionPreset="scale">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Sign in</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Stack gap={4}>
+              <Box>
+                <Text mb={2} fontWeight="medium">Email</Text>
+                <Input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="you@example.com" />
+              </Box>
+              <Box>
+                <Text mb={2} fontWeight="medium">Password</Text>
+                <Input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
+              </Box>
+              {error && <Box color="red.600">{error}</Box>}
+            </Stack>
+          </ModalBody>
+          <ModalFooter>
+            <Button mr={3} onClick={login.onClose} variant="ghost">Cancel</Button>
+            <Button colorScheme="teal" onClick={handleLogin} loading={submitting}>Sign in</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }
