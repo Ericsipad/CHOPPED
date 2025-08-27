@@ -30,7 +30,12 @@ export function getFrontendUrl(): string {
 
 export function getBunnyAuthQuery(): string {
   const w = window as any
-  const prebuilt = (w.env?.BUNNY_AUTH_QUERY ?? w.BUNNY_AUTH_QUERY) as string | undefined
+  const prebuilt = (
+    w.env?.BUNNY_AUTH_QUERY ||
+    w.Env?.BUNNY_AUTH_QUERY ||
+    w.ENV?.BUNNY_AUTH_QUERY ||
+    w.BUNNY_AUTH_QUERY
+  ) as string | undefined
   if (typeof prebuilt !== 'string' || !prebuilt.trim()) return ''
   return prebuilt.trim().replace(/^[?&]/, '')
 }
@@ -39,7 +44,12 @@ export function appendBunnyAuth(baseUrl: string): string {
   try {
     const w = window as any
     // Optional per-path map: { "/Gemini_Generated_Image_...png": "token=...&expires=...", ... }
-    const authMap = (w.BUNNY_AUTH_MAP || w.env?.BUNNY_AUTH_MAP) as Record<string, string> | undefined
+    const authMap = (
+      w.BUNNY_AUTH_MAP ||
+      w.env?.BUNNY_AUTH_MAP ||
+      w.Env?.BUNNY_AUTH_MAP ||
+      w.ENV?.BUNNY_AUTH_MAP
+    ) as Record<string, string> | undefined
     if (authMap && typeof authMap === 'object') {
       try {
         const urlObj = new URL(baseUrl)
