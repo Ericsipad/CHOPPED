@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&display=swap');
 
 html, body, #root {
 	margin: 0;
@@ -37,7 +38,7 @@ html, body, #root {
 
 /* Text-only links with calligraphy styling */
 .internal-nav-link {
-	font-family: 'Great Vibes', cursive;
+	font-family: 'Dancing Script', 'Great Vibes', cursive;
 	font-size: 24px;
 	font-weight: 400;
 	letter-spacing: 0.5px;
