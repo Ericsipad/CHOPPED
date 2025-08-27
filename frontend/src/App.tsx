@@ -47,6 +47,15 @@ function App() {
     }
   }
 
+  function handleOpenSignUp() {
+    const anyWindow = window as any
+    if (typeof anyWindow?.openSignUpModal === 'function') {
+      anyWindow.openSignUpModal()
+    } else {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   async function handleSignUp() {
     setSubmitting(true)
     setError(null)
@@ -94,6 +103,7 @@ function App() {
       {/* Hero background image (full-bleed) */}
       <Box
         as="section"
+        position="relative"
         w="100%"
         h="100vh"
         style={{
@@ -105,7 +115,19 @@ function App() {
           backgroundColor: '#000',
         }}
         aria-label="Chopped.dating landing background"
-      />
+      >
+        <Box
+          position="absolute"
+          left="50%"
+          transform="translateX(-50%)"
+          bottom="25%"
+          display="flex"
+          gap={4}
+        >
+          <Button colorScheme="teal" onClick={login.onOpen}>Sign in</Button>
+          <Button variant="outline" onClick={handleOpenSignUp}>Sign up</Button>
+        </Box>
+      </Box>
 
       {/* Lower section full-width image */}
       <Box as="section" w="100%">
@@ -123,11 +145,7 @@ function App() {
             <Account />
           ) : (
             <>
-            <Box textAlign="center">
-              <Button colorScheme="teal" onClick={login.onOpen}>
-                Sign in
-              </Button>
-            </Box>
+            {/* Fallback inline sign-up form section */}
             <Box
               ref={formRef as any}
               maxW="md"
