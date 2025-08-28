@@ -4,6 +4,7 @@ export type SignInDialogProps = {
 	open: boolean
 	onClose: () => void
 	onSuccess?: () => void
+	initialMessage?: string
 }
 
 function getBackendBaseUrl(): string {
@@ -13,11 +14,12 @@ function getBackendBaseUrl(): string {
 }
 
 export default function SignInDialog(props: SignInDialogProps) {
-	const { open, onClose, onSuccess } = props
+	const { open, onClose, onSuccess, initialMessage } = props
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [submitting, setSubmitting] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const [info] = useState<string | null>(initialMessage ?? null)
 
 	const isValid = useMemo(() => {
 		const emailOk = /.+@.+\..+/.test(email)
@@ -59,6 +61,7 @@ export default function SignInDialog(props: SignInDialogProps) {
 		<div role="dialog" aria-modal="true" aria-label="Sign in dialog" style={styles.overlay}>
 			<div style={styles.card}>
 				<div style={styles.header}>Sign in</div>
+				{info ? <div style={styles.info}>{info}</div> : null}
 				<form onSubmit={handleSubmit} style={styles.form}>
 					<label style={styles.label}>
 						<span style={styles.labelText}>Email</span>
@@ -155,7 +158,12 @@ const styles: Record<string, React.CSSProperties> = {
 	error: {
 		color: '#ff7676',
 		fontSize: 14,
-	}
+	},
+	info: {
+		color: '#6ee7b7',
+		fontSize: 14,
+		marginBottom: 8,
+	},
 }
 
 
