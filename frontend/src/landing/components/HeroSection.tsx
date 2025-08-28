@@ -1,6 +1,6 @@
 import SignInButton from '../../shared/auth/SignInButton'
 import SignUpButton from '../../shared/auth/SignUpButton'
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import SignInDialog from '../../shared/auth/SignInDialog'
 type HeroSectionProps = {
 	imageUrl?: string
