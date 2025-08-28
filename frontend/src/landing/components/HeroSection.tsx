@@ -37,7 +37,7 @@ export default function HeroSection(props: HeroSectionProps) {
 					<SignInButton className="pill-button" onClick={handleOpenSignIn} />
 				</div>
 				<SignInDialog open={showSignIn} onClose={handleCloseSignIn} onSuccess={handleSignedIn} initialMessage={typeof window !== 'undefined' && (window as any).CHOPPED_OPEN_SIGNIN ? 'Your email is confirmed. You can now sign in.' : undefined} />
-				<SignUpDialog open={showSignUp} onClose={handleCloseSignUp} onSuccess={handleSignUpSuccess} />
+				<SignUpDialog open={showSignUp} onClose={handleCloseSignUp} />
 			</div>
 		</section>
 	)

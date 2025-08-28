@@ -63,7 +63,6 @@ export default function SignUpDialog(props: SignUpDialogProps) {
 				throw new Error(data?.error || 'Sign up failed')
 			}
 			setMessage('Please check your email to confirm your account.')
-			onSuccess?.()
 		} catch (err) {
 			const msg = err instanceof Error ? err.message : 'Sign up failed'
 			setError(msg)
