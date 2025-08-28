@@ -1,161 +1,161 @@
 import React, { useCallback, useMemo, useState } from 'react'
 
 export type SignInDialogProps = {
-\topen: boolean
-\tonClose: () => void
-\tonSuccess?: () => void
+	open: boolean
+	onClose: () => void
+	onSuccess?: () => void
 }
 
 function getBackendBaseUrl(): string {
-\tconst a = (import.meta as any).env?.NEXT_PUBLIC_API_BASE_URL as string | undefined
-\tconst b = (import.meta as any).env?.VITE_BACKEND_URL as string | undefined
-\treturn a && a.length > 0 ? a : b && b.length > 0 ? b : ''
+	const a = (import.meta as any).env?.NEXT_PUBLIC_API_BASE_URL as string | undefined
+	const b = (import.meta as any).env?.VITE_BACKEND_URL as string | undefined
+	return a && a.length > 0 ? a : b && b.length > 0 ? b : ''
 }
 
 export default function SignInDialog(props: SignInDialogProps) {
-\tconst { open, onClose, onSuccess } = props
-\tconst [email, setEmail] = useState('')
-\tconst [password, setPassword] = useState('')
-\tconst [submitting, setSubmitting] = useState(false)
-\tconst [error, setError] = useState<string | null>(null)
+	const { open, onClose, onSuccess } = props
+	const [email, setEmail] = useState('')
+	const [password, setPassword] = useState('')
+	const [submitting, setSubmitting] = useState(false)
+	const [error, setError] = useState<string | null>(null)
 
-\tconst isValid = useMemo(() => {
-\t	const emailOk = /.+@.+\..+/.test(email)
-\t	const pwOk = password.length >= 8
-\t	return emailOk && pwOk
-\t}, [email, password])
+	const isValid = useMemo(() => {
+		const emailOk = /.+@.+\..+/.test(email)
+		const pwOk = password.length >= 8
+		return emailOk && pwOk
+	}, [email, password])
 
-\tconst handleSubmit = useCallback(async (e: React.FormEvent) => {
-\t	e.preventDefault()
-\t	if (!isValid || submitting) return
-\t	setSubmitting(true)
-\t	setError(null)
-\t	try {
-\t		const backendBaseUrl = getBackendBaseUrl()
-\t		const url = `${backendBaseUrl}/auth/sign-in`
-\t		const res = await fetch(url, {
-\t			method: 'POST',
-\t			headers: { 'Content-Type': 'application/json' },
-\t			credentials: 'include',
-\t			body: JSON.stringify({ email, password }),
-\t		})
-\t		if (!res.ok) {
-\t			const data = await res.json().catch(() => ({})) as { error?: string }
-\t			throw new Error(data?.error || 'Sign in failed')
-\t		}
-\t		onClose()
-\t		onSuccess?.()
-\t	} catch (err) {
-\t		const msg = err instanceof Error ? err.message : 'Sign in failed'
-\t		setError(msg)
-\t	} finally {
-\t		setSubmitting(false)
-\t	}
-\t}, [email, password, isValid, onClose, onSuccess, submitting])
+	const handleSubmit = useCallback(async (e: React.FormEvent) => {
+		e.preventDefault()
+		if (!isValid || submitting) return
+		setSubmitting(true)
+		setError(null)
+		try {
+			const backendBaseUrl = getBackendBaseUrl()
+			const url = `${backendBaseUrl}/auth/sign-in`
+			const res = await fetch(url, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({ email, password }),
+			})
+			if (!res.ok) {
+				const data = (await res.json().catch(() => ({}))) as { error?: string }
+				throw new Error(data?.error || 'Sign in failed')
+			}
+			onClose()
+			onSuccess?.()
+		} catch (err) {
+			const msg = err instanceof Error ? err.message : 'Sign in failed'
+			setError(msg)
+		} finally {
+			setSubmitting(false)
+		}
+	}, [email, password, isValid, onClose, onSuccess, submitting])
 
-\tif (!open) return null
+	if (!open) return null
 
-\treturn (
-\t\t<div role="dialog" aria-modal="true" aria-label="Sign in dialog" style={styles.overlay}>
-\t\t\t<div style={styles.card}>
-\t\t\t\t<div style={styles.header}>Sign in</div>
-\t\t\t\t<form onSubmit={handleSubmit} style={styles.form}>
-\t\t\t\t\t<label style={styles.label}>
-\t\t\t\t\t\t<span style={styles.labelText}>Email</span>
-\t\t\t\t\t\t<input
-\t\t\t\t\t\t\ttype="email"
-\t\t\t\t\t\t\tvalue={email}
-\t\t\t\t\t\t\tonChange={(e) => setEmail(e.target.value)}
-\t\t\t\t\t\t\tplaceholder="you@example.com"
-\t\t\t\t\t\t\trequired
-\t\t\t\t\t\t\tstyle={styles.input}
-\t\t\t\t\t\t/>
-\t\t\t\t\t</label>
-\t\t\t\t\t<label style={styles.label}>
-\t\t\t\t\t\t<span style={styles.labelText}>Password</span>
-\t\t\t\t\t\t<input
-\t\t\t\t\t\t\ttype="password"
-\t\t\t\t\t\t\tvalue={password}
-\t\t\t\t\t\t\tonChange={(e) => setPassword(e.target.value)}
-\t\t\t\t\t\t\tplaceholder="At least 8 characters"
-\t\t\t\t\t\t\trequired
-\t\t\t\t\t\t\tminLength={8}
-\t\t\t\t\t\t\tstyle={styles.input}
-\t\t\t\t\t\t/>
-\t\t\t\t\t</label>
-\t\t\t\t\t{error ? <div style={styles.error}>{error}</div> : null}
-\t\t\t\t\t<div style={styles.actions}>
-\t\t\t\t\t\t<button type="button" onClick={onClose} style={styles.cancelBtn} disabled={submitting}>Cancel</button>
-\t\t\t\t\t\t<button type="submit" style={styles.submitBtn} disabled={!isValid || submitting}>
-\t\t\t\t\t\t\t{submitting ? 'Signing in...' : 'Sign in'}
-\t\t\t\t\t\t</button>
-\t\t\t\t\t</div>
-\t\t\t\t</form>
-\t\t\t</div>
-\t\t</div>
-\t)
+	return (
+		<div role="dialog" aria-modal="true" aria-label="Sign in dialog" style={styles.overlay}>
+			<div style={styles.card}>
+				<div style={styles.header}>Sign in</div>
+				<form onSubmit={handleSubmit} style={styles.form}>
+					<label style={styles.label}>
+						<span style={styles.labelText}>Email</span>
+						<input
+							type="email"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+							placeholder="you@example.com"
+							required
+							style={styles.input}
+						/>
+					</label>
+					<label style={styles.label}>
+						<span style={styles.labelText}>Password</span>
+						<input
+							type="password"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+							placeholder="At least 8 characters"
+							required
+							minLength={8}
+							style={styles.input}
+						/>
+					</label>
+					{error ? <div style={styles.error}>{error}</div> : null}
+					<div style={styles.actions}>
+						<button type="button" onClick={onClose} style={styles.cancelBtn} disabled={submitting}>Cancel</button>
+						<button type="submit" style={styles.submitBtn} disabled={!isValid || submitting}>
+							{submitting ? 'Signing in...' : 'Sign in'}
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	)
 }
 
 const styles: Record<string, React.CSSProperties> = {
-\toverlay: {
-\t\tposition: 'fixed',
-\t\tleft: 0,
-\t\ttop: 0,
-\t\twidth: '100vw',
-\t\theight: '100vh',
-\t\tbackground: 'rgba(0,0,0,0.6)',
-\t\tdisplay: 'flex',
-\t\talignItems: 'center',
-\t\tjustifyContent: 'center',
-\t\tzIndex: 1000,
-\t},
-\tcard: {
-\t\twidth: 'min(92vw, 420px)',
-\t\tbackground: '#111',
-\t\tcolor: '#fff',
-\t\tborderRadius: 12,
-\t\tboxShadow: '0 8px 32px rgba(0,0,0,0.45)',
-\t\tpadding: 20,
-\t\tborder: '1px solid rgba(255,255,255,0.08)'
-\t},
-\theader: {
-\t\tfontSize: 22,
-\t\tmarginBottom: 12,
-\t\tfontFamily: 'Segoe UI, Roboto, Helvetica, Arial, sans-serif',
-\t},
-\tform: { display: 'flex', flexDirection: 'column', gap: 12 },
-\tlabel: { display: 'flex', flexDirection: 'column', gap: 6 },
-\tlabelText: { fontSize: 14, opacity: 0.9 },
-\tinput: {
-\t\tbackground: '#000',
-\t\tcolor: '#fff',
-\t\tborder: '1px solid rgba(255,255,255,0.2)',
-\t\tborderRadius: 8,
-\t\tpadding: '10px 12px',
-\t\tfontSize: 16,
-\t\toutline: 'none',
-\t},
-\tactions: { display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 },
-\tcancelBtn: {
-\t\tbackground: '#333',
-\t\tcolor: '#fff',
-\t\tborder: 'none',
-\t\tborderRadius: 9999,
-\t\tpadding: '10px 16px',
-\t\tcursor: 'pointer',
-\t},
-\tsubmitBtn: {
-\t\tbackground: '#fff',
-\t\tcolor: '#111',
-\t\tborder: 'none',
-\t\tborderRadius: 9999,
-\t\tpadding: '10px 16px',
-\t\tcursor: 'pointer',
-\t},
-\terror: {
-\t\tcolor: '#ff7676',
-\t\tfontSize: 14,
-\t}
+	overlay: {
+		position: 'fixed',
+		left: 0,
+		top: 0,
+		width: '100vw',
+		height: '100vh',
+		background: 'rgba(0,0,0,0.6)',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		zIndex: 1000,
+	},
+	card: {
+		width: 'min(92vw, 420px)',
+		background: '#111',
+		color: '#fff',
+		borderRadius: 12,
+		boxShadow: '0 8px 32px rgba(0,0,0,0.45)',
+		padding: 20,
+		border: '1px solid rgba(255,255,255,0.08)'
+	},
+	header: {
+		fontSize: 22,
+		marginBottom: 12,
+		fontFamily: 'Segoe UI, Roboto, Helvetica, Arial, sans-serif',
+	},
+	form: { display: 'flex', flexDirection: 'column', gap: 12 },
+	label: { display: 'flex', flexDirection: 'column', gap: 6 },
+	labelText: { fontSize: 14, opacity: 0.9 },
+	input: {
+		background: '#000',
+		color: '#fff',
+		border: '1px solid rgba(255,255,255,0.2)',
+		borderRadius: 8,
+		padding: '10px 12px',
+		fontSize: 16,
+		outline: 'none',
+	},
+	actions: { display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 },
+	cancelBtn: {
+		background: '#333',
+		color: '#fff',
+		border: 'none',
+		borderRadius: 9999,
+		padding: '10px 16px',
+		cursor: 'pointer',
+	},
+	submitBtn: {
+		background: '#fff',
+		color: '#111',
+		border: 'none',
+		borderRadius: 9999,
+		padding: '10px 16px',
+		cursor: 'pointer',
+	},
+	error: {
+		color: '#ff7676',
+		fontSize: 14,
+	}
 }
 
 
