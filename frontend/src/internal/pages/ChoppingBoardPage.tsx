@@ -19,14 +19,14 @@ export default function ChoppingBoardPage() {
 						<div
 							style={{
 								position: 'absolute',
-								top: 0,
+								top: 48, // keep clear of the 48px header so nav remains clickable
 								left: 0,
 								right: 0,
 								bottom: 0,
 								display: 'flex',
 								justifyContent: 'center',
 								alignItems: 'center',
-								zIndex: 100,
+								zIndex: 9,
 							}}
 						>
 							<ProfileGrid images={images} />
