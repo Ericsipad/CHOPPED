@@ -9,6 +9,13 @@ function DesktopGate() {
 		if (!isDesktop) {
 			window.location.replace('/mobile.html')
 		}
+		// If redirected from confirm, open sign-in dialog
+		try {
+			const url = new URL(window.location.href)
+			if (url.searchParams.get('signedUp') === '1') {
+				;(window as any).CHOPPED_OPEN_SIGNIN = true
+			}
+		} catch {}
 	}, [])
 	return <LandingPage />
 }

@@ -9,7 +9,9 @@ type HeroSectionProps = {
 
 export default function HeroSection(props: HeroSectionProps) {
 	const { imageUrl = 'https://publicwebassets.b-cdn.net/desktop%20landing%20img%201.png' } = props
-	const [showSignIn, setShowSignIn] = useState(false)
+	const [showSignIn, setShowSignIn] = useState<boolean>(() => {
+		try { return Boolean((window as any).CHOPPED_OPEN_SIGNIN) } catch { return false }
+	})
 	const [showSignUp, setShowSignUp] = useState(false)
 	const handleOpenSignIn = useCallback(() => setShowSignIn(true), [])
 	const handleCloseSignIn = useCallback(() => setShowSignIn(false), [])
