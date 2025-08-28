@@ -62,7 +62,7 @@ export default function SignUpDialog(props: SignUpDialogProps) {
 				const data = (await res.json().catch(() => ({}))) as { error?: string }
 				throw new Error(data?.error || 'Sign up failed')
 			}
-			setMessage('Please check your email for the verification link to log in.')
+			setMessage('Please check your email to confirm your account.')
 			onSuccess?.()
 		} catch (err) {
 			const msg = err instanceof Error ? err.message : 'Sign up failed'

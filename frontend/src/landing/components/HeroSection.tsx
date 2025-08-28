@@ -16,6 +16,10 @@ export default function HeroSection(props: HeroSectionProps) {
 	const handleOpenSignUp = useCallback(() => setShowSignUp(true), [])
 	const handleCloseSignUp = useCallback(() => setShowSignUp(false), [])
 	const handleSignedIn = useCallback(() => { window.location.replace('/account.html') }, [])
+	const handleSignUpSuccess = useCallback(() => {
+		setShowSignUp(false)
+		setShowSignIn(true)
+	}, [])
 	return (
 		<section className="landing-hero" aria-label="Landing top image">
 			<div className="landing-container">
@@ -31,7 +35,7 @@ export default function HeroSection(props: HeroSectionProps) {
 					<SignInButton className="pill-button" onClick={handleOpenSignIn} />
 				</div>
 				<SignInDialog open={showSignIn} onClose={handleCloseSignIn} onSuccess={handleSignedIn} />
-				<SignUpDialog open={showSignUp} onClose={handleCloseSignUp} onSuccess={handleSignedIn} />
+				<SignUpDialog open={showSignUp} onClose={handleCloseSignUp} onSuccess={handleSignUpSuccess} />
 			</div>
 		</section>
 	)
