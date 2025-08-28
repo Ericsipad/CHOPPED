@@ -20,27 +20,34 @@ export async function GET(req: Request) {
     if (exchangeError) {
       const base = getFrontendBase()
       const redirect = base ? `${base}/?auth_error=exchange_failed` : new URL('/auth/error?reason=exchange_failed', req.url)
-      return NextResponse.redirect(redirect as any)
+      return NextResponse.redirect(redirect)
     }
   } else {
     if (!token_hash) {
       const base = getFrontendBase()
       const redirect = base ? `${base}/?auth_error=missing_token` : new URL('/auth/error?reason=missing_token', req.url)
-      return NextResponse.redirect(redirect as any)
+      return NextResponse.redirect(redirect)
     }
     const emailOtpTypes = ['email', 'recovery', 'email_change', 'magiclink', 'signup'] as const
     type EmailOtpType = typeof emailOtpTypes[number]
+    function isEmailOtpType(t: string): t is EmailOtpType {
+      return (emailOtpTypes as readonly string[]).includes(t)
+    }
     function coerceType(t: string): EmailOtpType {
       // Supabase may send type=signup for email confirm; treat as 'email'
       if (t === 'signup') return 'email'
-      return (emailOtpTypes as readonly string[]).includes(t as any) ? (t as EmailOtpType) : 'email'
+      return isEmailOtpType(t) ? t : 'email'
     }
     const otpType = coerceType(rawType)
-    const { error } = await supabase.auth.verifyOtp({ type: otpType as any, token_hash })
+    const verifyParams: { type: 'email' | 'recovery' | 'email_change' | 'magiclink'; token_hash: string } = {
+      type: otpType === 'signup' ? 'email' : otpType,
+      token_hash: token_hash!,
+    }
+    const { error } = await supabase.auth.verifyOtp(verifyParams)
     if (error) {
       const base = getFrontendBase()
       const redirect = base ? `${base}/?auth_error=verify_failed` : new URL('/auth/error?reason=verify_failed', req.url)
-      return NextResponse.redirect(redirect as any)
+      return NextResponse.redirect(redirect)
     }
   }
   // Link Mongo and Supabase IDs on verification (server-side, once)
@@ -61,7 +68,7 @@ export async function GET(req: Request) {
   }
   const frontendUrl = (process.env.NEXT_PUBLIC_FRONTEND_URL || process.env.FRONTEND_URL || '').replace(/\/+$/g, '')
   const successRedirect = frontendUrl ? `${frontendUrl}/?signedUp=1` : new URL('/', req.url)
-  return NextResponse.redirect(successRedirect as any)
+  return NextResponse.redirect(successRedirect)
 }
 
 
