@@ -142,7 +142,7 @@ html, body, #root {
 	display: grid;
 	grid-template-columns: repeat(6, 1fr);
 	gap: 8px;
-	height: 25%;
+	height: 10%;
 }
 
 .profile-image-card__thumb {
