@@ -74,3 +74,13 @@ export function appendBunnyAuth(baseUrl: string): string {
 }
 
 
+export function getBackendApi(path: string): string {
+  const base = getBackendUrl()
+  return `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`
+}
+
+export function getFrontendApi(path: string): string {
+  const base = getFrontendUrl()
+  return `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`
+}
+

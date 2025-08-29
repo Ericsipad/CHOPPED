@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
+import { getBackendApi } from '../../lib/config'
 import ExpandedImageModal from './ExpandedImageModal'
 
 type ProfileImageCardProps = {
@@ -34,15 +35,60 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
 
   function handleUpload(file: File) {
     if (!modalTarget) return
-    if (modalTarget.kind === 'main') {
-      setMainFile(file)
-    } else {
-      setThumbFiles((prev) => {
-        const next = [...prev]
-        next[modalTarget.index] = file
-        return next
-      })
-    }
+    ;(async () => {
+      // Preflight: block >10MB; we'll also shrink but we avoid decoding huge files beyond limit if desired
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File exceeds 10MB. Please choose a smaller image.')
+        return
+      }
+
+      const shrinked = await shrinkImageToTarget(file, { maxEdge: 8000, targetMaxBytes: 3 * 1024 * 1024 })
+      if (!shrinked) {
+        alert('Unable to process image. Please try a different file.')
+        return
+      }
+
+      const form = new FormData()
+      const slot = modalTarget.kind === 'main' ? 'main' : `thumb${modalTarget.index + 1}`
+      form.append('slot', slot)
+      form.append('file', shrinked, file.name)
+
+      const url = getBackendApi('/api/uploads/storage')
+      const res = await fetch(url, { method: 'POST', credentials: 'include', body: form })
+      if (!res.ok) {
+        const text = await res.text().catch(() => '')
+        alert('Upload failed. ' + text)
+        return
+      }
+      const data = await res.json().catch(() => null)
+      const publicUrl = data?.publicUrl as string | undefined
+      if (!publicUrl) {
+        alert('Upload response invalid')
+        return
+      }
+
+      const upsertUrl = getBackendApi('/api/profile-images/upsert')
+      const body = modalTarget.kind === 'main'
+        ? { main: publicUrl }
+        : { thumbs: [{ name: slot, url: publicUrl }] }
+      const upsertRes = await fetch(upsertUrl, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      if (!upsertRes.ok) {
+        const t = await upsertRes.text().catch(() => '')
+        alert('Failed to save image URL: ' + t)
+        return
+      }
+
+      const previewFile = shrinked instanceof File ? shrinked : new File([shrinked], file.name, { type: shrinked.type || file.type })
+      if (modalTarget.kind === 'main') {
+        setMainFile(previewFile)
+      } else {
+        setThumbFiles((prev) => {
+          const next = [...prev]
+          next[modalTarget.index] = previewFile
+          return next
+        })
+      }
+    })()
   }
 
   function handleDelete() {
@@ -113,4 +159,40 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
   )
 }
 
+
+async function shrinkImageToTarget(input: File, opts: { maxEdge: number; targetMaxBytes: number }): Promise<Blob | null> {
+  const { maxEdge, targetMaxBytes } = opts
+  try {
+    // Try decode via createImageBitmap for speed
+    const bitmap = await createImageBitmap(input).catch(() => null)
+    if (!bitmap) {
+      // Fallback: if browser cannot decode (e.g., some HEIC), return original if within limit
+      return input.size <= targetMaxBytes ? input : null
+    }
+
+    const ratio = Math.max(bitmap.width, bitmap.height) > maxEdge ? (maxEdge / Math.max(bitmap.width, bitmap.height)) : 1
+    const targetW = Math.max(1, Math.round(bitmap.width * ratio))
+    const targetH = Math.max(1, Math.round(bitmap.height * ratio))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = targetW
+    canvas.height = targetH
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+    ctx.drawImage(bitmap, 0, 0, targetW, targetH)
+
+    let quality = 0.85
+    for (let i = 0; i < 6; i++) {
+      const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, input.type || 'image/jpeg', quality))
+      if (!blob) return null
+      if (blob.size <= targetMaxBytes) return blob
+      quality -= 0.1
+      if (quality <= 0.4) break
+    }
+    const finalBlob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, input.type || 'image/jpeg', 0.75))
+    return finalBlob
+  } catch {
+    return null
+  }
+}
 
