@@ -124,8 +124,22 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
     let cancelled = false
     ;(async () => {
       try {
-        const url = getBackendApi('/api/profile-images/me')
-        const res = await fetch(url, { method: 'GET', credentials: 'include' })
+        let targetUrl = ''
+        try {
+          const raw = localStorage.getItem('chopped.mongoUserId')
+          if (raw) {
+            const parsed = JSON.parse(raw) as { id?: string; ts?: number }
+            if (parsed && typeof parsed.id === 'string' && parsed.id) {
+              targetUrl = getBackendApi(`/api/profile-images/by-id?userId=${encodeURIComponent(parsed.id)}`)
+            }
+          }
+        } catch {}
+
+        if (!targetUrl) {
+          targetUrl = getBackendApi('/api/profile-images/me')
+        }
+
+        const res = await fetch(targetUrl, { method: 'GET', credentials: 'include' })
         if (!res.ok) return
         const data = await res.json().catch(() => null) as { main?: string | null; thumbs?: Array<{ name: string; url: string }> }
         if (!data || cancelled) return
