@@ -99,7 +99,7 @@ const styles: Record<string, React.CSSProperties> = {
     zIndex: 1000,
   },
   card: {
-    width: 'min(92vw, 900px)',
+    width: 'min(60vw, 600px)',
     background: 'rgba(18,18,18,0.75)',
     color: '#fff',
     borderRadius: 16,
@@ -107,6 +107,8 @@ const styles: Record<string, React.CSSProperties> = {
     padding: 16,
     border: '1px solid rgba(255,255,255,0.08)',
     backdropFilter: 'blur(10px) saturate(120%)',
+    maxHeight: '80vh',
+    overflow: 'hidden',
   },
   header: {
     fontSize: 18,
@@ -114,7 +116,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   previewWrap: {
     width: '100%',
-    maxHeight: '70vh',
+    maxHeight: '50vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -168,5 +170,6 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
   },
 }
+
 
 
