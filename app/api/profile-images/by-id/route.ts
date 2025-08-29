@@ -76,7 +76,11 @@ export async function GET(req: Request) {
     }
 
     const collection = await getUserProfileImagesCollection()
-    const filter = { userId: userDoc._id }
+    const mongoObjectId = userDoc._id
+    if (!mongoObjectId) {
+      return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
+    }
+    const filter = { userId: mongoObjectId }
     const doc = await collection.findOne<{ main?: string; thumbs?: Array<{ name: string; url: string }> }>(filter)
     const main = typeof doc?.main === 'string' ? doc!.main : null
     const thumbs = Array.isArray(doc?.thumbs) ? doc!.thumbs!.filter((t) => typeof t?.name === 'string' && typeof t?.url === 'string') : []
