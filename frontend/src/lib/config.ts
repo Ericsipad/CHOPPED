@@ -29,7 +29,7 @@ export function getFrontendUrl(): string {
 }
 
 
-// Bunny token auth is applied by the backend. Frontend no longer appends tokens.
+// Profile/media URLs are provided directly by the backend. No token signing on frontend.
 
 
 export function getBackendApi(path: string): string {

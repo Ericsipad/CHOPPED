@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getUsersCollection } from '@/lib/mongo'
-import { signBunnyUrl } from '@/lib/bunny'
 
 const ALLOWED_METHODS = ['POST', 'OPTIONS'] as const
 
@@ -209,8 +208,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'BUNNY_UPLOAD_FAIL', status: bunnyRes.status, detail: text }, { status: 502, headers })
     }
 
-    const signedUrl = signBunnyUrl(publicUrl)
-    return NextResponse.json({ publicUrl, signedUrl, path }, { headers })
+    return NextResponse.json({ publicUrl, path }, { headers })
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('UPLOAD UNKNOWN', err)

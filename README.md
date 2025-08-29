@@ -5,7 +5,7 @@
 2. Fill in values for your environment.
 
 ### DigitalOcean environment setup
-- Use App Platform or Secrets Manager to store non-public variables (e.g., `MONGODB_URI`, `SMTP_*`, `BUNNY_ACCESS_KEY`, `BUNNY_THUMBS_TOKEN_KEY`).
+- Use App Platform or Secrets Manager to store non-public variables (e.g., `MONGODB_URI`, `SMTP_*`, `BUNNY_ACCESS_KEY`).
 - Only commit public variables (e.g., `NEXT_PUBLIC_*`, hostnames). Keep secrets out of the repo.
 - For App Platform:
   - Settings  Environment Variables  Add variables matching `.env.example` keys

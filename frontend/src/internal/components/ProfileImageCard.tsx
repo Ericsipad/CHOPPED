@@ -70,7 +70,6 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
       }
       const data = await res.json().catch(() => null)
       const publicUrl = data?.publicUrl as string | undefined
-      const signedUrl = data?.signedUrl as string | undefined
       if (!publicUrl) {
         alert('Upload response invalid')
         return
@@ -90,7 +89,7 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
       const previewFile = shrinked instanceof File ? shrinked : new File([shrinked], file.name, { type: shrinked.type || file.type })
       if (modalTarget.kind === 'main') {
         setMainFile(previewFile)
-        setInitialMainUrl(signedUrl || publicUrl)
+        setInitialMainUrl(publicUrl)
       } else {
         setThumbFiles((prev) => {
           const next = [...prev]
@@ -99,7 +98,7 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
         })
         setInitialThumbUrls((prev) => {
           const next = [...prev]
-          next[modalTarget.index] = signedUrl || publicUrl
+          next[modalTarget.index] = publicUrl
           return next
         })
       }
@@ -156,7 +155,7 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
         setInitialMainUrl(main)
         setInitialThumbUrls(mapped)
 
-        // URLs are already signed by backend
+        // URLs are returned directly from backend (no signing)
       } catch { void 0 }
       return () => { cancelled = true }
     })()

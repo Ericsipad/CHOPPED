@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getUserProfileImagesCollection, getUsersCollection } from '@/lib/mongo'
-import { signBunnyUrl } from '@/lib/bunny'
 
 const ALLOWED_METHODS = ['GET', 'OPTIONS'] as const
 
@@ -72,9 +71,9 @@ export async function GET(req: Request) {
 		}
 
 		const mainRaw = typeof doc.main === 'string' ? doc.main : null
-		const main = mainRaw ? signBunnyUrl(mainRaw) : null
+		const main = mainRaw ? mainRaw : null
 		const thumbsRaw = Array.isArray(doc.thumbs) ? doc.thumbs.filter((t) => typeof t?.name === 'string' && typeof t?.url === 'string') : []
-		const thumbs = thumbsRaw.map((t) => ({ name: t.name, url: signBunnyUrl(t.url) }))
+		const thumbs = thumbsRaw.map((t) => ({ name: t.name, url: t.url }))
 		return NextResponse.json({ main, thumbs }, { headers })
 	} catch {
 		return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
