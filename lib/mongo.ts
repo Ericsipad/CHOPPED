@@ -52,3 +52,18 @@ export async function getUserProfileImagesCollection() {
 }
 
 
+export async function getProfileMatchingCollection() {
+  const client = await getMongoClient()
+  const uri = process.env.MONGODB_URI as string
+  const parsed = new URL(uri)
+  const dbName = (parsed.pathname || '').replace(/^\//, '')
+  if (!dbName) {
+    throw new Error('MONGODB_URI must include a database name (e.g., mongodb+srv://.../mydb)')
+  }
+  const db = client.db(dbName)
+  const collection = db.collection('Profile_Matching')
+  await collection.createIndex({ userId: 1 }, { unique: true })
+  return collection
+}
+
+

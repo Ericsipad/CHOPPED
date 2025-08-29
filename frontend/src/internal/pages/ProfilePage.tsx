@@ -2,6 +2,7 @@ import PageFrame from '../components/PageFrame'
 import Container from '../components/Container'
 import HeroImage from '../components/HeroImage'
 import ProfileImageCard from '../components/ProfileImageCard'
+import PublicProfilePanel from '../components/PublicProfilePanel'
 import '../styles/internal.css'
  
 
@@ -27,6 +28,13 @@ export default function ProfilePage() {
 							}}
 						>
 							<ProfileImageCard />
+						</div>
+					</div>
+				</Container>
+				<Container>
+					<div style={{ marginTop: 32, display: 'flex', justifyContent: 'center' }}>
+						<div style={{ width: 'clamp(30vw, calc(-118vw + 2127px), 90vw)', maxWidth: 1100 }}>
+							<PublicProfilePanel />
 						</div>
 					</div>
 				</Container>
