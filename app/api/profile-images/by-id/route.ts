@@ -65,10 +65,10 @@ export async function GET(req: Request) {
 
     const users = await getUsersCollection()
     const userDoc = await users.findOne({ supabaseUserId: user.id })
-    const currentMongoId = userDoc?._id?.toString()
-    if (!currentMongoId) {
+    if (!userDoc || !userDoc._id) {
       return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
     }
+    const currentMongoId = userDoc._id.toString()
 
     // Ensure requested userId matches the logged-in user's Mongo _id
     if (userIdParam !== currentMongoId) {
