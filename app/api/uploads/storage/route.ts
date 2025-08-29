@@ -151,11 +151,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Bunny env misconfigured' }, { status: 500, headers })
     }
 
-    // Flat filename at zone root: no slashes, Bunny format url/<filename>
-    const filename = `${mongoUserId}.${yyyy}${mm}${dd}.${HH}${MM}${SS}.${rand}.${slot}.${ext}`
-    const path = filename
-    const uploadUrl = `https://${storageHost}/${encodeURIComponent(storageZone)}/${encodeURIComponent(filename)}`
-    const publicUrl = `https://${pullZoneHost}/${encodeURIComponent(filename)}`
+    // Option B: one folder level by userId, filename without slot
+    const filename = `${yyyy}${mm}${dd}.${HH}${MM}${SS}.${rand}.${ext}`
+    const path = `${mongoUserId}/${filename}`
+    const uploadUrl = `https://${storageHost}/${encodeURIComponent(storageZone)}/${encodeURIComponent(mongoUserId)}/${encodeURIComponent(filename)}`
+    const publicUrl = `https://${pullZoneHost}/${encodeURIComponent(mongoUserId)}/${encodeURIComponent(filename)}`
 
     const bunnyRes = await fetch(uploadUrl, {
       method: 'PUT',
