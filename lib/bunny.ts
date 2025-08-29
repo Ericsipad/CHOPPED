@@ -16,7 +16,7 @@ export function signBunnyPath(pathname: string, expiresInSeconds?: number): { to
     throw new Error('BUNNY_SIGNING_KEY_MISSING')
   }
   const now = Math.floor(Date.now() / 1000)
-  const expires = now + Math.max(60, Math.min(24 * 3600, Math.floor(expiresInSeconds ?? 3600)))
+  const expires = now + Math.max(60, Math.min(24 * 3600, Math.floor(expiresInSeconds ?? (24 * 3600))))
   const path = pathname.startsWith('/') ? pathname : `/${pathname}`
   const token = crypto
     .createHash('md5')
