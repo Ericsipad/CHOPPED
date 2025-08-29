@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import AccountPage from '../pages/AccountPage'
@@ -18,3 +19,5 @@ createRoot(document.getElementById('root')!).render(
 		<DesktopGate />
 	</StrictMode>
 )
+
+export {}

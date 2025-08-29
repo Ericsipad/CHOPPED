@@ -20,8 +20,9 @@ export default function Account() {
         }
         const { user } = await sessionRes.json()
         setUserEmail(user?.email ?? null)
-      } catch (e: any) {
-        setError(e?.message || 'Failed to load account')
+      } catch (e) {
+        const errMsg = e instanceof Error ? e.message : 'Failed to load account'
+        setError(errMsg)
       } finally {
         if (isMounted) setLoading(false)
       }

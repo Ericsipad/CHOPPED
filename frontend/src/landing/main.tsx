@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import LandingPage from './pages/LandingPage'
@@ -13,9 +14,9 @@ function DesktopGate() {
 		try {
 			const url = new URL(window.location.href)
 			if (url.searchParams.get('signedUp') === '1') {
-				;(window as any).CHOPPED_OPEN_SIGNIN = true
+				window.CHOPPED_OPEN_SIGNIN = true
 			}
-		} catch {}
+		} catch { void 0 }
 	}, [])
 	return <LandingPage />
 }
@@ -26,4 +27,8 @@ createRoot(document.getElementById('root')!).render(
 	</StrictMode>,
 )
 
+declare global {
+	interface Window { CHOPPED_OPEN_SIGNIN?: boolean }
+}
 
+export {}

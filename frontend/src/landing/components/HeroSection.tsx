@@ -10,7 +10,7 @@ type HeroSectionProps = {
 export default function HeroSection(props: HeroSectionProps) {
 	const { imageUrl = 'https://publicwebassets.b-cdn.net/desktop%20landing%20img%201.png' } = props
 	const [showSignIn, setShowSignIn] = useState<boolean>(() => {
-		try { return Boolean((window as any).CHOPPED_OPEN_SIGNIN) } catch { return false }
+		try { return Boolean(window.CHOPPED_OPEN_SIGNIN) } catch { return false }
 	})
 	const [showSignUp, setShowSignUp] = useState(false)
 	const handleOpenSignIn = useCallback(() => setShowSignIn(true), [])
@@ -32,7 +32,7 @@ export default function HeroSection(props: HeroSectionProps) {
 				<div className="landing-btn landing-btn-signin">
 					<SignInButton className="pill-button" onClick={handleOpenSignIn} />
 				</div>
-				<SignInDialog open={showSignIn} onClose={handleCloseSignIn} onSuccess={handleSignedIn} initialMessage={typeof window !== 'undefined' && (window as any).CHOPPED_OPEN_SIGNIN ? 'Your email is confirmed. You can now sign in.' : undefined} />
+				<SignInDialog open={showSignIn} onClose={handleCloseSignIn} onSuccess={handleSignedIn} initialMessage={typeof window !== 'undefined' && window.CHOPPED_OPEN_SIGNIN ? 'Your email is confirmed. You can now sign in.' : undefined} />
 				<SignUpDialog open={showSignUp} onClose={handleCloseSignUp} />
 			</div>
 		</section>

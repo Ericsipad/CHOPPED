@@ -9,7 +9,7 @@ export type SignUpDialogProps = {
 }
 
 export default function SignUpDialog(props: SignUpDialogProps) {
-	const { open, onClose, onSuccess } = props
+	const { open, onClose } = props
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [repeatPassword, setRepeatPassword] = useState('')
@@ -69,7 +69,7 @@ export default function SignUpDialog(props: SignUpDialogProps) {
 		} finally {
 			setSubmitting(false)
 		}
-	}, [allValid, email, onSuccess, password, repeatPassword, submitting])
+	}, [allValid, email, password, repeatPassword, submitting, onClose])
 
 	if (!open) return null
 

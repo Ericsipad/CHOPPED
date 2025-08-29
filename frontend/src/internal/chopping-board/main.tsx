@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import ChoppingBoardPage from '../pages/ChoppingBoardPage'
@@ -23,3 +24,4 @@ createRoot(document.getElementById('root')!).render(
 )
 
 
+export {}

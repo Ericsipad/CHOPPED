@@ -7,9 +7,10 @@ export type SignInDialogProps = {
 	initialMessage?: string
 }
 
+type ImportMetaEnv = { NEXT_PUBLIC_API_BASE_URL?: string; VITE_BACKEND_URL?: string }
 function getBackendBaseUrl(): string {
-	const a = (import.meta as any).env?.NEXT_PUBLIC_API_BASE_URL as string | undefined
-	const b = (import.meta as any).env?.VITE_BACKEND_URL as string | undefined
+	const a = (import.meta as unknown as { env?: ImportMetaEnv }).env?.NEXT_PUBLIC_API_BASE_URL as string | undefined
+	const b = (import.meta as unknown as { env?: ImportMetaEnv }).env?.VITE_BACKEND_URL as string | undefined
 	return a && a.length > 0 ? a : b && b.length > 0 ? b : ''
 }
 

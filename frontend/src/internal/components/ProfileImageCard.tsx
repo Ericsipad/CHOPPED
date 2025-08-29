@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { appendBunnyAuth, getBackendApi } from '../../lib/config'
+import { getBackendApi } from '../../lib/config'
 import ExpandedImageModal from './ExpandedImageModal'
 
 type ProfileImageCardProps = {
@@ -22,10 +22,10 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalTarget, setModalTarget] = useState<{ kind: 'main' } | { kind: 'thumb', index: number } | null>(null)
 
-  const mainUrl = useMemo(() => (mainFile ? URL.createObjectURL(mainFile) : (initialMainUrl ? appendBunnyAuth(initialMainUrl) : null)), [mainFile, initialMainUrl])
+  const mainUrl = useMemo(() => (mainFile ? URL.createObjectURL(mainFile) : (initialMainUrl ? initialMainUrl : null)), [mainFile, initialMainUrl])
   const thumbUrls = useMemo(() => {
     const previews = thumbFiles.map((f) => (f ? URL.createObjectURL(f) : null))
-    return previews.map((p, i) => (p ? p : (initialThumbUrls[i] ? appendBunnyAuth(initialThumbUrls[i] as string) : null)))
+    return previews.map((p, i) => (p ? p : (initialThumbUrls[i] ? (initialThumbUrls[i] as string) : null)))
   }, [thumbFiles, initialThumbUrls])
 
   const mainInputRef = useRef<HTMLInputElement | null>(null)
@@ -70,6 +70,7 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
       }
       const data = await res.json().catch(() => null)
       const publicUrl = data?.publicUrl as string | undefined
+      const signedUrl = data?.signedUrl as string | undefined
       if (!publicUrl) {
         alert('Upload response invalid')
         return
@@ -89,16 +90,7 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
       const previewFile = shrinked instanceof File ? shrinked : new File([shrinked], file.name, { type: shrinked.type || file.type })
       if (modalTarget.kind === 'main') {
         setMainFile(previewFile)
-        setInitialMainUrl(publicUrl)
-        try {
-          const path = new URL(publicUrl).pathname
-          const signRes = await fetch(getBackendApi('/api/bunny/sign'), { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paths: [path] }) })
-          const signData = await signRes.json().catch(() => null) as { authMap?: Record<string, string> }
-          if (signRes.ok && signData && signData.authMap) {
-            const w = window as any
-            w.BUNNY_AUTH_MAP = Object.assign({}, w.BUNNY_AUTH_MAP || {}, signData.authMap)
-          }
-        } catch {}
+        setInitialMainUrl(signedUrl || publicUrl)
       } else {
         setThumbFiles((prev) => {
           const next = [...prev]
@@ -107,18 +99,9 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
         })
         setInitialThumbUrls((prev) => {
           const next = [...prev]
-          next[modalTarget.index] = publicUrl
+          next[modalTarget.index] = signedUrl || publicUrl
           return next
         })
-        try {
-          const path = new URL(publicUrl).pathname
-          const signRes = await fetch(getBackendApi('/api/bunny/sign'), { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paths: [path] }) })
-          const signData = await signRes.json().catch(() => null) as { authMap?: Record<string, string> }
-          if (signRes.ok && signData && signData.authMap) {
-            const w = window as any
-            w.BUNNY_AUTH_MAP = Object.assign({}, w.BUNNY_AUTH_MAP || {}, signData.authMap)
-          }
-        } catch {}
       }
     })()
   }
@@ -151,7 +134,7 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
               targetUrl = getBackendApi(`/api/profile-images/by-id?userId=${encodeURIComponent(parsed.id)}`)
             }
           }
-        } catch {}
+        } catch { void 0 }
 
         if (!targetUrl) {
           targetUrl = getBackendApi('/api/profile-images/me')
@@ -173,34 +156,8 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
         setInitialMainUrl(main)
         setInitialThumbUrls(mapped)
 
-        // Request Bunny auth tokens for known URLs
-        try {
-          const paths: string[] = []
-          if (typeof main === 'string' && main) {
-            try { paths.push(new URL(main).pathname) } catch {}
-          }
-          for (const u of mapped) {
-            if (typeof u === 'string' && u) {
-              try { paths.push(new URL(u).pathname) } catch {}
-            }
-          }
-          if (paths.length > 0) {
-            const signRes = await fetch(getBackendApi('/api/bunny/sign'), {
-              method: 'POST',
-              credentials: 'include',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ paths })
-            })
-            const signData = await signRes.json().catch(() => null) as { authMap?: Record<string, string> }
-            if (signRes.ok && signData && signData.authMap) {
-              const w = window as any
-              w.BUNNY_AUTH_MAP = Object.assign({}, w.BUNNY_AUTH_MAP || {}, signData.authMap)
-            }
-          }
-        } catch {}
-      } catch {
-        // ignore; show placeholders
-      }
+        // URLs are already signed by backend
+      } catch { void 0 }
       return () => { cancelled = true }
     })()
   }, [])
