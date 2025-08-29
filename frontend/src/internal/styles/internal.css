@@ -214,7 +214,7 @@ html, body, #root {
 
 .profile-public-panel__inputs {
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-columns: 2fr 1fr 1fr;
 	gap: 12px;
 }
 
@@ -228,7 +228,22 @@ html, body, #root {
 	color: #ffffff;
 	font-size: 14px;
 }
+.profile-public-panel__input--xs { width: 4ch; padding-left: 8px; padding-right: 8px; }
+.profile-public-panel__input--wide { width: 100%; }
 
 .profile-public-panel__status { margin-top: 10px; font-size: 12px; opacity: 0.8; }
 .profile-public-panel__error { margin-top: 10px; color: #ff7070; font-size: 13px; }
 .profile-public-panel__success { margin-top: 10px; color: #7dffa1; font-size: 13px; }
+
+.profile-public-panel__bio { margin-top: 16px; display: grid; gap: 8px; }
+.profile-public-panel__bio-header { font-size: 14px; font-weight: 600; opacity: 0.95; }
+.profile-public-panel__textarea {
+	background: rgba(0,0,0,0.35);
+	border: 1px solid rgba(255,255,255,0.12);
+	border-radius: 8px;
+	padding: 10px 12px;
+	color: #ffffff;
+	font-size: 14px;
+	resize: vertical;
+}
+.profile-public-panel__counter { font-size: 12px; opacity: 0.7; text-align: right; }

@@ -19,6 +19,7 @@ export default function PublicProfilePanel() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [savedTs, setSavedTs] = useState<number | null>(null)
+  const [bio, setBio] = useState('')
 
   const parsedAge = useMemo(() => {
     const n = Number(ageStr)
@@ -33,8 +34,9 @@ export default function PublicProfilePanel() {
     if (!displayName.trim()) return false
     if (!Number.isInteger(parsedAge) || parsedAge < 13 || parsedAge > 120) return false
     if (!Number.isInteger(parsedHeight) || parsedHeight < 50 || parsedHeight > 260) return false
+    if (bio.trim().length > 500) return false
     return true
-  }, [displayName, parsedAge, parsedHeight])
+  }, [displayName, parsedAge, parsedHeight, bio])
 
   useEffect(() => {
     let cancelled = false
@@ -59,11 +61,12 @@ export default function PublicProfilePanel() {
 
         const res = await fetch(getBackendApi('/api/profile-matching'), { credentials: 'include' })
         if (res.ok) {
-          const data = await res.json().catch(() => null) as { displayName?: string | null; age?: number | null; heightCm?: number | null }
+          const data = await res.json().catch(() => null) as { displayName?: string | null; age?: number | null; heightCm?: number | null; bio?: string | null }
           if (!cancelled && data) {
             setDisplayName(typeof data.displayName === 'string' ? data.displayName : '')
             setAgeStr(typeof data.age === 'number' ? String(data.age) : '')
             setHeightStr(typeof data.heightCm === 'number' ? String(data.heightCm) : '')
+            setBio(typeof data.bio === 'string' ? data.bio : '')
           }
         } else if (res.status === 401) {
           setError('Not signed in')
@@ -104,6 +107,7 @@ export default function PublicProfilePanel() {
         displayName: displayName.trim(),
         age: parsedAge,
         heightCm: parsedHeight,
+        bio: bio.trim(),
       }
       const res = await fetch(getBackendApi('/api/profile-matching'), {
         method: 'POST',
@@ -142,16 +146,29 @@ export default function PublicProfilePanel() {
       <div className="profile-public-panel__inputs">
         <div className="profile-public-panel__field">
           <label className="profile-public-panel__label" htmlFor="displayName">Display Name</label>
-          <input id="displayName" className="profile-public-panel__input" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your display name" maxLength={60} />
+          <input id="displayName" className="profile-public-panel__input profile-public-panel__input--wide" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your display name" maxLength={60} />
         </div>
         <div className="profile-public-panel__field">
           <label className="profile-public-panel__label" htmlFor="age">Age</label>
-          <input id="age" className="profile-public-panel__input" inputMode="numeric" pattern="[0-9]*" value={ageStr} onChange={(e) => setAgeStr(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 28" />
+          <input id="age" className="profile-public-panel__input profile-public-panel__input--xs" inputMode="numeric" pattern="[0-9]*" value={ageStr} onChange={(e) => setAgeStr(e.target.value.replace(/[^0-9]/g, ''))} placeholder="28" />
         </div>
         <div className="profile-public-panel__field">
           <label className="profile-public-panel__label" htmlFor="height">Height (cm)</label>
-          <input id="height" className="profile-public-panel__input" inputMode="numeric" pattern="[0-9]*" value={heightStr} onChange={(e) => setHeightStr(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 180" />
+          <input id="height" className="profile-public-panel__input profile-public-panel__input--xs" inputMode="numeric" pattern="[0-9]*" value={heightStr} onChange={(e) => setHeightStr(e.target.value.replace(/[^0-9]/g, ''))} placeholder="180" />
         </div>
+      </div>
+
+      <div className="profile-public-panel__bio">
+        <div className="profile-public-panel__bio-header">BIO</div>
+        <textarea
+          className="profile-public-panel__textarea"
+          maxLength={500}
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          placeholder="Tell others about yourself (max 500 characters)"
+          rows={6}
+        />
+        <div className="profile-public-panel__counter">{bio.trim().length}/500</div>
       </div>
 
       {loading && <div className="profile-public-panel__status">Loading…</div>}

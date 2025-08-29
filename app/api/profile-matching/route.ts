@@ -64,12 +64,13 @@ export async function GET(req: Request) {
     }
 
     const collection = await getProfileMatchingCollection()
-    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number }>({ userId: userDoc._id })
+    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string }>({ userId: userDoc._id })
     const displayName = typeof doc?.displayName === 'string' ? doc!.displayName : null
     const age = typeof doc?.age === 'number' ? doc!.age : null
     const heightCm = typeof doc?.heightCm === 'number' ? doc!.heightCm : null
+    const bio = typeof doc?.bio === 'string' ? doc!.bio : null
 
-    return NextResponse.json({ displayName, age, heightCm }, { headers })
+    return NextResponse.json({ displayName, age, heightCm, bio }, { headers })
   } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
@@ -91,14 +92,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400, headers })
     }
 
-    let { displayName, age, heightCm } = rawBody as { displayName?: unknown; age?: unknown; heightCm?: unknown }
+    let { displayName, age, heightCm, bio } = rawBody as { displayName?: unknown; age?: unknown; heightCm?: unknown; bio?: unknown }
 
     // Basic validation (keep simple, mirror existing style)
     if (typeof displayName !== 'string') displayName = undefined
     if (typeof age !== 'number' || !Number.isInteger(age)) age = undefined
     if (typeof heightCm !== 'number' || !Number.isInteger(heightCm)) heightCm = undefined
+    if (typeof bio !== 'string') bio = undefined
 
-    if (displayName === undefined && age === undefined && heightCm === undefined) {
+    if (displayName === undefined && age === undefined && heightCm === undefined && bio === undefined) {
       return NextResponse.json({ error: 'Validation error' }, { status: 400, headers })
     }
 
@@ -114,6 +116,13 @@ export async function POST(req: Request) {
     if (typeof heightCm === 'number') {
       if (heightCm < 50 || heightCm > 260) {
         return NextResponse.json({ error: 'Invalid heightCm' }, { status: 400, headers })
+      }
+    }
+    let bioStr: string | undefined
+    if (typeof bio === 'string') {
+      bioStr = bio.trim()
+      if (bioStr.length > 500) {
+        return NextResponse.json({ error: 'Invalid bio' }, { status: 400, headers })
       }
     }
 
@@ -133,6 +142,7 @@ export async function POST(req: Request) {
     if (typeof displayName === 'string') update.$set.displayName = displayName
     if (typeof age === 'number') update.$set.age = age
     if (typeof heightCm === 'number') update.$set.heightCm = heightCm
+    if (typeof bioStr === 'string') update.$set.bio = bioStr
 
     await collection.updateOne(filter, update, { upsert: true })
     return NextResponse.json({ ok: true }, { headers })
