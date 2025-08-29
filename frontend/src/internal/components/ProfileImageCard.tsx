@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from 'react'
-import { getBackendApi } from '../../lib/config'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { appendBunnyAuth, getBackendApi } from '../../lib/config'
 import ExpandedImageModal from './ExpandedImageModal'
 
 type ProfileImageCardProps = {
@@ -14,11 +14,19 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
     () => new Array(6).fill(null)
   )
 
+  const [initialMainUrl, setInitialMainUrl] = useState<string | null>(null)
+  const [initialThumbUrls, setInitialThumbUrls] = useState<Array<string | null>>(
+    () => new Array(6).fill(null)
+  )
+
   const [modalOpen, setModalOpen] = useState(false)
   const [modalTarget, setModalTarget] = useState<{ kind: 'main' } | { kind: 'thumb', index: number } | null>(null)
 
-  const mainUrl = useMemo(() => (mainFile ? URL.createObjectURL(mainFile) : null), [mainFile])
-  const thumbUrls = useMemo(() => thumbFiles.map((f) => f ? URL.createObjectURL(f) : null), [thumbFiles])
+  const mainUrl = useMemo(() => (mainFile ? URL.createObjectURL(mainFile) : (initialMainUrl ? appendBunnyAuth(initialMainUrl) : null)), [mainFile, initialMainUrl])
+  const thumbUrls = useMemo(() => {
+    const previews = thumbFiles.map((f) => (f ? URL.createObjectURL(f) : null))
+    return previews.map((p, i) => (p ? p : (initialThumbUrls[i] ? appendBunnyAuth(initialThumbUrls[i] as string) : null)))
+  }, [thumbFiles, initialThumbUrls])
 
   const mainInputRef = useRef<HTMLInputElement | null>(null)
   const thumbInputRefs = useRef<(HTMLInputElement | null)[]>([])
@@ -81,10 +89,16 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
       const previewFile = shrinked instanceof File ? shrinked : new File([shrinked], file.name, { type: shrinked.type || file.type })
       if (modalTarget.kind === 'main') {
         setMainFile(previewFile)
+        setInitialMainUrl(publicUrl)
       } else {
         setThumbFiles((prev) => {
           const next = [...prev]
           next[modalTarget.index] = previewFile
+          return next
+        })
+        setInitialThumbUrls((prev) => {
+          const next = [...prev]
+          next[modalTarget.index] = publicUrl
           return next
         })
       }
@@ -105,6 +119,33 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
   }
 
   const rootClass = ['profile-image-card', className].filter(Boolean).join(' ')
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const url = getBackendApi('/api/profile-images/me')
+        const res = await fetch(url, { method: 'GET', credentials: 'include' })
+        if (!res.ok) return
+        const data = await res.json().catch(() => null) as { main?: string | null; thumbs?: Array<{ name: string; url: string }> }
+        if (!data || cancelled) return
+        const main = typeof data.main === 'string' ? data.main : null
+        const thumbsArr = Array.isArray(data.thumbs) ? data.thumbs : []
+        const mapped: Array<string | null> = new Array(6).fill(null)
+        for (const t of thumbsArr) {
+          const m = /^thumb([1-6])$/.exec(t.name)
+          if (!m) continue
+          const idx = parseInt(m[1], 10) - 1
+          if (idx >= 0 && idx < 6 && typeof t.url === 'string') mapped[idx] = t.url
+        }
+        setInitialMainUrl(main)
+        setInitialThumbUrls(mapped)
+      } catch {
+        // ignore; show placeholders
+      }
+      return () => { cancelled = true }
+    })()
+  }, [])
 
   return (
     <div className={rootClass}>
