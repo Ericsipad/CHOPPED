@@ -226,4 +226,69 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
             <div key={i}
               className="profile-image-card__thumb"
               role="button" tabIndex={0}
-              aria-label={`Thumbnail ${i + 1}`
+              aria-label={`Thumbnail ${i + 1}`}
+              onClick={() => openModalForThumb(i)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') openModalForThumb(i) }}
+            >
+              {url ? (
+                <img src={url} alt={`Thumb ${i + 1}`} className="profile-image-card__img" />
+              ) : (
+                <div className="profile-image-card__placeholder small">+</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <ExpandedImageModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={modalTarget?.kind === 'main' ? 'Main Image' : (modalTarget ? `Thumbnail ${modalTarget.index + 1}` : '')}
+        imageUrl={modalTarget?.kind === 'main' ? mainUrl : (modalTarget && modalTarget.kind === 'thumb' ? thumbUrls[modalTarget.index] : null)}
+        onUpload={handleUpload}
+        onDelete={handleDelete}
+      />
+
+      {/* Hidden inputs retained for future direct-trigger needs */}
+      <input ref={mainInputRef} type="file" accept="image/*" style={{ display: 'none' }} />
+      {new Array(6).fill(null).map((_, i) => (
+        <input key={i} ref={(el) => { thumbInputRefs.current[i] = el }} type="file" accept="image/*" style={{ display: 'none' }} />
+      ))}
+    </div>
+  )
+}
+
+
+async function shrinkImageToTarget(input: File, opts: { maxEdge: number; targetMaxBytes: number }): Promise<Blob | null> {
+  const { maxEdge, targetMaxBytes } = opts
+  try {
+    const bitmap = await createImageBitmap(input).catch(() => null)
+    if (!bitmap) {
+      return input.size <= targetMaxBytes ? input : null
+    }
+
+    const ratio = Math.max(bitmap.width, bitmap.height) > maxEdge ? (maxEdge / Math.max(bitmap.width, bitmap.height)) : 1
+    const targetW = Math.max(1, Math.round(bitmap.width * ratio))
+    const targetH = Math.max(1, Math.round(bitmap.height * ratio))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = targetW
+    canvas.height = targetH
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+    ctx.drawImage(bitmap, 0, 0, targetW, targetH)
+
+    let quality = 0.85
+    for (let i = 0; i < 6; i++) {
+      const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, input.type || 'image/jpeg', quality))
+      if (!blob) return null
+      if (blob.size <= targetMaxBytes) return blob
+      quality -= 0.1
+      if (quality <= 0.4) break
+    }
+    const finalBlob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, input.type || 'image/jpeg', 0.75))
+    return finalBlob
+  } catch {
+    return null
+  }
+}
