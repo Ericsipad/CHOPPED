@@ -77,7 +77,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Expected multipart/form-data' }, { status: 400, headers })
     }
 
-    const formData = await req.formData()
+    let formData: FormData
+    try {
+      formData = await req.formData()
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('UPLOAD FORM_PARSE_FAIL', err)
+      return NextResponse.json({ error: 'FORM_PARSE_FAIL' }, { status: 400, headers })
+    }
     const slot = String(formData.get('slot') || '')
     if (!/^main$|^thumb[1-6]$/.test(slot)) {
       return NextResponse.json({ error: 'Invalid slot' }, { status: 400, headers })
@@ -91,17 +98,34 @@ export async function POST(req: Request) {
     }
 
     // Lookup or create user record to get Mongo _id
-    const users = await getUsersCollection()
+    const users = await getUsersCollection().catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error('UPLOAD MONGO_CONNECT_FAIL', err)
+      return null
+    })
+    if (!users) {
+      return NextResponse.json({ error: 'MONGO_CONNECT_FAIL' }, { status: 500, headers })
+    }
     const now = new Date()
-    await users.updateOne(
-      { supabaseUserId: user.id },
-      { $setOnInsert: { createdAt: now, supabaseUserId: user.id }, $set: { updatedAt: now } },
-      { upsert: true },
-    )
-    const doc = await users.findOne({ supabaseUserId: user.id })
+    try {
+      await users.updateOne(
+        { supabaseUserId: user.id },
+        { $setOnInsert: { createdAt: now, supabaseUserId: user.id }, $set: { updatedAt: now } },
+        { upsert: true },
+      )
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('UPLOAD MONGO_UPSERT_FAIL', err)
+      return NextResponse.json({ error: 'MONGO_UPSERT_FAIL' }, { status: 500, headers })
+    }
+    const doc = await users.findOne({ supabaseUserId: user.id }).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error('UPLOAD MONGO_FIND_FAIL', err)
+      return null
+    })
     const mongoUserId = doc?._id?.toString()
     if (!mongoUserId) {
-      return NextResponse.json({ error: 'Failed to resolve user id' }, { status: 500, headers })
+      return NextResponse.json({ error: 'USER_LOOKUP_FAIL' }, { status: 500, headers })
     }
 
     const rand = Math.floor(1 + Math.random() * 100)
@@ -147,8 +171,8 @@ export async function POST(req: Request) {
         ['accessKey', accessKey],
       ].filter(([, v]) => !v).map(([k]) => k)
       // eslint-disable-next-line no-console
-      console.error('Bunny env misconfigured. Missing:', missing)
-      return NextResponse.json({ error: 'Bunny env misconfigured' }, { status: 500, headers })
+      console.error('UPLOAD ENV_MISSING', missing)
+      return NextResponse.json({ error: 'ENV_MISSING', missing }, { status: 500, headers })
     }
 
     // Option B: one folder level by userId, filename without slot
@@ -157,23 +181,38 @@ export async function POST(req: Request) {
     const uploadUrl = `https://${storageHost}/${encodeURIComponent(storageZone)}/${encodeURIComponent(mongoUserId)}/${encodeURIComponent(filename)}`
     const publicUrl = `https://${pullZoneHost}/${encodeURIComponent(mongoUserId)}/${encodeURIComponent(filename)}`
 
+    // Convert to Buffer for reliable Node upload
+    let bodyBlob: Blob
+    try {
+      const ab = await file.arrayBuffer()
+      bodyBlob = new Blob([ab], { type: file.type || 'application/octet-stream' })
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('UPLOAD FILE_READ_FAIL', err)
+      return NextResponse.json({ error: 'FILE_READ_FAIL' }, { status: 500, headers })
+    }
+
     const bunnyRes = await fetch(uploadUrl, {
       method: 'PUT',
       headers: {
         'AccessKey': accessKey,
         'Content-Type': file.type || 'application/octet-stream',
       },
-      body: file.stream(),
+      body: bodyBlob,
     })
 
     if (!bunnyRes.ok && bunnyRes.status !== 201) {
       const text = await bunnyRes.text().catch(() => '')
-      return NextResponse.json({ error: 'Bunny upload failed', status: bunnyRes.status, detail: text }, { status: 502, headers })
+      // eslint-disable-next-line no-console
+      console.error('UPLOAD BUNNY_UPLOAD_FAIL', bunnyRes.status, text)
+      return NextResponse.json({ error: 'BUNNY_UPLOAD_FAIL', status: bunnyRes.status, detail: text }, { status: 502, headers })
     }
 
     return NextResponse.json({ publicUrl, path }, { headers })
-  } catch {
-    return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('UPLOAD UNKNOWN', err)
+    return NextResponse.json({ error: 'UNKNOWN' }, { status: 500, headers })
   }
 }
 
