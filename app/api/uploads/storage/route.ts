@@ -132,17 +132,18 @@ export async function POST(req: Request) {
       env.BUNNY_CDN_HOST ||
       env.BUNNY_PULL_ZONE_DOMAIN ||
       env.BUNNY_THUMBS_CDN
-    ) as string | undefined // optional for upload only
+    ) as string // required to build final public URL
     const accessKey = (
       env.BUNNY_ACCESS_KEY ||
       env.BUNNY_STORAGE_ACCESS_KEY ||
       env.BUNNY_STORAGE_PASSWORD
     ) as string
-    if (!storageZone || !storageHost || !accessKey) {
+    if (!storageZone || !storageHost || !accessKey || !pullZoneHost) {
       // Log which ones are missing for server diagnostics only
       const missing = [
         ['storageZone', storageZone],
         ['storageHost', storageHost],
+        ['pullZoneHost', pullZoneHost],
         ['accessKey', accessKey],
       ].filter(([, v]) => !v).map(([k]) => k)
       // eslint-disable-next-line no-console
@@ -152,8 +153,7 @@ export async function POST(req: Request) {
 
     const path = `users/${mongoUserId}/profile/${mongoUserId}.${yyyy}${mm}${dd}.${HH}${MM}${SS}.${rand}.${slot}.${ext}`
     const uploadUrl = `https://${storageHost}/${encodeURIComponent(storageZone)}/${path}`
-    const fallbackCdnHost = `${storageZone}.b-cdn.net`
-    const publicUrl = `https://${(pullZoneHost || fallbackCdnHost)}/${path}`
+    const publicUrl = `https://${pullZoneHost}/${path}`
 
     const bunnyRes = await fetch(uploadUrl, {
       method: 'PUT',
