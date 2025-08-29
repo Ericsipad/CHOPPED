@@ -130,7 +130,8 @@ export async function POST(req: Request) {
       env.BUNNY_PULLZONE_HOST ||
       env.BUNNY_PULL_ZONE_HOST ||
       env.BUNNY_CDN_HOST ||
-      env.BUNNY_PULL_ZONE_DOMAIN
+      env.BUNNY_PULL_ZONE_DOMAIN ||
+      env.BUNNY_THUMBS_CDN
     ) as string // e.g., cdn.example.com
     const accessKey = (
       env.BUNNY_ACCESS_KEY ||
