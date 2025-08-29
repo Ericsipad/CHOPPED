@@ -73,8 +73,8 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
           ) : (
             <div className="profile-image-card__placeholder">Click to upload main image</div>
           )}
+          <div className="profile-image-card__label">Main Image</div>
         </div>
-        <div className="profile-image-card__label">Main Image</div>
 
         <div className="profile-image-card__thumbs">
           {thumbUrls.map((url, i) => (

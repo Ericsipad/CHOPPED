@@ -87,6 +87,7 @@ html, body, #root {
 	/* clamp to scale from ~30vw at 1440px to ~90vw at 1024px */
 	width: clamp(30vw, calc(-118vw + 2127px), 90vw);
 	max-width: 1100px;
+	height: clamp(520px, 60vh, 780px);
 	background: rgba(18,18,18,0.6);
 	color: #ffffff;
 	border-radius: 16px;
@@ -99,14 +100,15 @@ html, body, #root {
 
 .profile-image-card__content {
 	display: grid;
-	grid-template-rows: 1fr auto auto;
+	height: 100%;
+	grid-template-rows: 1fr 10%;
 	gap: 12px;
-	min-height: 520px;
 }
 
 .profile-image-card__main {
 	/* roughly top-left area with ~70% of the card height */
-	height: 70%;
+	height: 100%;
+	position: relative;
 	border-radius: 12px;
 	overflow: hidden;
 	border: 1px solid rgba(255,255,255,0.08);
@@ -132,10 +134,15 @@ html, body, #root {
 }
 .profile-image-card__placeholder.small { font-size: 20px; }
 
-.profile-image-card__label {
-	font-size: 12px;
-	opacity: 0.9;
-	margin-left: 4px;
+.profile-image-card__label { font-size: 12px; opacity: 0.9; }
+.profile-image-card__main .profile-image-card__label {
+	position: absolute;
+	left: 8px;
+	bottom: 8px;
+	background: rgba(0,0,0,0.35);
+	border: 1px solid rgba(255,255,255,0.12);
+	border-radius: 6px;
+	padding: 4px 8px;
 }
 
 .profile-image-card__thumbs {
