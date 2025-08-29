@@ -152,7 +152,8 @@ export async function POST(req: Request) {
 
     const path = `users/${mongoUserId}/profile/${mongoUserId}.${yyyy}${mm}${dd}.${HH}${MM}${SS}.${rand}.${slot}.${ext}`
     const uploadUrl = `https://${storageHost}/${encodeURIComponent(storageZone)}/${path}`
-    const publicUrl = pullZoneHost ? `https://${pullZoneHost}/${path}` : ''
+    const fallbackCdnHost = `${storageZone}.b-cdn.net`
+    const publicUrl = `https://${(pullZoneHost || fallbackCdnHost)}/${path}`
 
     const bunnyRes = await fetch(uploadUrl, {
       method: 'PUT',
