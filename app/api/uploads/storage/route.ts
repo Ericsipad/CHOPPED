@@ -113,11 +113,40 @@ export async function POST(req: Request) {
     const MM = String(d.getMinutes()).padStart(2, '0')
     const SS = String(d.getSeconds()).padStart(2, '0')
     const ext = inferExtension(file.type)
-    const storageZone = process.env.BUNNY_STORAGE_ZONE as string
-    const storageHost = process.env.BUNNY_STORAGE_HOST as string // e.g., ny.storage.bunnycdn.com
-    const pullZoneHost = process.env.BUNNY_PULLZONE_HOST as string // e.g., cdn.example.com
-    const accessKey = process.env.BUNNY_ACCESS_KEY as string
+    const env = process.env as Record<string, string | undefined>
+    const storageZone = (
+      env.BUNNY_STORAGE_ZONE ||
+      env.BUNNY_STORAGE_ZONE_NAME ||
+      env.BUNNY_STORAGE_NAME ||
+      env.BUNNY_ZONE_NAME
+    ) as string
+    const storageHost = (
+      env.BUNNY_STORAGE_HOST ||
+      env.BUNNY_EDGE_STORAGE_HOST ||
+      env.BUNNY_STORAGE_ENDPOINT ||
+      env.BUNNY_STORAGE_REGION_HOST
+    ) as string // e.g., ny.storage.bunnycdn.com
+    const pullZoneHost = (
+      env.BUNNY_PULLZONE_HOST ||
+      env.BUNNY_PULL_ZONE_HOST ||
+      env.BUNNY_CDN_HOST ||
+      env.BUNNY_PULL_ZONE_DOMAIN
+    ) as string // e.g., cdn.example.com
+    const accessKey = (
+      env.BUNNY_ACCESS_KEY ||
+      env.BUNNY_STORAGE_ACCESS_KEY ||
+      env.BUNNY_STORAGE_PASSWORD
+    ) as string
     if (!storageZone || !storageHost || !pullZoneHost || !accessKey) {
+      // Log which ones are missing for server diagnostics only
+      const missing = [
+        ['storageZone', storageZone],
+        ['storageHost', storageHost],
+        ['pullZoneHost', pullZoneHost],
+        ['accessKey', accessKey],
+      ].filter(([, v]) => !v).map(([k]) => k)
+      // eslint-disable-next-line no-console
+      console.error('Bunny env misconfigured. Missing:', missing)
       return NextResponse.json({ error: 'Bunny env misconfigured' }, { status: 500, headers })
     }
 
