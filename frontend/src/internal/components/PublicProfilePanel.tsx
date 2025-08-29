@@ -148,7 +148,7 @@ export default function PublicProfilePanel() {
           <label className="profile-public-panel__label" htmlFor="displayName">Display Name</label>
           <input id="displayName" className="profile-public-panel__input profile-public-panel__input--wide" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your display name" maxLength={60} />
         </div>
-        <div className="profile-public-panel__field">
+        <div className="profile-public-panel__field profile-public-panel__field--age">
           <label className="profile-public-panel__label" htmlFor="age">Age</label>
           <input id="age" className="profile-public-panel__input profile-public-panel__input--xs" inputMode="numeric" pattern="[0-9]*" value={ageStr} onChange={(e) => setAgeStr(e.target.value.replace(/[^0-9]/g, ''))} placeholder="28" />
         </div>

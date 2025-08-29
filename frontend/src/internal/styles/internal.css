@@ -219,6 +219,7 @@ html, body, #root {
 }
 
 .profile-public-panel__field { display: flex; flex-direction: column; gap: 6px; }
+.profile-public-panel__field--age { margin-left: 30px; }
 .profile-public-panel__label { font-size: 12px; opacity: 0.85; }
 .profile-public-panel__input {
 	background: rgba(0,0,0,0.35);
