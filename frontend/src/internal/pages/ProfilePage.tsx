@@ -8,7 +8,7 @@ import { useState } from 'react'
  
  
 export default function ProfilePage() {
-	const [activeTab, setActiveTab] = useState<'pics' | 'bio'>('pics')
+	const [activeTab, setActiveTab] = useState<'pics' | 'bio' | 'settings'>('pics')
 
 	return (
 		<PageFrame>
@@ -45,6 +45,13 @@ export default function ProfilePage() {
 									>
 										Public BIO
 									</button>
+									<button
+										className={["profile-tabs__btn", activeTab === 'settings' ? 'is-active' : ''].filter(Boolean).join(' ')}
+										onClick={() => setActiveTab('settings')}
+										aria-pressed={activeTab === 'settings'}
+									>
+										Settings
+									</button>
 								</div>
 								<div className="profile-tabs__content">
 									<div className={activeTab === 'pics' ? '' : 'is-hidden'}>
@@ -52,6 +59,9 @@ export default function ProfilePage() {
 									</div>
 									<div className={activeTab === 'bio' ? '' : 'is-hidden'}>
 										<PublicProfilePanel />
+									</div>
+									<div className={activeTab === 'settings' ? '' : 'is-hidden'}>
+										<div className="profile-public-panel" style={{ minHeight: 200 }} />
 									</div>
 								</div>
 							</div>
