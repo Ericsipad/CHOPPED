@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-import { getBackendApi } from '../../lib/config'
+import { useState } from 'react'
 
 type SubscriptionPlan = {
   slots: number
