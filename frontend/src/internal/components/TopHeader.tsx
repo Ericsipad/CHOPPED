@@ -24,15 +24,7 @@ export default function TopHeader() {
 							href="/chopping-board.html"
 							className={`internal-nav-link${isChoppingBoard ? ' is-active' : ''}`}
 							aria-current={isChoppingBoard ? 'page' : undefined}
-							onClick={async (e) => {
-								try {
-									const { ready, missing } = await fetchReadiness()
-									if (!ready) {
-										e.preventDefault()
-										alert('Complete required fields to browse: ' + missing.join(', '))
-									}
-								} catch { /* ignore */ }
-							}}
+							
 						>
 							Chopping Board
 						</a>
