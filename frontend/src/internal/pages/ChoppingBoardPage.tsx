@@ -6,11 +6,13 @@ import ValidationModal from '../components/ValidationModal'
 import { fetchReadiness } from '../components/readiness'
 import { useEffect, useState } from 'react'
 import '../styles/internal.css'
+import { fetchUserMatchArray, type MatchSlot } from '../../lib/matches'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
     const [missingFields, setMissingFields] = useState<string[]>([])
     const [viewCount, setViewCount] = useState<10 | 25 | 50>(10)
+    const [slots, setSlots] = useState<Array<MatchSlot | null>>([])
 
     useEffect(() => {
         let cancelled = false
@@ -20,6 +22,10 @@ export default function ChoppingBoardPage() {
                 if (!cancelled && !ready) {
                     setMissingFields(missing)
                     setModalOpen(true)
+                }
+                if (!cancelled) {
+                    const s = await fetchUserMatchArray()
+                    if (!cancelled) setSlots(s)
                 }
             } catch {
                 // On error, conservatively block and redirect path via modal
@@ -31,11 +37,16 @@ export default function ChoppingBoardPage() {
         })()
         return () => { cancelled = true }
     }, [])
-	// Placeholder images (supports up to 50)
-	const images = new Array(50).fill(null).map((_, i) => ({
-		url: `https://picsum.photos/seed/chopped-${i}/600/600`,
-		alt: `profile ${i + 1}`,
-	}))
+	// Build images array from slots with status for glow; fallback to placeholder when empty
+	const placeholderUrl = '/profile-placeholder.svg'
+	const images = new Array(50).fill(null).map((_, i) => {
+		const slot = slots[i]
+		return {
+			url: slot?.mainImageUrl || placeholderUrl,
+			alt: `profile ${i + 1}`,
+			status: slot?.matchStatus ?? null,
+		}
+	})
 	return (
 		<PageFrame>
 			<div>

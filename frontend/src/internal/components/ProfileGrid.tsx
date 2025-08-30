@@ -1,7 +1,7 @@
 import { Box, Grid, GridItem } from '@chakra-ui/react'
 import WobblyCard3D from './WobblyCard3D'
 
-type ProfileImage = { url: string; alt?: string }
+type ProfileImage = { url: string; alt?: string; status?: 'yes' | 'pending' | 'chopped' | null }
 type ProfileGridProps = { images: ProfileImage[]; viewCount: 10 | 25 | 50 }
 
 export default function ProfileGrid(props: ProfileGridProps) {
@@ -51,34 +51,40 @@ export default function ProfileGrid(props: ProfileGridProps) {
 				alignContent="center"
 				width="fit-content"
 			>
-				{items.map((img, idx) => (
-					<GridItem key={idx} w={cardSize} h={cardSize}>
-						{wobble ? (
-							<WobblyCard3D
-								p={0}
-								borderRadius="xl"
-								boxShadow="xl"
-								bg="gray.800"
-								maxRotate={12}
-								perspective={900}
-							>
-								<img
-									src={img.url}
-									alt={img.alt ?? 'profile picture'}
-									style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-								/>
-							</WobblyCard3D>
-						) : (
-							<Box p={0} borderRadius="xl" boxShadow="xl" bg="gray.800" w="100%" h="100%">
-								<img
-									src={img.url}
-									alt={img.alt ?? 'profile picture'}
-									style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-								/>
-							</Box>
-						)}
-					</GridItem>
-				))}
+				{items.map((img, idx) => {
+					const glow = img.status === 'yes' ? '0 0 16px rgba(34,197,94,0.8)'
+						: img.status === 'pending' ? '0 0 16px rgba(234,179,8,0.8)'
+						: img.status === 'chopped' ? '0 0 16px rgba(239,68,68,0.8)'
+						: 'none'
+					return (
+						<GridItem key={idx} w={cardSize} h={cardSize}>
+							{wobble ? (
+								<WobblyCard3D
+									p={0}
+									borderRadius="xl"
+									boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'}
+									bg="gray.800"
+									maxRotate={12}
+									perspective={900}
+								>
+									<img
+										src={img.url}
+										alt={img.alt ?? 'profile picture'}
+										style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+									/>
+								</WobblyCard3D>
+							) : (
+								<Box p={0} borderRadius="xl" boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'} bg="gray.800" w="100%" h="100%">
+									<img
+										src={img.url}
+										alt={img.alt ?? 'profile picture'}
+										style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+									/>
+								</Box>
+							)}
+						</GridItem>
+					)
+				})}
 			</Grid>
 		</Box>
 	)
