@@ -67,15 +67,15 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
     }
 
-    const raw = (Array.isArray(userDoc?.Match_array) ? (userDoc!.Match_array as RawMatch[]) : [])
+    const raw = (Array.isArray(userDoc!.Match_array) ? (userDoc!.Match_array as RawMatch[]) : [])
     const limit = 50
     const slots: Array<MatchSlot | null> = new Array(limit).fill(null)
     for (let i = 0; i < Math.min(raw.length, limit); i++) {
       const entry = raw[i] as RawMatch | RawMatchAlt
       if (!entry || typeof entry !== 'object') { continue }
-      const matchedUserId = typeof (entry as RawMatch).matchedUserId === 'string' ? (entry as RawMatch).matchedUserId : (typeof (entry as RawMatchAlt).userId === 'string' ? (entry as RawMatchAlt).userId : '')
-      const mainImageUrl = typeof (entry as RawMatch).mainImageUrl === 'string' ? (entry as RawMatch).mainImageUrl : (typeof (entry as RawMatchAlt).imageUrl === 'string' ? (entry as RawMatchAlt).imageUrl : '')
-      const statusRaw = typeof (entry as RawMatch).matchStatus === 'string' ? (entry as RawMatch).matchStatus : (typeof (entry as RawMatchAlt).status === 'string' ? (entry as RawMatchAlt).status : '')
+      const matchedUserId = typeof (entry! as RawMatch).matchedUserId === 'string' ? (entry! as RawMatch).matchedUserId : (typeof (entry! as RawMatchAlt).userId === 'string' ? (entry! as RawMatchAlt).userId : '')
+      const mainImageUrl = typeof (entry! as RawMatch).mainImageUrl === 'string' ? (entry! as RawMatch).mainImageUrl : (typeof (entry! as RawMatchAlt).imageUrl === 'string' ? (entry! as RawMatchAlt).imageUrl : '')
+      const statusRaw = typeof (entry! as RawMatch).matchStatus === 'string' ? (entry! as RawMatch).matchStatus : (typeof (entry! as RawMatchAlt).status === 'string' ? (entry! as RawMatchAlt).status : '')
       const statusLc = statusRaw.toLowerCase()
       const matchStatus = (statusLc === 'yes' || statusLc === 'pending' || statusLc === 'chopped') ? statusLc as MatchSlot['matchStatus'] : null
       if (matchedUserId && mainImageUrl && matchStatus) {
