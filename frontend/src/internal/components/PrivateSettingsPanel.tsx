@@ -238,16 +238,16 @@ export default function PrivateSettingsPanel() {
       <fieldset className="profile-iam" aria-label="Health status">
         <legend className="profile-iam__legend">Health status: We prioritize matching for these selections</legend>
         <div className="profile-iam__grid" role="radiogroup" aria-label="Health status">
-          <button type="button" className={["profile-iam__option", healthCondition === 'hiv' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'hiv'} onClick={() => setHealthCondition('hiv')}>
+          <button type="button" className={["profile-iam__option", healthCondition === 'hiv' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'hiv'} onClick={() => setHealthCondition(healthCondition === 'hiv' ? '' : 'hiv')}>
             <span className="profile-iam__label">HIV</span>
           </button>
-          <button type="button" className={["profile-iam__option", healthCondition === 'herpes' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'herpes'} onClick={() => setHealthCondition('herpes')}>
+          <button type="button" className={["profile-iam__option", healthCondition === 'herpes' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'herpes'} onClick={() => setHealthCondition(healthCondition === 'herpes' ? '' : 'herpes')}>
             <span className="profile-iam__label">Herpes</span>
           </button>
-          <button type="button" className={["profile-iam__option", healthCondition === 'autism' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'autism'} onClick={() => setHealthCondition('autism')}>
+          <button type="button" className={["profile-iam__option", healthCondition === 'autism' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'autism'} onClick={() => setHealthCondition(healthCondition === 'autism' ? '' : 'autism')}>
             <span className="profile-iam__label">Autism</span>
           </button>
-          <button type="button" className={["profile-iam__option", healthCondition === 'physical_handicap' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'physical_handicap'} onClick={() => setHealthCondition('physical_handicap')}>
+          <button type="button" className={["profile-iam__option", healthCondition === 'physical_handicap' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'physical_handicap'} onClick={() => setHealthCondition(healthCondition === 'physical_handicap' ? '' : 'physical_handicap')}>
             <span className="profile-iam__label">Physical Handicap</span>
           </button>
         </div>
