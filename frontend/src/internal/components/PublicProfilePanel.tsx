@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import ValidationModal from './ValidationModal'
+import { fetchReadiness } from './readiness'
 import { getBackendApi } from '../../lib/config'
 
 function EyeIcon(props: { size?: number }) {
@@ -20,6 +22,9 @@ export default function PublicProfilePanel() {
   const [error, setError] = useState<string | null>(null)
   const [savedTs, setSavedTs] = useState<number | null>(null)
   const [bio, setBio] = useState('')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [missingFields, setMissingFields] = useState<string[]>([])
+  const [errors, setErrors] = useState<{ displayName?: boolean; age?: boolean; bio?: boolean }>({})
 
   const parsedAge = useMemo(() => {
     const n = Number(ageStr)
@@ -33,10 +38,9 @@ export default function PublicProfilePanel() {
   const isValid = useMemo(() => {
     if (!displayName.trim()) return false
     if (!Number.isInteger(parsedAge) || parsedAge < 13 || parsedAge > 120) return false
-    if (!Number.isInteger(parsedHeight) || parsedHeight < 50 || parsedHeight > 260) return false
-    if (bio.trim().length > 500) return false
+    if (bio.trim().length < 1 || bio.trim().length > 500) return false
     return true
-  }, [displayName, parsedAge, parsedHeight, bio])
+  }, [displayName, parsedAge, bio])
 
   useEffect(() => {
     let cancelled = false
@@ -84,10 +88,21 @@ export default function PublicProfilePanel() {
   }, [])
 
   async function onSave() {
-    if (!isValid || saving) return
+    if (saving) return
     setSaving(true)
     setError(null)
     try {
+      const panelMissing: string[] = []
+      const nextErrors: { displayName?: boolean; age?: boolean; bio?: boolean } = {}
+      if (!displayName.trim()) { panelMissing.push('Display name'); nextErrors.displayName = true }
+      if (!Number.isInteger(parsedAge) || parsedAge < 13 || parsedAge > 120) { panelMissing.push('Age'); nextErrors.age = true }
+      if (bio.trim().length < 1) { panelMissing.push('Bio'); nextErrors.bio = true }
+      setErrors(nextErrors)
+      if (panelMissing.length > 0) {
+        setMissingFields(panelMissing)
+        setModalOpen(true)
+        throw new Error('Validation error')
+      }
       // Re-verify local mongo id matches session, then persist
       try {
         const resMe = await fetch(getBackendApi('/api/user/me'), { credentials: 'include' })
@@ -120,9 +135,17 @@ export default function PublicProfilePanel() {
         throw new Error(err?.error || 'Failed to save')
       }
       setSavedTs(Date.now())
+
+      // After save, check readiness to browse
+      const { ready, missing: readinessMissing } = await fetchReadiness({ displayName, ageStr, bio })
+      if (!ready) {
+        setError('Missing required fields: ' + readinessMissing.join(', '))
+        setModalOpen(true)
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to save'
       setError(msg)
+      setModalOpen(true)
     } finally {
       setSaving(false)
       setTimeout(() => setSavedTs(null), 2000)
@@ -145,12 +168,12 @@ export default function PublicProfilePanel() {
 
       <div className="profile-public-panel__inputs">
         <div className="profile-public-panel__field">
-          <label className="profile-public-panel__label" htmlFor="displayName">Display Name</label>
-          <input id="displayName" className="profile-public-panel__input profile-public-panel__input--wide" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your display name" maxLength={60} />
+          <label className={["profile-public-panel__label", errors.displayName ? 'profile-public-panel__label--error' : ''].filter(Boolean).join(' ')} htmlFor="displayName">Display Name</label>
+          <input id="displayName" className={["profile-public-panel__input", "profile-public-panel__input--wide", errors.displayName ? 'profile-public-panel__input--error' : ''].filter(Boolean).join(' ')} type="text" value={displayName} onChange={(e) => { setDisplayName(e.target.value); if (errors.displayName) setErrors((p) => ({ ...p, displayName: false })) }} placeholder="Your display name" maxLength={60} />
         </div>
         <div className="profile-public-panel__field profile-public-panel__field--age">
-          <label className="profile-public-panel__label" htmlFor="age">Age</label>
-          <input id="age" className="profile-public-panel__input profile-public-panel__input--xs" inputMode="numeric" pattern="[0-9]*" value={ageStr} onChange={(e) => setAgeStr(e.target.value.replace(/[^0-9]/g, ''))} placeholder="28" />
+          <label className={["profile-public-panel__label", errors.age ? 'profile-public-panel__label--error' : ''].filter(Boolean).join(' ')} htmlFor="age">Age</label>
+          <input id="age" className={["profile-public-panel__input", "profile-public-panel__input--xs", errors.age ? 'profile-public-panel__input--error' : ''].filter(Boolean).join(' ')} inputMode="numeric" pattern="[0-9]*" value={ageStr} onChange={(e) => { setAgeStr(e.target.value.replace(/[^0-9]/g, '')); if (errors.age) setErrors((p) => ({ ...p, age: false })) }} placeholder="28" />
         </div>
         <div className="profile-public-panel__field">
           <label className="profile-public-panel__label" htmlFor="height">Height (cm)</label>
@@ -161,10 +184,10 @@ export default function PublicProfilePanel() {
       <div className="profile-public-panel__bio">
         <div className="profile-public-panel__bio-header">BIO</div>
         <textarea
-          className="profile-public-panel__textarea"
+          className={["profile-public-panel__textarea", errors.bio ? 'profile-public-panel__textarea--error' : ''].filter(Boolean).join(' ')}
           maxLength={500}
           value={bio}
-          onChange={(e) => setBio(e.target.value)}
+          onChange={(e) => { setBio(e.target.value); if (errors.bio) setErrors((p) => ({ ...p, bio: false })) }}
           placeholder="Tell others about yourself (max 500 characters)"
           rows={6}
         />
@@ -174,6 +197,13 @@ export default function PublicProfilePanel() {
       {loading && <div className="profile-public-panel__status">Loading…</div>}
       {error && <div className="profile-public-panel__error">{error}</div>}
       {savedTs && !error && <div className="profile-public-panel__success">Saved</div>}
+      <ValidationModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Incomplete profile">
+        <div style={{ marginBottom: 8 }}>Please fill the following in this panel:</div>
+        <ul style={{ margin: 0, paddingLeft: 18 }}>
+          {missingFields.map((f) => (<li key={f}>{f}</li>))}
+        </ul>
+        <div style={{ marginTop: 12, opacity: 0.8 }}>Note: To browse Chopping Board, also ensure Main image and Country are set.</div>
+      </ValidationModal>
     </div>
   )
 }

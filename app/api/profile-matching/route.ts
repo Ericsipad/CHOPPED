@@ -64,13 +64,17 @@ export async function GET(req: Request) {
     }
 
     const collection = await getProfileMatchingCollection()
-    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string }>({ userId: userDoc._id })
+    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string; country?: string; stateProvince?: string; city?: string; locationAnswer?: string }>({ userId: userDoc._id })
     const displayName = typeof doc?.displayName === 'string' ? doc!.displayName : null
     const age = typeof doc?.age === 'number' ? doc!.age : null
     const heightCm = typeof doc?.heightCm === 'number' ? doc!.heightCm : null
     const bio = typeof doc?.bio === 'string' ? doc!.bio : null
+    const country = typeof doc?.country === 'string' ? doc!.country : null
+    const stateProvince = typeof doc?.stateProvince === 'string' ? doc!.stateProvince : null
+    const city = typeof doc?.city === 'string' ? doc!.city : null
+    const locationAnswer = typeof doc?.locationAnswer === 'string' ? doc!.locationAnswer : null
 
-    return NextResponse.json({ displayName, age, heightCm, bio }, { headers })
+    return NextResponse.json({ displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer }, { headers })
   } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
@@ -92,15 +96,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400, headers })
     }
 
-    let { displayName, age, heightCm, bio } = rawBody as { displayName?: unknown; age?: unknown; heightCm?: unknown; bio?: unknown }
+    let { displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer } = rawBody as { displayName?: unknown; age?: unknown; heightCm?: unknown; bio?: unknown; country?: unknown; stateProvince?: unknown; city?: unknown; locationAnswer?: unknown }
 
     // Basic validation (keep simple, mirror existing style)
     if (typeof displayName !== 'string') displayName = undefined
     if (typeof age !== 'number' || !Number.isInteger(age)) age = undefined
     if (typeof heightCm !== 'number' || !Number.isInteger(heightCm)) heightCm = undefined
     if (typeof bio !== 'string') bio = undefined
+    if (typeof country !== 'string') country = undefined
+    if (typeof stateProvince !== 'string') stateProvince = undefined
+    if (typeof city !== 'string') city = undefined
+    if (typeof locationAnswer !== 'string') locationAnswer = undefined
 
-    if (displayName === undefined && age === undefined && heightCm === undefined && bio === undefined) {
+    if (displayName === undefined && age === undefined && heightCm === undefined && bio === undefined && country === undefined && stateProvince === undefined && city === undefined && locationAnswer === undefined) {
       return NextResponse.json({ error: 'Validation error' }, { status: 400, headers })
     }
 
@@ -126,6 +134,23 @@ export async function POST(req: Request) {
       }
     }
 
+    let countryStr: string | undefined
+    if (typeof country === 'string') {
+      countryStr = country.trim().slice(0, 80)
+    }
+    let stateProvinceStr: string | undefined
+    if (typeof stateProvince === 'string') {
+      stateProvinceStr = stateProvince.trim().slice(0, 120)
+    }
+    let cityStr: string | undefined
+    if (typeof city === 'string') {
+      cityStr = city.trim().slice(0, 160)
+    }
+    let locationAnswerStr: string | undefined
+    if (typeof locationAnswer === 'string') {
+      locationAnswerStr = locationAnswer.trim().slice(0, 260)
+    }
+
     const users = await getUsersCollection()
     const userDoc = await users.findOne({ supabaseUserId: user.id })
     if (!userDoc?._id) {
@@ -143,6 +168,10 @@ export async function POST(req: Request) {
     if (typeof age === 'number') update.$set.age = age
     if (typeof heightCm === 'number') update.$set.heightCm = heightCm
     if (typeof bioStr === 'string') update.$set.bio = bioStr
+    if (typeof countryStr === 'string') update.$set.country = countryStr
+    if (typeof stateProvinceStr === 'string') update.$set.stateProvince = stateProvinceStr
+    if (typeof cityStr === 'string') update.$set.city = cityStr
+    if (typeof locationAnswerStr === 'string') update.$set.locationAnswer = locationAnswerStr
 
     await collection.updateOne(filter, update, { upsert: true })
     return NextResponse.json({ ok: true }, { headers })

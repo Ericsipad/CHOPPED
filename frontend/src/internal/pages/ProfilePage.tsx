@@ -3,6 +3,7 @@ import Container from '../components/Container'
 import HeroImage from '../components/HeroImage'
 import ProfileImageCard from '../components/ProfileImageCard'
 import PublicProfilePanel from '../components/PublicProfilePanel'
+import PrivateSettingsPanel from '../components/PrivateSettingsPanel'
 import '../styles/internal.css'
 import { useState } from 'react'
  
@@ -61,7 +62,7 @@ export default function ProfilePage() {
 										<PublicProfilePanel />
 									</div>
 									<div className={activeTab === 'settings' ? '' : 'is-hidden'}>
-										<div className="profile-public-panel" style={{ minHeight: 200 }} />
+										<PrivateSettingsPanel />
 									</div>
 								</div>
 							</div>

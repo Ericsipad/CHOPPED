@@ -1,5 +1,6 @@
 import Container from './Container'
 import '../styles/internal.css'
+import { fetchReadiness } from './readiness'
 
 export default function TopHeader() {
 	const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
@@ -23,6 +24,15 @@ export default function TopHeader() {
 							href="/chopping-board.html"
 							className={`internal-nav-link${isChoppingBoard ? ' is-active' : ''}`}
 							aria-current={isChoppingBoard ? 'page' : undefined}
+							onClick={async (e) => {
+								try {
+									const { ready, missing } = await fetchReadiness()
+									if (!ready) {
+										e.preventDefault()
+										alert('Complete required fields to browse: ' + missing.join(', '))
+									}
+								} catch { /* ignore */ }
+							}}
 						>
 							Chopping Board
 						</a>

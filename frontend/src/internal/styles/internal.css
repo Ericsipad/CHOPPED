@@ -243,6 +243,15 @@ html, body, #root {
 }
 
 .profile-public-panel__field { display: flex; flex-direction: column; gap: 6px; }
+
+/* Error styles for inputs/selects/textarea */
+.profile-public-panel__input--error,
+.profile-public-panel__textarea--error,
+select.profile-public-panel__input.profile-public-panel__input--error {
+    border: 1px solid rgba(255, 77, 77, 0.9) !important;
+    box-shadow: 0 0 0 1px rgba(255, 77, 77, 0.4) inset;
+}
+.profile-public-panel__label--error { color: #ff6961; }
 .profile-public-panel__field--age { margin-left: 30px; }
 .profile-public-panel__label { font-size: 12px; opacity: 0.85; }
 .profile-public-panel__input {
