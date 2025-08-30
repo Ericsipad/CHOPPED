@@ -61,12 +61,26 @@ export async function GET(req: Request) {
     const now = new Date()
     await users.updateOne(
       { supabaseUserId: user.id },
-      { $setOnInsert: { createdAt: now, supabaseUserId: user.id }, $set: { updatedAt: now } },
+      {
+        $setOnInsert: {
+          createdAt: now,
+          supabaseUserId: user.id,
+          subscription: 3, // Default subscription value
+          subscriptionUpdatedAt: now
+        },
+        $set: { updatedAt: now }
+      },
       { upsert: true },
     )
     const doc = await users.findOne({ supabaseUserId: user.id })
     const mongoUserId = doc?._id?.toString() || null
-    return NextResponse.json({ userId: mongoUserId }, { headers })
+    const subscription = doc?.subscription || 3
+    const subscriptionUpdatedAt = doc?.subscriptionUpdatedAt
+    return NextResponse.json({
+      userId: mongoUserId,
+      subscription,
+      subscriptionUpdatedAt
+    }, { headers })
   } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
