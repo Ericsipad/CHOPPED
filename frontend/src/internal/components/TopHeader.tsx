@@ -1,6 +1,5 @@
 import Container from './Container'
 import '../styles/internal.css'
-import { fetchReadiness } from './readiness'
 
 export default function TopHeader() {
 	const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
