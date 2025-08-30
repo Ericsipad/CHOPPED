@@ -171,6 +171,25 @@ html, body, #root {
 	outline-offset: 2px;
 }
 
+/* Tabs for profile sections */
+.profile-tabs__nav {
+	display: flex;
+	gap: 8px;
+	margin: 0 0 8px 0;
+}
+.profile-tabs__btn {
+	appearance: none;
+	border: 1px solid rgba(255,255,255,0.18);
+	background: rgba(255,255,255,0.06);
+	color: #ffffff;
+	border-radius: 8px;
+	padding: 8px 12px;
+	cursor: pointer;
+	font-size: 14px;
+}
+.profile-tabs__btn.is-active { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.28); }
+.profile-tabs__content { }
+
 /* Public profile panel (glass grey) */
 .profile-public-panel {
 	background: rgba(18,18,18,0.6);

@@ -4,9 +4,11 @@ import HeroImage from '../components/HeroImage'
 import ProfileImageCard from '../components/ProfileImageCard'
 import PublicProfilePanel from '../components/PublicProfilePanel'
 import '../styles/internal.css'
+import { useState } from 'react'
  
-
+ 
 export default function ProfilePage() {
+	const [activeTab, setActiveTab] = useState<'pics' | 'bio'>('pics')
 
 	return (
 		<PageFrame>
@@ -27,14 +29,31 @@ export default function ProfilePage() {
 								zIndex: 9,
 							}}
 						>
-							<ProfileImageCard />
-						</div>
-					</div>
-				</Container>
-				<Container>
-					<div style={{ marginTop: 32, display: 'flex', justifyContent: 'center' }}>
-						<div style={{ width: 'clamp(30vw, calc(-118vw + 2127px), 90vw)', maxWidth: 1100 }}>
-							<PublicProfilePanel />
+							<div style={{ width: 'clamp(30vw, calc(-118vw + 2127px), 90vw)', maxWidth: 1100 }}>
+								<div className="profile-tabs__nav">
+									<button
+										className={["profile-tabs__btn", activeTab === 'pics' ? 'is-active' : ''].filter(Boolean).join(' ')}
+										onClick={() => setActiveTab('pics')}
+										aria-pressed={activeTab === 'pics'}
+									>
+										Profile pics
+									</button>
+									<button
+										className={["profile-tabs__btn", activeTab === 'bio' ? 'is-active' : ''].filter(Boolean).join(' ')}
+										onClick={() => setActiveTab('bio')}
+										aria-pressed={activeTab === 'bio'}
+									>
+										Public BIO
+									</button>
+								</div>
+								<div className="profile-tabs__content">
+									{activeTab === 'pics' ? (
+										<ProfileImageCard />
+									) : (
+										<PublicProfilePanel />
+									)}
+								</div>
+							</div>
 						</div>
 					</div>
 				</Container>
