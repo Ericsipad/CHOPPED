@@ -64,7 +64,7 @@ export async function GET(req: Request) {
     }
 
     const collection = await getProfileMatchingCollection()
-    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string; country?: string; stateProvince?: string; city?: string; locationAnswer?: string; iam?: string; Iwant?: string; healthCondition?: string }>({ userId: userDoc._id })
+    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string; country?: string; stateProvince?: string; city?: string; locationAnswer?: string; iam?: string; Iwant?: string; healthCondition?: string; Accept_hiv?: boolean; Accept_Herpes?: boolean; Accept_Autism?: boolean; Accept_Physical_Handicap?: boolean }>({ userId: userDoc._id })
     const displayName = typeof doc?.displayName === 'string' ? doc!.displayName : null
     const age = typeof doc?.age === 'number' ? doc!.age : null
     const heightCm = typeof doc?.heightCm === 'number' ? doc!.heightCm : null
@@ -76,8 +76,12 @@ export async function GET(req: Request) {
     const iam = typeof doc?.iam === 'string' ? doc!.iam : null
     const Iwant = typeof doc?.Iwant === 'string' ? doc!.Iwant : null
     const healthCondition = typeof doc?.healthCondition === 'string' ? doc!.healthCondition : null
+    const Accept_hiv = typeof doc?.Accept_hiv === 'boolean' ? doc!.Accept_hiv : null
+    const Accept_Herpes = typeof doc?.Accept_Herpes === 'boolean' ? doc!.Accept_Herpes : null
+    const Accept_Autism = typeof doc?.Accept_Autism === 'boolean' ? doc!.Accept_Autism : null
+    const Accept_Physical_Handicap = typeof doc?.Accept_Physical_Handicap === 'boolean' ? doc!.Accept_Physical_Handicap : null
 
-    return NextResponse.json({ displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam, Iwant, healthCondition }, { headers })
+    return NextResponse.json({ displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam, Iwant, healthCondition, Accept_hiv, Accept_Herpes, Accept_Autism, Accept_Physical_Handicap }, { headers })
   } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
@@ -99,7 +103,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400, headers })
     }
 
-    let { displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam, Iwant, healthCondition } = rawBody as { displayName?: unknown; age?: unknown; heightCm?: unknown; bio?: unknown; country?: unknown; stateProvince?: unknown; city?: unknown; locationAnswer?: unknown; iam?: unknown; Iwant?: unknown; healthCondition?: unknown }
+    let { displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam, Iwant, healthCondition, Accept_hiv, Accept_Herpes, Accept_Autism, Accept_Physical_Handicap } = rawBody as { displayName?: unknown; age?: unknown; heightCm?: unknown; bio?: unknown; country?: unknown; stateProvince?: unknown; city?: unknown; locationAnswer?: unknown; iam?: unknown; Iwant?: unknown; healthCondition?: unknown; Accept_hiv?: unknown; Accept_Herpes?: unknown; Accept_Autism?: unknown; Accept_Physical_Handicap?: unknown }
 
     // Basic validation (keep simple, mirror existing style)
     if (typeof displayName !== 'string') displayName = undefined
@@ -113,8 +117,12 @@ export async function POST(req: Request) {
     if (typeof iam !== 'string') iam = undefined
     if (typeof Iwant !== 'string') Iwant = undefined
     if (typeof healthCondition !== 'string') healthCondition = undefined
+    if (typeof Accept_hiv !== 'boolean') Accept_hiv = undefined
+    if (typeof Accept_Herpes !== 'boolean') Accept_Herpes = undefined
+    if (typeof Accept_Autism !== 'boolean') Accept_Autism = undefined
+    if (typeof Accept_Physical_Handicap !== 'boolean') Accept_Physical_Handicap = undefined
 
-    if (displayName === undefined && age === undefined && heightCm === undefined && bio === undefined && country === undefined && stateProvince === undefined && city === undefined && locationAnswer === undefined && iam === undefined && Iwant === undefined && healthCondition === undefined) {
+    if (displayName === undefined && age === undefined && heightCm === undefined && bio === undefined && country === undefined && stateProvince === undefined && city === undefined && locationAnswer === undefined && iam === undefined && Iwant === undefined && healthCondition === undefined && Accept_hiv === undefined && Accept_Herpes === undefined && Accept_Autism === undefined && Accept_Physical_Handicap === undefined) {
       return NextResponse.json({ error: 'Validation error' }, { status: 400, headers })
     }
 
@@ -208,6 +216,10 @@ export async function POST(req: Request) {
     if (typeof iamStr === 'string') update.$set.iam = iamStr
     if (typeof IwantStr === 'string') update.$set.Iwant = IwantStr
     if (typeof healthConditionStr === 'string') update.$set.healthCondition = healthConditionStr
+    if (typeof Accept_hiv === 'boolean') update.$set.Accept_hiv = Accept_hiv
+    if (typeof Accept_Herpes === 'boolean') update.$set.Accept_Herpes = Accept_Herpes
+    if (typeof Accept_Autism === 'boolean') update.$set.Accept_Autism = Accept_Autism
+    if (typeof Accept_Physical_Handicap === 'boolean') update.$set.Accept_Physical_Handicap = Accept_Physical_Handicap
 
     await collection.updateOne(filter, update, { upsert: true })
     return NextResponse.json({ ok: true }, { headers })
