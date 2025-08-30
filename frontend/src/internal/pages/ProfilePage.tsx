@@ -47,11 +47,12 @@ export default function ProfilePage() {
 									</button>
 								</div>
 								<div className="profile-tabs__content">
-									{activeTab === 'pics' ? (
+									<div className={activeTab === 'pics' ? '' : 'is-hidden'}>
 										<ProfileImageCard />
-									) : (
+									</div>
+									<div className={activeTab === 'bio' ? '' : 'is-hidden'}>
 										<PublicProfilePanel />
-									)}
+									</div>
 								</div>
 							</div>
 						</div>
