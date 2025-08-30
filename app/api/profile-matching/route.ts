@@ -64,7 +64,7 @@ export async function GET(req: Request) {
     }
 
     const collection = await getProfileMatchingCollection()
-    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string; country?: string; stateProvince?: string; city?: string; locationAnswer?: string; iam?: string; Iwant?: string }>({ userId: userDoc._id })
+    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string; country?: string; stateProvince?: string; city?: string; locationAnswer?: string; iam?: string; Iwant?: string; healthCondition?: string }>({ userId: userDoc._id })
     const displayName = typeof doc?.displayName === 'string' ? doc!.displayName : null
     const age = typeof doc?.age === 'number' ? doc!.age : null
     const heightCm = typeof doc?.heightCm === 'number' ? doc!.heightCm : null
@@ -75,8 +75,9 @@ export async function GET(req: Request) {
     const locationAnswer = typeof doc?.locationAnswer === 'string' ? doc!.locationAnswer : null
     const iam = typeof doc?.iam === 'string' ? doc!.iam : null
     const Iwant = typeof doc?.Iwant === 'string' ? doc!.Iwant : null
+    const healthCondition = typeof doc?.healthCondition === 'string' ? doc!.healthCondition : null
 
-    return NextResponse.json({ displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam, Iwant }, { headers })
+    return NextResponse.json({ displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam, Iwant, healthCondition }, { headers })
   } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
@@ -98,7 +99,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400, headers })
     }
 
-    let { displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam, Iwant } = rawBody as { displayName?: unknown; age?: unknown; heightCm?: unknown; bio?: unknown; country?: unknown; stateProvince?: unknown; city?: unknown; locationAnswer?: unknown; iam?: unknown; Iwant?: unknown }
+    let { displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam, Iwant, healthCondition } = rawBody as { displayName?: unknown; age?: unknown; heightCm?: unknown; bio?: unknown; country?: unknown; stateProvince?: unknown; city?: unknown; locationAnswer?: unknown; iam?: unknown; Iwant?: unknown; healthCondition?: unknown }
 
     // Basic validation (keep simple, mirror existing style)
     if (typeof displayName !== 'string') displayName = undefined
@@ -111,8 +112,9 @@ export async function POST(req: Request) {
     if (typeof locationAnswer !== 'string') locationAnswer = undefined
     if (typeof iam !== 'string') iam = undefined
     if (typeof Iwant !== 'string') Iwant = undefined
+    if (typeof healthCondition !== 'string') healthCondition = undefined
 
-    if (displayName === undefined && age === undefined && heightCm === undefined && bio === undefined && country === undefined && stateProvince === undefined && city === undefined && locationAnswer === undefined && iam === undefined && Iwant === undefined) {
+    if (displayName === undefined && age === undefined && heightCm === undefined && bio === undefined && country === undefined && stateProvince === undefined && city === undefined && locationAnswer === undefined && iam === undefined && Iwant === undefined && healthCondition === undefined) {
       return NextResponse.json({ error: 'Validation error' }, { status: 400, headers })
     }
 
@@ -172,6 +174,15 @@ export async function POST(req: Request) {
       }
       IwantStr = trimmed
     }
+    let healthConditionStr: string | undefined
+    if (typeof healthCondition === 'string') {
+      const trimmed = healthCondition.trim().toLowerCase().slice(0, 80)
+      const allowed = new Set(['hiv', 'herpes', 'autism', 'physical_handicap'])
+      if (!allowed.has(trimmed)) {
+        return NextResponse.json({ error: 'Invalid healthCondition' }, { status: 400, headers })
+      }
+      healthConditionStr = trimmed
+    }
 
     const users = await getUsersCollection()
     const userDoc = await users.findOne({ supabaseUserId: user.id })
@@ -196,6 +207,7 @@ export async function POST(req: Request) {
     if (typeof locationAnswerStr === 'string') update.$set.locationAnswer = locationAnswerStr
     if (typeof iamStr === 'string') update.$set.iam = iamStr
     if (typeof IwantStr === 'string') update.$set.Iwant = IwantStr
+    if (typeof healthConditionStr === 'string') update.$set.healthCondition = healthConditionStr
 
     await collection.updateOne(filter, update, { upsert: true })
     return NextResponse.json({ ok: true }, { headers })

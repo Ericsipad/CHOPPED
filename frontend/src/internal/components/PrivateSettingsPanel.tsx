@@ -38,6 +38,7 @@ export default function PrivateSettingsPanel() {
   const [cityName, setCityName] = useState('')
   const [iam, setIam] = useState<'straight_man' | 'gay_man' | 'straight_woman' | 'gay_woman' | ''>('')
   const [Iwant, setIwant] = useState<'straight_man' | 'gay_man' | 'straight_woman' | 'gay_woman' | ''>('')
+  const [healthCondition, setHealthCondition] = useState<'' | 'hiv' | 'herpes' | 'autism' | 'physical_handicap'>('')
 
   const isValid = useMemo(() => {
     return countryCode.trim().length > 0
@@ -55,7 +56,7 @@ export default function PrivateSettingsPanel() {
       try {
         const res = await fetch(getBackendApi('/api/profile-matching'), { credentials: 'include' })
         if (res.ok) {
-          const data = await res.json().catch(() => null) as { country?: string | null; stateProvince?: string | null; city?: string | null; iam?: string | null; Iwant?: string | null }
+          const data = await res.json().catch(() => null) as { country?: string | null; stateProvince?: string | null; city?: string | null; iam?: string | null; Iwant?: string | null; healthCondition?: string | null }
           if (!cancelled && data) {
             const initialCountryIso = toCountryIso(typeof data.country === 'string' ? data.country : '')
             const initialStateIso = toStateIso(initialCountryIso, typeof data.stateProvince === 'string' ? data.stateProvince : '')
@@ -64,6 +65,7 @@ export default function PrivateSettingsPanel() {
             setCityName(typeof data.city === 'string' ? data.city : '')
             setIam(typeof data.iam === 'string' ? (data.iam as any) : '')
             setIwant(typeof data.Iwant === 'string' ? (data.Iwant as any) : '')
+            setHealthCondition(typeof data.healthCondition === 'string' ? (data.healthCondition as any) : '')
           }
         }
       } catch (e) {
@@ -115,6 +117,7 @@ export default function PrivateSettingsPanel() {
         locationAnswer,
         ...(iam ? { iam } : {}),
         ...(Iwant ? { Iwant } : {}),
+        ...(healthCondition ? { healthCondition } : {}),
       }
       const res = await fetch(getBackendApi('/api/profile-matching'), {
         method: 'POST',
@@ -228,6 +231,24 @@ export default function PrivateSettingsPanel() {
           <button type="button" className={["profile-iam__option", Iwant === 'gay_woman' ? 'is-selected' : '', 'profile-iam__option--female'].filter(Boolean).join(' ')} aria-pressed={Iwant === 'gay_woman'} onClick={() => setIwant('gay_woman')}>
             <span className="profile-iam__icon" aria-hidden>⚢</span>
             <span className="profile-iam__label">Gay Woman</span>
+          </button>
+        </div>
+      </fieldset>
+
+      <fieldset className="profile-iam" aria-label="Health status">
+        <legend className="profile-iam__legend">Health status: We prioritize matching for these selections</legend>
+        <div className="profile-iam__grid" role="radiogroup" aria-label="Health status">
+          <button type="button" className={["profile-iam__option", healthCondition === 'hiv' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'hiv'} onClick={() => setHealthCondition('hiv')}>
+            <span className="profile-iam__label">HIV</span>
+          </button>
+          <button type="button" className={["profile-iam__option", healthCondition === 'herpes' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'herpes'} onClick={() => setHealthCondition('herpes')}>
+            <span className="profile-iam__label">Herpes</span>
+          </button>
+          <button type="button" className={["profile-iam__option", healthCondition === 'autism' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'autism'} onClick={() => setHealthCondition('autism')}>
+            <span className="profile-iam__label">Autism</span>
+          </button>
+          <button type="button" className={["profile-iam__option", healthCondition === 'physical_handicap' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={healthCondition === 'physical_handicap'} onClick={() => setHealthCondition('physical_handicap')}>
+            <span className="profile-iam__label">Physical Handicap</span>
           </button>
         </div>
       </fieldset>
