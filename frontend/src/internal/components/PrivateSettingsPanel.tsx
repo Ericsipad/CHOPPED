@@ -2,6 +2,16 @@ import { useEffect, useMemo, useState } from 'react'
 import ValidationModal from './ValidationModal'
 import { fetchReadiness } from './readiness'
 import { getBackendApi } from '../../lib/config'
+import {
+  getCountries,
+  getStates,
+  getCities,
+  toCountryName,
+  toStateName,
+  toCountryIso,
+  toStateIso,
+  type Option,
+} from '../../lib/location-utils'
 
 function EyeOffIcon(props: { size?: number }) {
   const size = props.size ?? 18
@@ -14,10 +24,6 @@ function EyeOffIcon(props: { size?: number }) {
   )
 }
 
-type Country = { code: string; name: string }
-type StateItem = { code: string; name: string }
-type CityItem = { name: string }
-
 export default function PrivateSettingsPanel() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -27,10 +33,6 @@ export default function PrivateSettingsPanel() {
   const [missingFields, setMissingFields] = useState<string[]>([])
   const [errors, setErrors] = useState<{ country?: boolean }>({})
 
-  const [countries, setCountries] = useState<Country[]>([])
-  const [statesByCountry, setStatesByCountry] = useState<Record<string, StateItem[]>>({})
-  const [citiesByState, setCitiesByState] = useState<Record<string, CityItem[]>>({})
-
   const [countryCode, setCountryCode] = useState('')
   const [stateCode, setStateCode] = useState('')
   const [cityName, setCityName] = useState('')
@@ -39,16 +41,9 @@ export default function PrivateSettingsPanel() {
     return countryCode.trim().length > 0
   }, [countryCode])
 
-  const states = useMemo(() => {
-    if (!countryCode) return []
-    return statesByCountry[countryCode] || []
-  }, [statesByCountry, countryCode])
-
-  const cities = useMemo(() => {
-    if (!countryCode) return []
-    const key = `${countryCode}__${stateCode || ''}`
-    return citiesByState[key] || []
-  }, [citiesByState, countryCode, stateCode])
+  const countries: Option[] = useMemo(() => getCountries(), [])
+  const states: Option[] = useMemo(() => getStates(countryCode), [countryCode])
+  const cities: Option[] = useMemo(() => getCities(countryCode, stateCode), [countryCode, stateCode])
 
   useEffect(() => {
     let cancelled = false
@@ -56,22 +51,14 @@ export default function PrivateSettingsPanel() {
       setLoading(true)
       setError(null)
       try {
-        const resMap = await fetch(getBackendApi('/api/mapset'), { credentials: 'include' })
-        if (resMap.ok) {
-          const data = await resMap.json().catch(() => null) as { countries?: Country[]; statesByCountry?: Record<string, StateItem[]>; citiesByState?: Record<string, CityItem[]> }
-          if (!cancelled && data) {
-            setCountries(Array.isArray(data.countries) ? data.countries : [])
-            setStatesByCountry(typeof data.statesByCountry === 'object' && data.statesByCountry ? data.statesByCountry : {})
-            setCitiesByState(typeof data.citiesByState === 'object' && data.citiesByState ? data.citiesByState : {})
-          }
-        }
-
         const res = await fetch(getBackendApi('/api/profile-matching'), { credentials: 'include' })
         if (res.ok) {
           const data = await res.json().catch(() => null) as { country?: string | null; stateProvince?: string | null; city?: string | null }
           if (!cancelled && data) {
-            setCountryCode(typeof data.country === 'string' ? data.country : '')
-            setStateCode(typeof data.stateProvince === 'string' ? data.stateProvince : '')
+            const initialCountryIso = toCountryIso(typeof data.country === 'string' ? data.country : '')
+            const initialStateIso = toStateIso(initialCountryIso, typeof data.stateProvince === 'string' ? data.stateProvince : '')
+            setCountryCode(initialCountryIso)
+            setStateCode(initialStateIso)
             setCityName(typeof data.city === 'string' ? data.city : '')
           }
         }
@@ -111,15 +98,15 @@ export default function PrivateSettingsPanel() {
         throw new Error('Validation error')
       }
 
-      const countryName = (countries.find((c) => c.code === countryCode)?.name || countryCode).trim()
-      const stateName = (states.find((s) => s.code === stateCode)?.name || stateCode).trim()
+      const countryName = toCountryName(countryCode).trim() || countryCode.trim()
+      const stateName = toStateName(countryCode, stateCode).trim() || stateCode.trim()
       const city = (cityName || '').trim()
       const parts = [city, stateName, countryName].filter((x) => !!x)
       const locationAnswer = parts.join(', ')
 
       const body: Record<string, unknown> = {
-        country: countryCode,
-        stateProvince: stateCode,
+        country: countryName,
+        stateProvince: stateName,
         city,
         locationAnswer,
       }
@@ -171,7 +158,7 @@ export default function PrivateSettingsPanel() {
           <select id="country" className={["profile-public-panel__input", "profile-public-panel__input--wide", errors.country ? 'profile-public-panel__input--error' : ''].filter(Boolean).join(' ')} value={countryCode} onChange={(e) => { onChangeCountry(e.target.value); if (errors.country) setErrors((p) => ({ ...p, country: false })) }}>
             <option value="">Select country</option>
             {countries.map((c) => (
-              <option key={c.code || c.name} value={c.code || c.name}>{c.name}</option>
+              <option key={c.value} value={c.value}>{c.label}</option>
             ))}
           </select>
         </div>
@@ -180,16 +167,16 @@ export default function PrivateSettingsPanel() {
           <select id="state" className="profile-public-panel__input profile-public-panel__input--wide" value={stateCode} onChange={(e) => onChangeState(e.target.value)} disabled={!countryCode}>
             <option value="">Select state/province (optional)</option>
             {states.map((s) => (
-              <option key={(s.code || s.name) + s.name} value={s.code || s.name}>{s.name}</option>
+              <option key={s.value} value={s.value}>{s.label}</option>
             ))}
           </select>
         </div>
         <div className="profile-public-panel__field">
           <label className="profile-public-panel__label" htmlFor="city">City</label>
-          <select id="city" className="profile-public-panel__input profile-public-panel__input--wide" value={cityName} onChange={(e) => setCityName(e.target.value)} disabled={!countryCode}>
+          <select id="city" className="profile-public-panel__input profile-public-panel__input--wide" value={cityName} onChange={(e) => setCityName(e.target.value)} disabled={!countryCode || !stateCode}>
             <option value="">Select city (optional)</option>
             {cities.map((c) => (
-              <option key={c.name} value={c.name}>{c.name}</option>
+              <option key={c.value} value={c.value}>{c.label}</option>
             ))}
           </select>
         </div>
