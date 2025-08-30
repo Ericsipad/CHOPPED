@@ -64,7 +64,7 @@ export async function GET(req: Request) {
     }
 
     const collection = await getProfileMatchingCollection()
-    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string; country?: string; stateProvince?: string; city?: string; locationAnswer?: string; iam?: string }>({ userId: userDoc._id })
+    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string; country?: string; stateProvince?: string; city?: string; locationAnswer?: string; iam?: string; Iwant?: string }>({ userId: userDoc._id })
     const displayName = typeof doc?.displayName === 'string' ? doc!.displayName : null
     const age = typeof doc?.age === 'number' ? doc!.age : null
     const heightCm = typeof doc?.heightCm === 'number' ? doc!.heightCm : null
@@ -74,8 +74,9 @@ export async function GET(req: Request) {
     const city = typeof doc?.city === 'string' ? doc!.city : null
     const locationAnswer = typeof doc?.locationAnswer === 'string' ? doc!.locationAnswer : null
     const iam = typeof doc?.iam === 'string' ? doc!.iam : null
+    const Iwant = typeof doc?.Iwant === 'string' ? doc!.Iwant : null
 
-    return NextResponse.json({ displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam }, { headers })
+    return NextResponse.json({ displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam, Iwant }, { headers })
   } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
@@ -97,7 +98,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400, headers })
     }
 
-    let { displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam } = rawBody as { displayName?: unknown; age?: unknown; heightCm?: unknown; bio?: unknown; country?: unknown; stateProvince?: unknown; city?: unknown; locationAnswer?: unknown; iam?: unknown }
+    let { displayName, age, heightCm, bio, country, stateProvince, city, locationAnswer, iam, Iwant } = rawBody as { displayName?: unknown; age?: unknown; heightCm?: unknown; bio?: unknown; country?: unknown; stateProvince?: unknown; city?: unknown; locationAnswer?: unknown; iam?: unknown; Iwant?: unknown }
 
     // Basic validation (keep simple, mirror existing style)
     if (typeof displayName !== 'string') displayName = undefined
@@ -109,8 +110,9 @@ export async function POST(req: Request) {
     if (typeof city !== 'string') city = undefined
     if (typeof locationAnswer !== 'string') locationAnswer = undefined
     if (typeof iam !== 'string') iam = undefined
+    if (typeof Iwant !== 'string') Iwant = undefined
 
-    if (displayName === undefined && age === undefined && heightCm === undefined && bio === undefined && country === undefined && stateProvince === undefined && city === undefined && locationAnswer === undefined && iam === undefined) {
+    if (displayName === undefined && age === undefined && heightCm === undefined && bio === undefined && country === undefined && stateProvince === undefined && city === undefined && locationAnswer === undefined && iam === undefined && Iwant === undefined) {
       return NextResponse.json({ error: 'Validation error' }, { status: 400, headers })
     }
 
@@ -161,6 +163,15 @@ export async function POST(req: Request) {
       }
       iamStr = trimmed
     }
+    let IwantStr: string | undefined
+    if (typeof Iwant === 'string') {
+      const trimmed = Iwant.trim().slice(0, 80)
+      const allowed = new Set(['straight_man', 'gay_man', 'straight_woman', 'gay_woman'])
+      if (!allowed.has(trimmed)) {
+        return NextResponse.json({ error: 'Invalid Iwant' }, { status: 400, headers })
+      }
+      IwantStr = trimmed
+    }
 
     const users = await getUsersCollection()
     const userDoc = await users.findOne({ supabaseUserId: user.id })
@@ -184,6 +195,7 @@ export async function POST(req: Request) {
     if (typeof cityStr === 'string') update.$set.city = cityStr
     if (typeof locationAnswerStr === 'string') update.$set.locationAnswer = locationAnswerStr
     if (typeof iamStr === 'string') update.$set.iam = iamStr
+    if (typeof IwantStr === 'string') update.$set.Iwant = IwantStr
 
     await collection.updateOne(filter, update, { upsert: true })
     return NextResponse.json({ ok: true }, { headers })

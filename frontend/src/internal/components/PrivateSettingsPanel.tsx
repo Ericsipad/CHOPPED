@@ -37,6 +37,7 @@ export default function PrivateSettingsPanel() {
   const [stateCode, setStateCode] = useState('')
   const [cityName, setCityName] = useState('')
   const [iam, setIam] = useState<'straight_man' | 'gay_man' | 'straight_woman' | 'gay_woman' | ''>('')
+  const [Iwant, setIwant] = useState<'straight_man' | 'gay_man' | 'straight_woman' | 'gay_woman' | ''>('')
 
   const isValid = useMemo(() => {
     return countryCode.trim().length > 0
@@ -54,7 +55,7 @@ export default function PrivateSettingsPanel() {
       try {
         const res = await fetch(getBackendApi('/api/profile-matching'), { credentials: 'include' })
         if (res.ok) {
-          const data = await res.json().catch(() => null) as { country?: string | null; stateProvince?: string | null; city?: string | null; iam?: string | null }
+          const data = await res.json().catch(() => null) as { country?: string | null; stateProvince?: string | null; city?: string | null; iam?: string | null; Iwant?: string | null }
           if (!cancelled && data) {
             const initialCountryIso = toCountryIso(typeof data.country === 'string' ? data.country : '')
             const initialStateIso = toStateIso(initialCountryIso, typeof data.stateProvince === 'string' ? data.stateProvince : '')
@@ -62,6 +63,7 @@ export default function PrivateSettingsPanel() {
             setStateCode(initialStateIso)
             setCityName(typeof data.city === 'string' ? data.city : '')
             setIam(typeof data.iam === 'string' ? (data.iam as any) : '')
+            setIwant(typeof data.Iwant === 'string' ? (data.Iwant as any) : '')
           }
         }
       } catch (e) {
@@ -112,6 +114,7 @@ export default function PrivateSettingsPanel() {
         city,
         locationAnswer,
         ...(iam ? { iam } : {}),
+        ...(Iwant ? { Iwant } : {}),
       }
       const res = await fetch(getBackendApi('/api/profile-matching'), {
         method: 'POST',
@@ -201,6 +204,28 @@ export default function PrivateSettingsPanel() {
             <span className="profile-iam__label">Straight Woman</span>
           </button>
           <button type="button" className={["profile-iam__option", iam === 'gay_woman' ? 'is-selected' : '', 'profile-iam__option--female'].filter(Boolean).join(' ')} aria-pressed={iam === 'gay_woman'} onClick={() => setIam('gay_woman')}>
+            <span className="profile-iam__icon" aria-hidden>⚢</span>
+            <span className="profile-iam__label">Gay Woman</span>
+          </button>
+        </div>
+      </fieldset>
+
+      <fieldset className="profile-iam" aria-label="I'm Searching For">
+        <legend className="profile-iam__legend">I'm Searching For</legend>
+        <div className="profile-iam__grid" role="radiogroup" aria-label="I'm Searching For">
+          <button type="button" className={["profile-iam__option", Iwant === 'straight_man' ? 'is-selected' : '', 'profile-iam__option--male'].filter(Boolean).join(' ')} aria-pressed={Iwant === 'straight_man'} onClick={() => setIwant('straight_man')}>
+            <span className="profile-iam__icon" aria-hidden>♂</span>
+            <span className="profile-iam__label">Straight Man</span>
+          </button>
+          <button type="button" className={["profile-iam__option", Iwant === 'gay_man' ? 'is-selected' : '', 'profile-iam__option--male'].filter(Boolean).join(' ')} aria-pressed={Iwant === 'gay_man'} onClick={() => setIwant('gay_man')}>
+            <span className="profile-iam__icon" aria-hidden>⚣</span>
+            <span className="profile-iam__label">Gay Man</span>
+          </button>
+          <button type="button" className={["profile-iam__option", Iwant === 'straight_woman' ? 'is-selected' : '', 'profile-iam__option--female'].filter(Boolean).join(' ')} aria-pressed={Iwant === 'straight_woman'} onClick={() => setIwant('straight_woman')}>
+            <span className="profile-iam__icon" aria-hidden>♀</span>
+            <span className="profile-iam__label">Straight Woman</span>
+          </button>
+          <button type="button" className={["profile-iam__option", Iwant === 'gay_woman' ? 'is-selected' : '', 'profile-iam__option--female'].filter(Boolean).join(' ')} aria-pressed={Iwant === 'gay_woman'} onClick={() => setIwant('gay_woman')}>
             <span className="profile-iam__icon" aria-hidden>⚢</span>
             <span className="profile-iam__label">Gay Woman</span>
           </button>
