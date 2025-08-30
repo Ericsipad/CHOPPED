@@ -113,7 +113,7 @@ export async function GET(req: Request) {
   try {
     const data = await loadOrCreateDataset()
     return NextResponse.json(data, { headers })
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
 }
