@@ -7,12 +7,14 @@ import { fetchReadiness } from '../components/readiness'
 import { useEffect, useState } from 'react'
 import '../styles/internal.css'
 import { fetchUserMatchArray, type MatchSlot } from '../../lib/matches'
+import { getBackendApi } from '../../lib/config'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
     const [missingFields, setMissingFields] = useState<string[]>([])
     const [viewCount, setViewCount] = useState<10 | 25 | 50>(10)
     const [slots, setSlots] = useState<Array<MatchSlot | null>>([])
+    const [subscription, setSubscription] = useState<number>(0)
 
     useEffect(() => {
         let cancelled = false
@@ -22,6 +24,21 @@ export default function ChoppingBoardPage() {
                 if (!cancelled && !ready) {
                     setMissingFields(missing)
                     setModalOpen(true)
+                }
+                // Fetch subscription after readiness
+                if (!cancelled) {
+                    try {
+                        const res = await fetch(getBackendApi('/api/user/me'), { credentials: 'include' })
+                        if (res.ok) {
+                            const data = await res.json().catch(() => null) as { subscription?: number }
+                            const sub = typeof data?.subscription === 'number' ? data.subscription : 3
+                            if (!cancelled) setSubscription(sub)
+                        } else {
+                            if (!cancelled) setSubscription(3)
+                        }
+                    } catch {
+                        if (!cancelled) setSubscription(3)
+                    }
                 }
                 if (!cancelled) {
                     const s = await fetchUserMatchArray()
@@ -45,8 +62,13 @@ export default function ChoppingBoardPage() {
 			url: slot?.mainImageUrl || placeholderUrl,
 			alt: `profile ${i + 1}`,
 			status: slot?.matchStatus ?? null,
+			hasProfile: slot !== null,
 		}
 	})
+	const activeSlotsCount = Math.min(50, Math.max(0, subscription || 0))
+	const handleCardClick = (index: number) => {
+		console.log('Active card clicked:', index)
+	}
 	return (
 		<PageFrame>
 			<div>
@@ -93,7 +115,7 @@ export default function ChoppingBoardPage() {
 
 								{/* Centered grid */}
 								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-									<ProfileGrid images={images} viewCount={viewCount} />
+									<ProfileGrid images={images} viewCount={viewCount} activeSlotsCount={activeSlotsCount} onCardClick={handleCardClick} />
 								</div>
 							</div>
 						</div>
