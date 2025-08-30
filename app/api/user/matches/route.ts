@@ -62,7 +62,7 @@ export async function GET(req: Request) {
     }
 
     const users = await getUsersCollection()
-    const userDoc = await users.findOne<{ Match_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
+    const userDoc = await users.findOne<{ _id?: unknown; Match_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
     if (!userDoc?._id) {
       return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
     }
