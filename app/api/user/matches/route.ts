@@ -47,6 +47,7 @@ export async function OPTIONS(req: Request) {
 }
 
 type RawMatch = { matchedUserId?: unknown; mainImageUrl?: unknown; matchStatus?: unknown } | null | undefined
+type RawMatchAlt = { userId?: unknown; imageUrl?: unknown; status?: unknown } | null | undefined
 type MatchSlot = { matchedUserId: string; mainImageUrl: string; matchStatus: 'yes' | 'pending' | 'chopped' }
 
 export async function GET(req: Request) {
@@ -70,11 +71,11 @@ export async function GET(req: Request) {
     const limit = 50
     const slots: Array<MatchSlot | null> = new Array(limit).fill(null)
     for (let i = 0; i < Math.min(raw.length, limit); i++) {
-      const entry = raw[i]
+      const entry = raw[i] as RawMatch | RawMatchAlt
       if (!entry || typeof entry !== 'object') { continue }
-      const matchedUserId = typeof entry.matchedUserId === 'string' ? entry.matchedUserId : (typeof (entry as any).userId === 'string' ? (entry as any).userId : '')
-      const mainImageUrl = typeof entry.mainImageUrl === 'string' ? entry.mainImageUrl : (typeof (entry as any).imageUrl === 'string' ? (entry as any).imageUrl : '')
-      const statusRaw = typeof entry.matchStatus === 'string' ? entry.matchStatus : (typeof (entry as any).status === 'string' ? (entry as any).status : '')
+      const matchedUserId = typeof (entry as RawMatch).matchedUserId === 'string' ? (entry as RawMatch).matchedUserId : (typeof (entry as RawMatchAlt).userId === 'string' ? (entry as RawMatchAlt).userId : '')
+      const mainImageUrl = typeof (entry as RawMatch).mainImageUrl === 'string' ? (entry as RawMatch).mainImageUrl : (typeof (entry as RawMatchAlt).imageUrl === 'string' ? (entry as RawMatchAlt).imageUrl : '')
+      const statusRaw = typeof (entry as RawMatch).matchStatus === 'string' ? (entry as RawMatch).matchStatus : (typeof (entry as RawMatchAlt).status === 'string' ? (entry as RawMatchAlt).status : '')
       const statusLc = statusRaw.toLowerCase()
       const matchStatus = (statusLc === 'yes' || statusLc === 'pending' || statusLc === 'chopped') ? statusLc as MatchSlot['matchStatus'] : null
       if (matchedUserId && mainImageUrl && matchStatus) {
