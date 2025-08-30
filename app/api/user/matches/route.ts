@@ -50,6 +50,17 @@ type RawMatch = { matchedUserId?: unknown; mainImageUrl?: unknown; matchStatus?:
 type RawMatchAlt = { userId?: unknown; imageUrl?: unknown; status?: unknown } | null | undefined
 type MatchSlot = { matchedUserId: string; mainImageUrl: string; matchStatus: 'yes' | 'pending' | 'chopped' }
 
+// Helper function to safely extract string values
+function getStringValue(obj: unknown, primaryKey: string, fallbackKey: string): string {
+  if (obj && typeof obj === 'object' && obj !== null) {
+    const primary = (obj as Record<string, unknown>)[primaryKey]
+    if (typeof primary === 'string') return primary
+    const fallback = (obj as Record<string, unknown>)[fallbackKey]
+    if (typeof fallback === 'string') return fallback
+  }
+  return ''
+}
+
 export async function GET(req: Request) {
   const allowedOrigins = getAllowedOrigins()
   const requestOrigin = req.headers.get('origin')
@@ -73,11 +84,15 @@ export async function GET(req: Request) {
     for (let i = 0; i < Math.min(raw.length, limit); i++) {
       const entry = raw[i] as RawMatch | RawMatchAlt
       if (!entry || typeof entry !== 'object') { continue }
-      const matchedUserId = typeof (entry! as RawMatch).matchedUserId === 'string' ? (entry! as RawMatch).matchedUserId : (typeof (entry! as RawMatchAlt).userId === 'string' ? (entry! as RawMatchAlt).userId : '')
-      const mainImageUrl = typeof (entry! as RawMatch).mainImageUrl === 'string' ? (entry! as RawMatch).mainImageUrl : (typeof (entry! as RawMatchAlt).imageUrl === 'string' ? (entry! as RawMatchAlt).imageUrl : '')
-      const statusRaw = typeof (entry! as RawMatch).matchStatus === 'string' ? (entry! as RawMatch).matchStatus : (typeof (entry! as RawMatchAlt).status === 'string' ? (entry! as RawMatchAlt).status : '')
+
+      // Extract values safely with fallback to alternative property names
+      const matchedUserId = getStringValue(entry, 'matchedUserId', 'userId')
+      const mainImageUrl = getStringValue(entry, 'mainImageUrl', 'imageUrl')
+      const statusRaw = getStringValue(entry, 'matchStatus', 'status')
+
       const statusLc = statusRaw.toLowerCase()
       const matchStatus = (statusLc === 'yes' || statusLc === 'pending' || statusLc === 'chopped') ? statusLc as MatchSlot['matchStatus'] : null
+
       if (matchedUserId && mainImageUrl && matchStatus) {
         slots[i] = { matchedUserId, mainImageUrl, matchStatus }
       } else {
