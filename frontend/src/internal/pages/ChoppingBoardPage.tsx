@@ -10,6 +10,7 @@ import '../styles/internal.css'
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
     const [missingFields, setMissingFields] = useState<string[]>([])
+    const [viewCount, setViewCount] = useState<10 | 25 | 50>(10)
 
     useEffect(() => {
         let cancelled = false
@@ -30,8 +31,8 @@ export default function ChoppingBoardPage() {
         })()
         return () => { cancelled = true }
     }, [])
-	// Fixed filler images for wobble cards (2x5 grid)
-	const images = new Array(10).fill(null).map((_, i) => ({
+	// Placeholder images (supports up to 50)
+	const images = new Array(50).fill(null).map((_, i) => ({
 		url: `https://picsum.photos/seed/chopped-${i}/600/600`,
 		alt: `profile ${i + 1}`,
 	}))
@@ -48,13 +49,42 @@ export default function ChoppingBoardPage() {
 								left: 0,
 								right: 0,
 								bottom: 0,
-								display: 'flex',
-								justifyContent: 'center',
-								alignItems: 'center',
 								zIndex: 9,
 							}}
 						>
-							<ProfileGrid images={images} />
+							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
+								{/* Glass toggle buttons - top-left */}
+								<div style={{ position: 'absolute', top: 8, left: 12, zIndex: 10 }}>
+									<div className="profile-tabs__nav">
+										<button
+											className={["profile-tabs__btn", viewCount === 10 ? 'is-active' : ''].filter(Boolean).join(' ')}
+											onClick={() => setViewCount(10)}
+											aria-pressed={viewCount === 10}
+										>
+											10
+										</button>
+										<button
+											className={["profile-tabs__btn", viewCount === 25 ? 'is-active' : ''].filter(Boolean).join(' ')}
+											onClick={() => setViewCount(25)}
+											aria-pressed={viewCount === 25}
+										>
+											25
+										</button>
+										<button
+											className={["profile-tabs__btn", viewCount === 50 ? 'is-active' : ''].filter(Boolean).join(' ')}
+											onClick={() => setViewCount(50)}
+											aria-pressed={viewCount === 50}
+										>
+											50
+										</button>
+									</div>
+								</div>
+
+								{/* Centered grid */}
+								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+									<ProfileGrid images={images} viewCount={viewCount} />
+								</div>
+							</div>
 						</div>
 					</div>
 				</Container>
