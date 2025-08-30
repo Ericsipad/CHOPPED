@@ -39,7 +39,10 @@ export default function PrivateSettingsPanel() {
   const [iam, setIam] = useState<'straight_man' | 'gay_man' | 'straight_woman' | 'gay_woman' | ''>('')
   const [Iwant, setIwant] = useState<'straight_man' | 'gay_man' | 'straight_woman' | 'gay_woman' | ''>('')
   const [healthCondition, setHealthCondition] = useState<'' | 'hiv' | 'herpes' | 'autism' | 'physical_handicap'>('')
-  const [acceptCondition, setAcceptCondition] = useState<'' | 'hiv' | 'herpes' | 'autism' | 'physical_handicap'>('')
+  const [acceptHiv, setAcceptHiv] = useState(false)
+  const [acceptHerpes, setAcceptHerpes] = useState(false)
+  const [acceptAutism, setAcceptAutism] = useState(false)
+  const [acceptPhysicalHandicap, setAcceptPhysicalHandicap] = useState(false)
 
   const isValid = useMemo(() => {
     return countryCode.trim().length > 0
@@ -67,12 +70,11 @@ export default function PrivateSettingsPanel() {
             setIam(typeof data.iam === 'string' ? (data.iam as any) : '')
             setIwant(typeof data.Iwant === 'string' ? (data.Iwant as any) : '')
             setHealthCondition(typeof data.healthCondition === 'string' ? (data.healthCondition as any) : '')
-            // Accept_* come as booleans; map to a single-selection value or '' if none
-            if (data.Accept_hiv) setAcceptCondition('hiv')
-            else if (data.Accept_Herpes) setAcceptCondition('herpes')
-            else if (data.Accept_Autism) setAcceptCondition('autism')
-            else if (data.Accept_Physical_Handicap) setAcceptCondition('physical_handicap')
-            else setAcceptCondition('')
+            // Accept_* booleans: default to false when null/undefined
+            setAcceptHiv(!!data.Accept_hiv)
+            setAcceptHerpes(!!data.Accept_Herpes)
+            setAcceptAutism(!!data.Accept_Autism)
+            setAcceptPhysicalHandicap(!!data.Accept_Physical_Handicap)
           }
         }
       } catch (e) {
@@ -125,19 +127,11 @@ export default function PrivateSettingsPanel() {
         ...(iam ? { iam } : {}),
         ...(Iwant ? { Iwant } : {}),
         ...(healthCondition ? { healthCondition } : {}),
-        // Accept_* are stored as booleans in DB; derive from single-select acceptCondition
-        ...(acceptCondition ? {
-          Accept_hiv: acceptCondition === 'hiv',
-          Accept_Herpes: acceptCondition === 'herpes',
-          Accept_Autism: acceptCondition === 'autism',
-          Accept_Physical_Handicap: acceptCondition === 'physical_handicap',
-        } : {
-          // Explicitly clear if user deselected
-          Accept_hiv: false,
-          Accept_Herpes: false,
-          Accept_Autism: false,
-          Accept_Physical_Handicap: false,
-        }),
+        // Accept_* are stored as booleans in DB; send four independent toggles
+        Accept_hiv: !!acceptHiv,
+        Accept_Herpes: !!acceptHerpes,
+        Accept_Autism: !!acceptAutism,
+        Accept_Physical_Handicap: !!acceptPhysicalHandicap,
       }
       const res = await fetch(getBackendApi('/api/profile-matching'), {
         method: 'POST',
@@ -275,17 +269,17 @@ export default function PrivateSettingsPanel() {
 
       <fieldset className="profile-iam" aria-label="I will accept a partner with">
         <legend className="profile-iam__legend">I will accept a partner with:</legend>
-        <div className="profile-iam__grid" role="radiogroup" aria-label="I will accept a partner with">
-          <button type="button" className={["profile-iam__option", acceptCondition === 'hiv' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={acceptCondition === 'hiv'} onClick={() => setAcceptCondition(acceptCondition === 'hiv' ? '' : 'hiv')}>
+        <div className="profile-iam__grid" role="group" aria-label="I will accept a partner with">
+          <button type="button" className={["profile-iam__option", acceptHiv ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={acceptHiv} onClick={() => setAcceptHiv((v) => !v)}>
             <span className="profile-iam__label">HIV</span>
           </button>
-          <button type="button" className={["profile-iam__option", acceptCondition === 'herpes' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={acceptCondition === 'herpes'} onClick={() => setAcceptCondition(acceptCondition === 'herpes' ? '' : 'herpes')}>
+          <button type="button" className={["profile-iam__option", acceptHerpes ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={acceptHerpes} onClick={() => setAcceptHerpes((v) => !v)}>
             <span className="profile-iam__label">Herpes</span>
           </button>
-          <button type="button" className={["profile-iam__option", acceptCondition === 'autism' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={acceptCondition === 'autism'} onClick={() => setAcceptCondition(acceptCondition === 'autism' ? '' : 'autism')}>
+          <button type="button" className={["profile-iam__option", acceptAutism ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={acceptAutism} onClick={() => setAcceptAutism((v) => !v)}>
             <span className="profile-iam__label">Autism</span>
           </button>
-          <button type="button" className={["profile-iam__option", acceptCondition === 'physical_handicap' ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={acceptCondition === 'physical_handicap'} onClick={() => setAcceptCondition(acceptCondition === 'physical_handicap' ? '' : 'physical_handicap')}>
+          <button type="button" className={["profile-iam__option", acceptPhysicalHandicap ? 'is-selected' : ''].filter(Boolean).join(' ')} aria-pressed={acceptPhysicalHandicap} onClick={() => setAcceptPhysicalHandicap((v) => !v)}>
             <span className="profile-iam__label">Physical Handicap</span>
           </button>
         </div>
