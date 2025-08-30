@@ -281,3 +281,34 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	resize: vertical;
 }
 .profile-public-panel__counter { font-size: 12px; opacity: 0.7; text-align: right; }
+
+/* IAM selection */
+.profile-iam { margin-top: 16px; border: none; padding: 0; }
+.profile-iam__legend { font-size: 14px; font-weight: 600; opacity: 0.95; margin-bottom: 8px; }
+.profile-iam__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+.profile-iam__option {
+    appearance: none;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.35);
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 16px 12px;
+    cursor: pointer;
+    text-align: center;
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05) inset;
+}
+.profile-iam__option:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }
+.profile-iam__option.is-selected {
+    border-color: rgba(76, 255, 137, 0.9);
+    box-shadow: 0 0 0 2px rgba(76, 255, 137, 0.5), 0 0 18px rgba(76, 255, 137, 0.45);
+}
+.profile-iam__icon { display: block; font-size: 28px; line-height: 1; margin-bottom: 8px; }
+.profile-iam__label { display: block; font-size: 13px; opacity: 0.95; }
+.profile-iam__option--male .profile-iam__icon, .profile-iam__option--male .profile-iam__label { color: #5AA6FF; }
+.profile-iam__option--female .profile-iam__icon, .profile-iam__option--female .profile-iam__label { color: #FF5ACD; }
