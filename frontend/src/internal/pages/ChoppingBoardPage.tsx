@@ -7,6 +7,7 @@ import { fetchReadiness } from '../components/readiness'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import '../styles/internal.css'
 import { fetchUserMatchArray, type MatchSlot } from '../../lib/matches'
+import MatchProfileModal from '../components/MatchProfileModal'
 import { getBackendApi } from '../../lib/config'
 
 export default function ChoppingBoardPage() {
@@ -19,6 +20,8 @@ export default function ChoppingBoardPage() {
     const [searchMessageIndex, setSearchMessageIndex] = useState(0)
     const searchIntervalRef = useRef<number | null>(null)
     const searchInFlightRef = useRef(false)
+    const [profileModalOpen, setProfileModalOpen] = useState(false)
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
 
     useEffect(() => {
         let cancelled = false
@@ -116,6 +119,12 @@ export default function ChoppingBoardPage() {
 		// Whole active empty card triggers the gate
 		if (!hasProfile) {
 			triggerMatchSearchFlow()
+		} else {
+			const slot = slots[index]
+			if (slot && typeof slot.matchedUserId === 'string') {
+				setSelectedUserId(slot.matchedUserId)
+				setProfileModalOpen(true)
+			}
 		}
 	}
 	return (
@@ -192,6 +201,13 @@ export default function ChoppingBoardPage() {
 					</div>
 					<style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 				</ValidationModal>
+				<MatchProfileModal
+					isOpen={profileModalOpen}
+					userId={selectedUserId}
+					onClose={() => { setProfileModalOpen(false); setSelectedUserId(null) }}
+					onChat={() => { /* integrate when chat is built */ }}
+					onChop={() => { /* integrate when chop is built */ }}
+				/>
 			</div>
 		</PageFrame>
 	)
