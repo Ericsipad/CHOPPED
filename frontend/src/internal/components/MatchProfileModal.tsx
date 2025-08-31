@@ -198,10 +198,10 @@ const styles: Record<string, React.CSSProperties> = {
 		position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999,
 	},
 	card: {
-		width: 'min(1000px, 92vw)', maxWidth: 1000, background: 'rgba(10,10,10,0.55)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', color: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.6)'
+		width: 'min(700px, 64vw)', maxWidth: 700, background: 'rgba(10,10,10,0.55)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', color: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.6)'
 	},
 	headerBar: {
-		display: 'grid', gridTemplateColumns: '1fr 1fr', height: 50, width: '100%'
+		display: 'grid', gridTemplateColumns: '1fr 1fr', height: 35, width: '100%'
 	},
 	chatBtn: {
 		background: '#16a34a', color: '#fff', height: '100%', width: '100%', border: 'none', cursor: 'pointer', fontWeight: 700
@@ -210,7 +210,7 @@ const styles: Record<string, React.CSSProperties> = {
 		background: '#dc2626', color: '#fff', height: '100%', width: '100%', border: 'none', cursor: 'pointer', fontWeight: 700
 	},
 	body: {
-		padding: 16
+		padding: 12
 	},
 	mainImageWrap: {
 		width: '100%', aspectRatio: '4 / 3', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -221,21 +221,21 @@ const styles: Record<string, React.CSSProperties> = {
 	loading: { opacity: 0.9 },
 	empty: { opacity: 0.75 },
 	thumbs: {
-		display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8, marginTop: 12
+		display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6, marginTop: 10
 	},
 	thumbBtn: {
-		borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.35)', height: 72, cursor: 'pointer'
+		borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.35)', height: 50, cursor: 'pointer'
 	},
 	thumbImg: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
 	thumbEmpty: { width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5 },
 	details: { marginTop: 12 },
-	nameRow: { fontSize: 18, fontWeight: 700, display: 'flex', alignItems: 'baseline' },
-	nameText: { fontSize: 18, fontWeight: 700 },
-	ageText: { fontSize: 16, opacity: 0.9 },
-	bioText: { marginTop: 6, opacity: 0.95, lineHeight: 1.4 },
+	nameRow: { fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'baseline' },
+	nameText: { fontSize: 14, fontWeight: 700 },
+	ageText: { fontSize: 12, opacity: 0.9 },
+	bioText: { marginTop: 6, opacity: 0.95, lineHeight: 1.35, fontSize: 13 },
 	error: { marginTop: 8, color: '#fca5a5' },
-	footer: { padding: '0 16px 16px', display: 'flex', justifyContent: 'flex-end' },
-	closeBtn: { border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.3)', color: '#fff', padding: '6px 12px', borderRadius: 8, cursor: 'pointer' },
+	footer: { padding: '0 12px 12px', display: 'flex', justifyContent: 'flex-end' },
+	closeBtn: { border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.3)', color: '#fff', padding: '4px 10px', borderRadius: 8, cursor: 'pointer', fontSize: 13 },
 }
 
 
