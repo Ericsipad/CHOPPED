@@ -172,10 +172,10 @@ export async function POST(req: Request) {
         if (deduped.length > 0) {
           await usersCol.updateOne(
             { _id: userDoc._id } as Filter<UsersDoc>,
-            ({
+            (({
               $set: { Last_matchsearch: now },
               $push: { pendingmatch_array: { $each: deduped } },
-            }) as UpdateFilter<Document>,
+            }) as unknown) as UpdateFilter<Document>,
           )
           addedCount = deduped.length
         } else {
