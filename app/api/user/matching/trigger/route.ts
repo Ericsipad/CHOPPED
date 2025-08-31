@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getProfileMatchingCollection, getUserProfileImagesCollection, getUsersCollection } from '@/lib/mongo'
-import { ObjectId, type UpdateFilter, type Filter } from 'mongodb'
+import { ObjectId, type UpdateFilter, type Filter, type Document } from 'mongodb'
 
 const ALLOWED_METHODS = ['POST', 'OPTIONS'] as const
 
@@ -175,25 +175,25 @@ export async function POST(req: Request) {
             ({
               $set: { Last_matchsearch: now },
               $push: { pendingmatch_array: { $each: deduped } },
-            }) as UpdateFilter<UsersDoc>,
+            }) as UpdateFilter<Document>,
           )
           addedCount = deduped.length
         } else {
           await usersCol.updateOne(
             { _id: userDoc._id } as Filter<UsersDoc>,
-            { $set: { Last_matchsearch: now } } as UpdateFilter<UsersDoc>,
+            ({ $set: { Last_matchsearch: now } }) as UpdateFilter<Document>,
           )
         }
       } else {
         await usersCol.updateOne(
           { _id: userDoc._id } as Filter<UsersDoc>,
-          { $set: { Last_matchsearch: now } } as UpdateFilter<UsersDoc>,
+          ({ $set: { Last_matchsearch: now } }) as UpdateFilter<Document>,
         )
       }
     } else {
       await usersCol.updateOne(
         { _id: userDoc._id } as Filter<UsersDoc>,
-        { $set: { Last_matchsearch: now } } as UpdateFilter<UsersDoc>,
+        ({ $set: { Last_matchsearch: now } }) as UpdateFilter<Document>,
       )
     }
 
