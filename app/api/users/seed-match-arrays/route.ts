@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import { getUsersCollection } from '@/lib/mongo'
 import { ObjectId } from 'mongodb'
 
@@ -52,17 +53,36 @@ export async function POST(req: Request) {
   const requestOrigin = req.headers.get('origin')
   const headers = buildCorsHeaders(allowedOrigins, requestOrigin)
   try {
-    const supabase = createSupabaseRouteClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    // Try cookie-based session first
+    const supabaseFromCookies = createSupabaseRouteClient()
+    let { data: { user } } = await supabaseFromCookies.auth.getUser()
+    // If not present, try Bearer token from Authorization header
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers })
+      const authHeader = req.headers.get('authorization') || req.headers.get('Authorization') || ''
+      const m = /^Bearer\s+(.+)$/.exec(authHeader)
+      if (m) {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+        const supabase = createClient(supabaseUrl, supabaseAnonKey)
+        const byToken = await supabase.auth.getUser(m[1])
+        user = byToken.data.user || null
+      }
     }
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers })
 
     const users = await getUsersCollection()
-    const userDoc = await users.findOne({ supabaseUserId: user.id })
+    let userDoc = await users.findOne({ supabaseUserId: user.id })
+    // Auto-create user doc if not present
     if (!userDoc?._id) {
-      return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
+      const now = new Date()
+      await users.updateOne(
+        { supabaseUserId: user.id },
+        { $setOnInsert: { createdAt: now, supabaseUserId: user.id }, $set: { updatedAt: now } },
+        { upsert: true },
+      )
+      userDoc = await users.findOne({ supabaseUserId: user.id })
     }
+    if (!userDoc?._id) return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
 
     await users.updateOne(
       { _id: userDoc._id },
