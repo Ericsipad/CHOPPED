@@ -4,7 +4,7 @@ import HeroImage from '../components/HeroImage'
 import ProfileGrid from '../components/ProfileGrid'
 import ValidationModal from '../components/ValidationModal'
 import { fetchReadiness } from '../components/readiness'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import '../styles/internal.css'
 import { fetchUserMatchArray, type MatchSlot } from '../../lib/matches'
 import { getBackendApi } from '../../lib/config'
@@ -15,6 +15,10 @@ export default function ChoppingBoardPage() {
     const [viewCount, setViewCount] = useState<10 | 25 | 50>(10)
     const [slots, setSlots] = useState<Array<MatchSlot | null>>([])
     const [subscription, setSubscription] = useState<number>(0)
+    const [searchModalOpen, setSearchModalOpen] = useState(false)
+    const [searchMessageIndex, setSearchMessageIndex] = useState(0)
+    const searchIntervalRef = useRef<number | null>(null)
+    const searchInFlightRef = useRef(false)
 
     useEffect(() => {
         let cancelled = false
@@ -66,8 +70,53 @@ export default function ChoppingBoardPage() {
 		}
 	})
 	const activeSlotsCount = Math.min(50, Math.max(0, subscription || 0))
+
+	const funnyLines = useMemo(() => ([
+		'Searching for your perfect match…',
+		'Narrowing preferences…',
+		"Maybe at least with a job… no promises.",
+		'Calibrating cupid algorithms…',
+	]), [])
+
+	async function triggerMatchSearchFlow() {
+		if (searchInFlightRef.current) return
+		searchInFlightRef.current = true
+		setSearchModalOpen(true)
+		setSearchMessageIndex(0)
+		// Rotate messages every ~3s, play a short cycle regardless of API timing
+		const interval = window.setInterval(() => {
+			setSearchMessageIndex((i) => (i + 1) % funnyLines.length)
+		}, 3000)
+		searchIntervalRef.current = interval as unknown as number
+		try {
+			// Fire and forget the trigger; we don't block the modal on it
+			await fetch(getBackendApi('/api/user/matching/trigger'), {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({})
+			}).catch(() => null)
+		} finally {
+			// Ensure modal stays visible for at least ~10-12s
+			setTimeout(() => {
+				if (searchIntervalRef.current !== null) {
+					window.clearInterval(searchIntervalRef.current)
+					searchIntervalRef.current = null
+				}
+				setSearchModalOpen(false)
+				searchInFlightRef.current = false
+			}, 10000)
+		}
+	}
+
 	const handleCardClick = (index: number) => {
-		console.log('Active card clicked:', index)
+		const isActive = index < activeSlotsCount
+		const hasProfile = images[index]?.hasProfile
+		if (!isActive) return
+		// Whole active empty card triggers the gate
+		if (!hasProfile) {
+			triggerMatchSearchFlow()
+		}
 	}
 	return (
 		<PageFrame>
@@ -130,6 +179,18 @@ export default function ChoppingBoardPage() {
 					<ul style={{ margin: 0, paddingLeft: 18 }}>
 						{missingFields.map((f) => (<li key={f}>{f}</li>))}
 					</ul>
+				</ValidationModal>
+				<ValidationModal
+					isOpen={searchModalOpen}
+					title="Hang tight"
+					onClose={() => { /* disable manual close during sequence */ }}
+				>
+					<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0' }}>
+						<div style={{ width: 36, height: 36, border: '3px solid rgba(255,255,255,0.25)', borderTopColor: 'rgba(0, 200, 120, 0.9)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+						<div style={{ height: 12 }} />
+						<div style={{ textAlign: 'center' }}>{funnyLines[searchMessageIndex]}</div>
+					</div>
+					<style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 				</ValidationModal>
 			</div>
 		</PageFrame>
