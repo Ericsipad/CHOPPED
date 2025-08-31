@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getProfileMatchingCollection, getUserProfileImagesCollection, getUsersCollection } from '@/lib/mongo'
+import type { ObjectId } from 'mongodb'
 
 const ALLOWED_METHODS = ['POST', 'OPTIONS'] as const
 
@@ -47,7 +48,7 @@ export async function OPTIONS(req: Request) {
 }
 
 type ProfileDoc = {
-  userId: any
+  userId: ObjectId
   iam?: string
   Iwant?: string
   age?: number
@@ -74,12 +75,14 @@ export async function POST(req: Request) {
     }
 
     const usersCol = await getUsersCollection()
-    const userDoc = await usersCol.findOne<{ _id?: any; Match_array?: unknown; pendingmatch_array?: unknown; choppedmatch_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
+    const userDoc = await usersCol.findOne<{ _id?: ObjectId; Match_array?: unknown; pendingmatch_array?: unknown; choppedmatch_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
     if (!userDoc?._id) {
       return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
     }
 
-    const pending = Array.isArray((userDoc as any).pendingmatch_array) ? ((userDoc as any).pendingmatch_array as Array<any>) : []
+    const pending = Array.isArray((userDoc as { pendingmatch_array?: unknown }).pendingmatch_array)
+      ? ((userDoc as { pendingmatch_array?: Array<{ userId?: unknown }> }).pendingmatch_array as Array<{ userId?: unknown }>)
+      : []
     const totalPending = pending.length
 
     if (totalPending >= 200) {
@@ -106,10 +109,16 @@ export async function POST(req: Request) {
     const existingMatch = new Set<string>()
     const arrs = ['Match_array', 'pendingmatch_array', 'choppedmatch_array'] as const
     for (const key of arrs) {
-      const arr = Array.isArray((userDoc as any)[key]) ? ((userDoc as any)[key] as Array<any>) : []
+      const rawArr = (userDoc as Record<string, unknown>)[key]
+      const arr = Array.isArray(rawArr) ? (rawArr as Array<unknown>) : []
       for (const it of arr) {
-        const uid = (it && typeof it === 'object' && (typeof (it as any).matchedUserId === 'string' ? (it as any).matchedUserId : (typeof (it as any).userId === 'string' ? (it as any).userId : null)))
-        if (uid) existingMatch.add(uid)
+        if (it && typeof it === 'object') {
+          const entry = it as Record<string, unknown>
+          const a = entry.matchedUserId
+          const b = entry.userId
+          if (typeof a === 'string' && a) existingMatch.add(a)
+          else if (typeof b === 'string' && b) existingMatch.add(b)
+        }
       }
     }
 
@@ -126,11 +135,16 @@ export async function POST(req: Request) {
     if (toAdd.length > 0) {
       // Batch fetch main images
       const imagesCol = await getUserProfileImagesCollection()
-      const ids = toAdd.map((a) => (a.userId))
-      const imageDocs = await imagesCol.find({ userId: { $in: ids as any } }).project<{ userId: any; main?: string | null }>({ userId: 1, main: 1 }).toArray()
+      const ids = toAdd.map((a) => a.userId)
+      // Convert to ObjectId for lookup in images collection
+      const idsObj = ids.map((s) => ({ ok: true as const, id: s })).map((x) => x.id) // keep as string array first
+      const imageDocs = await imagesCol
+        .find({ userId: { $in: idsObj as unknown as ObjectId[] } })
+        .project<{ userId: ObjectId; main?: string | null }>({ userId: 1, main: 1 })
+        .toArray()
       const userIdToImage = new Map<string, string>()
       for (const d of imageDocs) {
-        const uid = String((d as any).userId)
+        const uid = d.userId.toString()
         if (typeof d.main === 'string' && d.main) {
           userIdToImage.set(uid, d.main)
         }
@@ -139,7 +153,11 @@ export async function POST(req: Request) {
 
       if (filtered.length > 0) {
         // Dedup against current pending to be safe
-        const pendingIds = new Set<string>(pending.map((p: any) => (typeof p?.userId === 'string' ? p.userId : null)).filter(Boolean))
+        const pendingIds = new Set<string>(
+          pending
+            .map((p) => (p && typeof p.userId === 'string' ? (p.userId as string) : null))
+            .filter((v): v is string => typeof v === 'string')
+        )
         const deduped = filtered.filter((a) => !pendingIds.has(a.userId))
         if (deduped.length > 0) {
           await usersCol.updateOne(
@@ -161,7 +179,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ action: 'matchsearch', addedCount }, { headers })
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
 }
@@ -178,7 +196,7 @@ async function runMatchSearch(profileCol: Awaited<ReturnType<typeof getProfileMa
   const myCond = typeof me.healthCondition === 'string' && me.healthCondition ? me.healthCondition : null
 
   // Utility to build health tier filter
-  function buildHealthFilter(tier: 1 | 2 | 3) {
+  function buildHealthFilter(tier: 1 | 2 | 3): Record<string, unknown> {
     if (!myCond) return {}
     if (tier === 1) {
       // Same condition
@@ -188,7 +206,7 @@ async function runMatchSearch(profileCol: Awaited<ReturnType<typeof getProfileMa
         : myCond === 'herpes' ? 'Accept_Herpes'
         : myCond === 'autism' ? 'Accept_Autism'
         : 'Accept_Physical_Handicap'
-      return { [acceptField]: true } as any
+      return { [acceptField]: true } as Record<string, unknown>
     }
     return {}
   }
@@ -204,7 +222,7 @@ async function runMatchSearch(profileCol: Awaited<ReturnType<typeof getProfileMa
       if (results.length >= needed) break
 
       // Age bounds
-      let ageFilter: any = {}
+      let ageFilter: Record<string, unknown> = {}
       if (meAge !== null) {
         const minA = meAge - band
         const maxA = meAge + band
@@ -212,7 +230,7 @@ async function runMatchSearch(profileCol: Awaited<ReturnType<typeof getProfileMa
       }
 
       // Build base orientation filter (mutual)
-      const base: any = {
+      const base: Record<string, unknown> = {
         iam: meIwant,
         Iwant: meIam,
       }
@@ -223,30 +241,30 @@ async function runMatchSearch(profileCol: Awaited<ReturnType<typeof getProfileMa
       else if (stage === 'country' && meCountry) base.country = meCountry
       // 'none' adds no location constraint
 
-      const tiers: Array<1 | 2 | 3> = myCond ? [1, 2, 3] as const : [3] as any // when no condition, treat as single tier
+      const tiers: Array<1 | 2 | 3> = myCond ? [1, 2, 3] : [3] // when no condition, treat as single tier
 
       for (const tier of tiers) {
         if (results.length >= needed) break
 
-        const match: any = { ...base, ...ageFilter, ...buildHealthFilter(tier) }
+        const match: Record<string, unknown> = { ...base, ...ageFilter, ...buildHealthFilter(tier) }
 
         // Exclude known IDs
-        const excludeIdObjs = Array.from(excludeIds).map((id) => ({ userId: (global as any).ObjectId ? new (global as any).ObjectId(id) : id }))
+        const excludeObjectIds = Array.from(excludeIds).map((id) => id)
 
         // Build pipeline with $match and $sample to randomize; limit per step conservatively
         const remaining = needed - results.length
         const sampleSize = Math.min(Math.max(remaining * 2, 20), 150)
 
-        const pipeline: any[] = [
-          { $match: { ...match, userId: { $nin: Array.from(excludeIds).map((s) => (s as any)) } } },
+        const pipeline: Array<Record<string, unknown>> = [
+          { $match: { ...match, userId: { $nin: excludeObjectIds } } },
           { $sample: { size: sampleSize } },
           { $project: { userId: 1 } },
         ]
 
-        const candidates = await profileCol.aggregate<{ userId: any }>(pipeline).toArray()
+        const candidates = await profileCol.aggregate<{ userId: ObjectId | string }>(pipeline).toArray()
         for (const cand of candidates) {
           if (results.length >= needed) break
-          const uid = String((cand as any).userId)
+          const uid = typeof cand.userId === 'string' ? cand.userId : cand.userId.toString()
           if (excludeIds.has(uid)) continue
           // We only return userId here; images fetched in batch by caller
           results.push({ userId: uid, imageUrl: '' })
