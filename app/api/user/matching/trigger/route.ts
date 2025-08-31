@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getProfileMatchingCollection, getUserProfileImagesCollection, getUsersCollection } from '@/lib/mongo'
-import type { ObjectId, UpdateFilter } from 'mongodb'
+import { ObjectId, type UpdateFilter, type Filter } from 'mongodb'
 
 const ALLOWED_METHODS = ['POST', 'OPTIONS'] as const
 
@@ -63,6 +63,16 @@ type ProfileDoc = {
   updatedAt?: Date
 }
 
+type PendingEntry = { userId: string; imageUrl: string }
+type UsersDoc = {
+  _id: ObjectId
+  pendingmatch_array?: PendingEntry[]
+  Last_matchsearch?: Date
+  Match_array?: unknown
+  choppedmatch_array?: unknown
+  supabaseUserId?: string
+}
+
 export async function POST(req: Request) {
   const allowedOrigins = getAllowedOrigins()
   const requestOrigin = req.headers.get('origin')
@@ -75,7 +85,7 @@ export async function POST(req: Request) {
     }
 
     const usersCol = await getUsersCollection()
-    const userDoc = await usersCol.findOne<{ _id?: ObjectId; Match_array?: unknown; pendingmatch_array?: unknown; choppedmatch_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
+    const userDoc = await usersCol.findOne<UsersDoc>({ supabaseUserId: user.id } as Filter<UsersDoc>)
     if (!userDoc?._id) {
       return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
     }
@@ -161,21 +171,30 @@ export async function POST(req: Request) {
         const deduped = filtered.filter((a) => !pendingIds.has(a.userId))
         if (deduped.length > 0) {
           await usersCol.updateOne(
-            { _id: userDoc._id },
+            { _id: userDoc._id } as Filter<UsersDoc>,
             ({
               $set: { Last_matchsearch: now },
               $push: { pendingmatch_array: { $each: deduped } },
-            }) as UpdateFilter<Record<string, unknown>>,
+            }) as UpdateFilter<UsersDoc>,
           )
           addedCount = deduped.length
         } else {
-          await usersCol.updateOne({ _id: userDoc._id }, { $set: { Last_matchsearch: now } })
+          await usersCol.updateOne(
+            { _id: userDoc._id } as Filter<UsersDoc>,
+            { $set: { Last_matchsearch: now } } as UpdateFilter<UsersDoc>,
+          )
         }
       } else {
-        await usersCol.updateOne({ _id: userDoc._id }, { $set: { Last_matchsearch: now } })
+        await usersCol.updateOne(
+          { _id: userDoc._id } as Filter<UsersDoc>,
+          { $set: { Last_matchsearch: now } } as UpdateFilter<UsersDoc>,
+        )
       }
     } else {
-      await usersCol.updateOne({ _id: userDoc._id }, { $set: { Last_matchsearch: now } })
+      await usersCol.updateOne(
+        { _id: userDoc._id } as Filter<UsersDoc>,
+        { $set: { Last_matchsearch: now } } as UpdateFilter<UsersDoc>,
+      )
     }
 
     return NextResponse.json({ action: 'matchsearch', addedCount }, { headers })
