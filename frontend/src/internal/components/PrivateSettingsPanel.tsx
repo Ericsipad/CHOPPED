@@ -45,8 +45,8 @@ export default function PrivateSettingsPanel() {
   const [acceptPhysicalHandicap, setAcceptPhysicalHandicap] = useState(false)
 
   const isValid = useMemo(() => {
-    return countryCode.trim().length > 0
-  }, [countryCode])
+    return countryCode.trim().length > 0 && !!iam && !!Iwant
+  }, [countryCode, iam, Iwant])
 
   const countries: Option[] = useMemo(() => getCountries(), [])
   const states: Option[] = useMemo(() => getStates(countryCode), [countryCode])
@@ -69,7 +69,13 @@ export default function PrivateSettingsPanel() {
             setCityName(typeof data.city === 'string' ? data.city : '')
             setIam(typeof data.iam === 'string' ? (data.iam as any) : '')
             setIwant(typeof data.Iwant === 'string' ? (data.Iwant as any) : '')
-            setHealthCondition(typeof data.healthCondition === 'string' ? (data.healthCondition as any) : '')
+            // Show no selection if DB has 'none' or no value
+            if (typeof data.healthCondition === 'string') {
+              const hc = (data.healthCondition as string).toLowerCase()
+              setHealthCondition(hc === 'none' ? '' : (hc as any))
+            } else {
+              setHealthCondition('')
+            }
             // Accept_* booleans: default to false when null/undefined
             setAcceptHiv(!!data.Accept_hiv)
             setAcceptHerpes(!!data.Accept_Herpes)
@@ -126,7 +132,8 @@ export default function PrivateSettingsPanel() {
         locationAnswer,
         ...(iam ? { iam } : {}),
         ...(Iwant ? { Iwant } : {}),
-        ...(healthCondition ? { healthCondition } : {}),
+        // Persist 'none' when unselected
+        healthCondition: healthCondition ? healthCondition : 'none',
         // Accept_* are stored as booleans in DB; send four independent toggles
         Accept_hiv: !!acceptHiv,
         Accept_Herpes: !!acceptHerpes,

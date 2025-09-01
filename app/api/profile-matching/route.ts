@@ -185,7 +185,7 @@ export async function POST(req: Request) {
     let healthConditionStr: string | undefined
     if (typeof healthCondition === 'string') {
       const trimmed = healthCondition.trim().toLowerCase().slice(0, 80)
-      const allowed = new Set(['hiv', 'herpes', 'autism', 'physical_handicap'])
+      const allowed = new Set(['none', 'hiv', 'herpes', 'autism', 'physical_handicap'])
       if (!allowed.has(trimmed)) {
         return NextResponse.json({ error: 'Invalid healthCondition' }, { status: 400, headers })
       }
