@@ -52,57 +52,67 @@ export async function GET(req: Request) {
 	const allowedOrigins = getAllowedOrigins()
 	const requestOrigin = req.headers.get('origin')
 	const headers = buildCorsHeaders(allowedOrigins, requestOrigin)
+    const url = new URL(req.url)
+    const debugEnabled = url.searchParams.get('debug') === '1' || process.env.DEBUG_API === '1'
+    const debug: Record<string, unknown> = { step: 'start' }
 	try {
 		const supabase = createSupabaseRouteClient()
 		const { data: { user } } = await supabase.auth.getUser()
+		if (debugEnabled) debug.user = !!user
 		if (!user) {
-			return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers })
+			return NextResponse.json({ error: 'Unauthorized', debug: debugEnabled ? debug : undefined }, { status: 401, headers })
 		}
 
-		const url = new URL(req.url)
 		const limitParam = url.searchParams.get('limit')
 		const offsetParam = url.searchParams.get('offset')
 		const userIdParam = url.searchParams.get('userId') || ''
 		const limit = Number.isFinite(Number(limitParam)) ? Math.max(0, Math.min(500, Number(limitParam))) : 500
 		const offset = Number.isFinite(Number(offsetParam)) ? Math.max(0, Number(offsetParam)) : 0
+		if (debugEnabled) Object.assign(debug, { limit, offset, userIdParam })
 
 		const usersCol = await getUsersCollection()
 		const userDoc = await usersCol.findOne<{ _id?: unknown; pendingmatch_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
+		if (debugEnabled) debug.userDoc = !!userDoc
 		if (!userDoc) {
-			return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
+			return NextResponse.json({ error: 'User not linked', debug: debugEnabled ? debug : undefined }, { status: 400, headers })
 		}
 
 		// If a userId is provided, ensure it matches the logged-in user's Mongo _id
 		if (userIdParam) {
 			const currentMongoId = (userDoc as { _id?: { toString?: () => string } })._id?.toString?.() || ''
+			if (debugEnabled) Object.assign(debug, { currentMongoId })
 			if (!currentMongoId || userIdParam !== currentMongoId) {
-				return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers })
+				return NextResponse.json({ error: 'Forbidden', debug: debugEnabled ? debug : undefined }, { status: 403, headers })
 			}
 		}
 
 		// Use actual database field 'pendingmatch_array' written by matching/trigger
 		const baseArr: unknown = (userDoc as { pendingmatch_array?: unknown }).pendingmatch_array
 		const rawArr: PendingRaw[] = Array.isArray(baseArr) ? baseArr as PendingRaw[] : []
+		if (debugEnabled) Object.assign(debug, { total: rawArr.length })
 
 		const sliced = rawArr.slice(offset, offset + limit)
 		const items = sliced
 			.map((entry) => {
 				if (!entry || typeof entry !== 'object') return null
-				const uidRaw = (entry as Record<string, unknown>).userId
-				const img = (entry as Record<string, unknown>).imageUrl
+				const rec = entry as Record<string, unknown>
+				const uidRaw = rec.userId
+				const imgRaw = rec.imageUrl
 				let uid: string | null = null
 				if (typeof uidRaw === 'string') {
 					uid = uidRaw
 				} else if (uidRaw && typeof uidRaw === 'object' && typeof (uidRaw as { toHexString?: unknown }).toHexString === 'function') {
 					try { uid = (uidRaw as { toHexString: () => string }).toHexString() } catch { uid = null }
 				}
-				return (uid && typeof img === 'string' && img) ? { userId: uid, imageUrl: img } : null
+				const img = typeof imgRaw === 'string' ? imgRaw : null
+				return (uid && img) ? { userId: uid, imageUrl: img } : null
 			})
 			.filter((v): v is { userId: string; imageUrl: string } => v !== null)
 
-		return NextResponse.json({ items }, { headers })
-	} catch {
-		return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
+		return NextResponse.json({ items, debug: debugEnabled ? debug : undefined }, { headers })
+	} catch (e) {
+		if (debugEnabled) debug.error = e instanceof Error ? e.message : String(e)
+		return NextResponse.json({ error: 'Internal error', debug: debugEnabled ? debug : undefined }, { status: 500, headers })
 	}
 }
 
