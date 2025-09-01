@@ -37,6 +37,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 	const [profileCache, setProfileCache] = useState<Record<string, ProfilePublic>>({})
     const [limitOpen, setLimitOpen] = useState(false)
     const verticalSwipersRef = useRef<Record<number, SwiperClass | undefined>>({})
+    const previousBodyOverflowRef = useRef<string | null>(null)
 
 	// fetch pending items once when opened
 	useEffect(() => {
@@ -106,19 +107,16 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 	useEffect(() => {
 		function handleKeyDown(e: KeyboardEvent) {
 			if (!isOpen) return
-			// Do not handle when overlay panel is open
-			if (bioOpenIndex !== null) return
-			if (e.key === 'ArrowUp') {
-				const s = verticalSwipersRef.current[activeIdx]
-				if (s) {
-					e.preventDefault()
-					s.slidePrev()
-				}
-			} else if (e.key === 'ArrowDown') {
-				const s = verticalSwipersRef.current[activeIdx]
-				if (s) {
-					e.preventDefault()
-					s.slideNext()
+			if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+				// Always prevent page scroll when modal is open
+				e.preventDefault()
+				e.stopPropagation()
+				if (bioOpenIndex === null) {
+					const s = verticalSwipersRef.current[activeIdx]
+					if (s) {
+						if (e.key === 'ArrowUp') s.slidePrev()
+						else s.slideNext()
+					}
 				}
 			}
 		}
@@ -126,13 +124,25 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 		return () => window.removeEventListener('keydown', handleKeyDown)
 	}, [isOpen, activeIdx, bioOpenIndex])
 
+	// Lock body scroll when modal is open
+	useEffect(() => {
+		if (isOpen) {
+			previousBodyOverflowRef.current = document.body.style.overflow
+			document.body.style.overflow = 'hidden'
+			return () => {
+				document.body.style.overflow = previousBodyOverflowRef.current || ''
+			}
+		}
+		return
+	}, [isOpen])
+
 	if (!isOpen) return null
 
 	const total = items.length
 	const reachedEnd = total === 0
 
 	return (
-		<div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)' }}>
+		<div onKeyDownCapture={(e) => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); e.stopPropagation() } }} style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)' }}>
 			<div style={{ width: 'min(1100px, 92vw)', height: '60vh', position: 'relative', borderRadius: 12, overflow: 'hidden', background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)' }}>
 				<button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: 8, right: 10, zIndex: 5, background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 10px', cursor: 'pointer' }}>Close</button>
 				{limitOpen && (
