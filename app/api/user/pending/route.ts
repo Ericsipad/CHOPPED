@@ -75,8 +75,12 @@ export async function GET(req: Request) {
 		const limitParam = url.searchParams.get('limit')
 		const offsetParam = url.searchParams.get('offset')
 		const userIdParam = url.searchParams.get('userId') || ''
-		const limit = Number.isFinite(Number(limitParam)) ? Math.max(0, Math.min(500, Number(limitParam))) : 500
-		const offset = Number.isFinite(Number(offsetParam)) ? Math.max(0, Number(offsetParam)) : 0
+		const limit = (limitParam !== null && limitParam !== '' && Number.isFinite(Number(limitParam)))
+			? Math.max(0, Math.min(500, Number(limitParam)))
+			: 500
+		const offset = (offsetParam !== null && offsetParam !== '' && Number.isFinite(Number(offsetParam)))
+			? Math.max(0, Number(offsetParam))
+			: 0
 		console.log('[pending][GET] params', { limit, offset, userIdParam })
 		Object.assign(debug, { userIdParam, limit, offset })
 
