@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getUsersCollection } from '@/lib/mongo'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const ALLOWED_METHODS = ['GET', 'OPTIONS'] as const
 
 function getAllowedOrigins(): string[] {
@@ -27,6 +31,7 @@ function buildCorsHeaders(allowedOrigins: string[], requestOrigin: string | null
 		'Access-Control-Allow-Methods': ALLOWED_METHODS.join(', '),
 		'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 		'Access-Control-Allow-Credentials': 'true',
+		'Cache-Control': 'no-store',
 		'Vary': 'Origin',
 	}
 }
@@ -34,7 +39,9 @@ function buildCorsHeaders(allowedOrigins: string[], requestOrigin: string | null
 export async function OPTIONS(req: Request) {
 	const allowedOrigins = getAllowedOrigins()
 	const requestOrigin = req.headers.get('origin')
+	console.log('[pending][OPTIONS] origin', { origin: requestOrigin })
 	if (allowedOrigins.length > 0 && requestOrigin && !isOriginAllowed(requestOrigin, allowedOrigins)) {
+		console.warn('[pending][OPTIONS] origin not allowed')
 		return new NextResponse(null, {
 			status: 403,
 			headers: buildCorsHeaders(allowedOrigins, null),
@@ -56,33 +63,33 @@ export async function GET(req: Request) {
 	try {
 		const supabase = createSupabaseRouteClient()
 		const { data: { user } } = await supabase.auth.getUser()
-		console.log('[pending] start', { origin: requestOrigin })
+		console.log('[pending][GET] start', { origin: requestOrigin })
 		if (!user) {
-			console.warn('[pending] unauthorized')
+			console.warn('[pending][GET] unauthorized')
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers })
 		}
-		console.log('[pending] supabase user', { present: true })
+		console.log('[pending][GET] supabase user', { present: true })
 
 		const limitParam = url.searchParams.get('limit')
 		const offsetParam = url.searchParams.get('offset')
 		const userIdParam = url.searchParams.get('userId') || ''
 		const limit = Number.isFinite(Number(limitParam)) ? Math.max(0, Math.min(500, Number(limitParam))) : 500
 		const offset = Number.isFinite(Number(offsetParam)) ? Math.max(0, Number(offsetParam)) : 0
-		console.log('[pending] params', { limit, offset, userIdParam })
+		console.log('[pending][GET] params', { limit, offset, userIdParam })
 
 		const usersCol = await getUsersCollection()
 		const userDoc = await usersCol.findOne<{ _id?: unknown; pendingmatch_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
 		if (!userDoc) {
-			console.warn('[pending] user not linked')
+			console.warn('[pending][GET] user not linked')
 			return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
 		}
-		console.log('[pending] mongo link', { found: true, mongoUserId: (userDoc as { _id?: { toString?: () => string } })._id?.toString?.() || null })
+		console.log('[pending][GET] mongo link', { found: true, mongoUserId: (userDoc as { _id?: { toString?: () => string } })._id?.toString?.() || null })
 
 		// If a userId is provided, ensure it matches the logged-in user's Mongo _id
 		if (userIdParam) {
 			const currentMongoId = (userDoc as { _id?: { toString?: () => string } })._id?.toString?.() || ''
 			if (!currentMongoId || userIdParam !== currentMongoId) {
-				console.warn('[pending] forbidden mismatch', { provided: userIdParam, currentMongoId })
+				console.warn('[pending][GET] forbidden mismatch', { provided: userIdParam, currentMongoId })
 				return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers })
 			}
 		}
@@ -90,7 +97,7 @@ export async function GET(req: Request) {
 		// Use actual database field 'pendingmatch_array' written by matching/trigger
 		const baseArr: unknown = (userDoc as { pendingmatch_array?: unknown }).pendingmatch_array
 		const rawArr: PendingRaw[] = Array.isArray(baseArr) ? baseArr as PendingRaw[] : []
-		console.log('[pending] counts', { total: rawArr.length })
+		console.log('[pending][GET] counts', { total: rawArr.length })
 
 		const sliced = rawArr.slice(offset, offset + limit)
 		const items = sliced
@@ -109,11 +116,11 @@ export async function GET(req: Request) {
 				return (uid && img) ? { userId: uid, imageUrl: img } : null
 			})
 			.filter((v): v is { userId: string; imageUrl: string } => v !== null)
-		console.log('[pending] items', { count: items.length })
+		console.log('[pending][GET] items', { count: items.length })
 
 		return NextResponse.json({ items }, { headers })
 	} catch (e) {
-		console.error('[pending] error', e)
+		console.error('[pending][GET] error', e)
 		return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
 	}
 }
