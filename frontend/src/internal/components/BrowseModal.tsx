@@ -73,7 +73,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 				if (cancelled) break
 				if (thumbsCache[it.userId]) continue
 				try {
-					const res = await fetch(getBackendApi(`/api/profile-images/by-id?userId=${encodeURIComponent(it.userId)}`), { credentials: 'include' })
+					const res = await fetch(getBackendApi(`/api/profile-images/public?userId=${encodeURIComponent(it.userId)}`), { credentials: 'include' })
 					if (!res.ok) continue
 					const data = await res.json().catch(() => null) as ByIdImages
 					if (cancelled) break

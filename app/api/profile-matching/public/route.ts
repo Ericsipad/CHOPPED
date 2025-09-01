@@ -52,9 +52,11 @@ export async function GET(req: Request) {
 	const requestOrigin = req.headers.get('origin')
 	const headers = buildCorsHeaders(allowedOrigins, requestOrigin)
 	try {
+		console.log('[profile-matching/public][GET] start', { origin: requestOrigin })
 		const supabase = createSupabaseRouteClient()
 		const { data: { user } } = await supabase.auth.getUser()
 		if (!user) {
+			console.warn('[profile-matching/public][GET] unauthorized')
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers })
 		}
 
@@ -68,6 +70,7 @@ export async function GET(req: Request) {
 		try {
 			targetId = new ObjectId(userIdParam)
 		} catch {
+			console.warn('[profile-matching/public][GET] invalid userId', { userIdParam })
 			return NextResponse.json({ error: 'Invalid userId' }, { status: 400, headers })
 		}
 
@@ -76,6 +79,10 @@ export async function GET(req: Request) {
 			{ userId: targetId },
 			{ projection: { _id: 0, userId: 0, displayName: 1, age: 1, heightCm: 1, bio: 1 } }
 		)
+		if (!doc) {
+			console.warn('[profile-matching/public][GET] not found', { userIdParam })
+			return NextResponse.json({ displayName: null, age: null, heightCm: null, bio: null }, { headers })
+		}
 
 		const displayName = typeof doc?.displayName === 'string' ? doc!.displayName : null
 		const age = typeof doc?.age === 'number' ? doc!.age : null
@@ -83,7 +90,8 @@ export async function GET(req: Request) {
 		const bio = typeof doc?.bio === 'string' ? doc!.bio : null
 
 		return NextResponse.json({ displayName, age, heightCm, bio }, { headers })
-	} catch {
+	} catch (e) {
+		console.error('[profile-matching/public][GET] error', e)
 		return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
 	}
 }
