@@ -40,7 +40,17 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 		if (!isOpen) return
 		;(async () => {
 			try {
-				const res = await fetch(getBackendApi('/api/user/pending'), { credentials: 'include' })
+				let url = '/api/user/pending'
+				try {
+					const raw = localStorage.getItem('chopped.mongoUserId')
+					if (raw) {
+						const parsed = JSON.parse(raw) as { id?: string; ts?: number }
+						if (parsed && typeof parsed.id === 'string' && parsed.id) {
+							url = `/api/user/pending?userId=${encodeURIComponent(parsed.id)}`
+						}
+					}
+				} catch { /* ignore */ }
+				const res = await fetch(getBackendApi(url), { credentials: 'include' })
 				const data = await res.json().catch(() => null) as { items?: PendingItem[] }
 				const arr = Array.isArray(data?.items) ? data!.items! : []
 				if (!cancelled) setItems(shuffleArray(arr).slice(0, 500))

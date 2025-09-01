@@ -118,7 +118,17 @@ export default function ChoppingBoardPage() {
 
 	async function getPendingCount(): Promise<number> {
 		try {
-			const res = await fetch(getBackendApi('/api/user/pending'), { credentials: 'include' })
+			let url = '/api/user/pending'
+			try {
+				const raw = localStorage.getItem('chopped.mongoUserId')
+				if (raw) {
+					const parsed = JSON.parse(raw) as { id?: string; ts?: number }
+					if (parsed && typeof parsed.id === 'string' && parsed.id) {
+						url = `/api/user/pending?userId=${encodeURIComponent(parsed.id)}`
+					}
+				}
+			} catch { /* ignore */ }
+			const res = await fetch(getBackendApi(url), { credentials: 'include' })
 			if (!res.ok) return 0
 			const data = await res.json().catch(() => null) as { items?: Array<{ userId: string; imageUrl: string }> }
 			return Array.isArray(data?.items) ? data!.items!.length : 0

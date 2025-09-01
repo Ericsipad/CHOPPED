@@ -62,13 +62,22 @@ export async function GET(req: Request) {
 		const url = new URL(req.url)
 		const limitParam = url.searchParams.get('limit')
 		const offsetParam = url.searchParams.get('offset')
+		const userIdParam = url.searchParams.get('userId') || ''
 		const limit = Number.isFinite(Number(limitParam)) ? Math.max(0, Math.min(500, Number(limitParam))) : 500
 		const offset = Number.isFinite(Number(offsetParam)) ? Math.max(0, Number(offsetParam)) : 0
 
 		const usersCol = await getUsersCollection()
-		const userDoc = await usersCol.findOne<{ pendingmatch_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
+		const userDoc = await usersCol.findOne<{ _id?: unknown; pendingmatch_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
 		if (!userDoc) {
 			return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
+		}
+
+		// If a userId is provided, ensure it matches the logged-in user's Mongo _id
+		if (userIdParam) {
+			const currentMongoId = (userDoc as { _id?: { toString?: () => string } })._id?.toString?.() || ''
+			if (!currentMongoId || userIdParam !== currentMongoId) {
+				return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers })
+			}
 		}
 
 		// Use actual database field 'pendingmatch_array' written by matching/trigger
