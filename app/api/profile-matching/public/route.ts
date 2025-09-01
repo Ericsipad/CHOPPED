@@ -86,7 +86,7 @@ export async function GET(req: Request) {
 		const collection = await getProfileMatchingCollection()
 		const doc = await collection.findOne<{ userId: ObjectId; displayName?: string; age?: number; heightCm?: number; bio?: string }>(
 			{ userId: targetId },
-			{ projection: { _id: 0, userId: 0, displayName: 1, age: 1, heightCm: 1, bio: 1 } }
+			{ projection: { _id: 0, displayName: 1, age: 1, heightCm: 1, bio: 1 } }
 		)
 		if (!doc) {
 			console.warn('[profile-matching/public][GET] not found', { userIdParam })
