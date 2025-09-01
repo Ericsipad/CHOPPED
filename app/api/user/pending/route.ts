@@ -60,13 +60,15 @@ export async function GET(req: Request) {
 	const requestOrigin = req.headers.get('origin')
 	const headers = buildCorsHeaders(allowedOrigins, requestOrigin)
 	const url = new URL(req.url)
+	const debug: Record<string, unknown> = { origin: requestOrigin, method: 'GET' }
 	try {
 		const supabase = createSupabaseRouteClient()
 		const { data: { user } } = await supabase.auth.getUser()
 		console.log('[pending][GET] start', { origin: requestOrigin })
+		debug.userPresent = !!user
 		if (!user) {
 			console.warn('[pending][GET] unauthorized')
-			return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers })
+			return NextResponse.json({ error: 'Unauthorized', debug }, { status: 401, headers })
 		}
 		console.log('[pending][GET] supabase user', { present: true })
 
@@ -76,21 +78,24 @@ export async function GET(req: Request) {
 		const limit = Number.isFinite(Number(limitParam)) ? Math.max(0, Math.min(500, Number(limitParam))) : 500
 		const offset = Number.isFinite(Number(offsetParam)) ? Math.max(0, Number(offsetParam)) : 0
 		console.log('[pending][GET] params', { limit, offset, userIdParam })
+		Object.assign(debug, { userIdParam, limit, offset })
 
 		const usersCol = await getUsersCollection()
 		const userDoc = await usersCol.findOne<{ _id?: unknown; pendingmatch_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
 		if (!userDoc) {
 			console.warn('[pending][GET] user not linked')
-			return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
+			return NextResponse.json({ error: 'User not linked', debug }, { status: 400, headers })
 		}
-		console.log('[pending][GET] mongo link', { found: true, mongoUserId: (userDoc as { _id?: { toString?: () => string } })._id?.toString?.() || null })
+		const mongoIdString = (userDoc as { _id?: { toString?: () => string } })._id?.toString?.() || null
+		console.log('[pending][GET] mongo link', { found: true, mongoUserId: mongoIdString })
+		debug.mongoUserId = mongoIdString
 
 		// If a userId is provided, ensure it matches the logged-in user's Mongo _id
 		if (userIdParam) {
-			const currentMongoId = (userDoc as { _id?: { toString?: () => string } })._id?.toString?.() || ''
+			const currentMongoId = mongoIdString || ''
 			if (!currentMongoId || userIdParam !== currentMongoId) {
 				console.warn('[pending][GET] forbidden mismatch', { provided: userIdParam, currentMongoId })
-				return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers })
+				return NextResponse.json({ error: 'Forbidden', debug }, { status: 403, headers })
 			}
 		}
 
@@ -98,6 +103,7 @@ export async function GET(req: Request) {
 		const baseArr: unknown = (userDoc as { pendingmatch_array?: unknown }).pendingmatch_array
 		const rawArr: PendingRaw[] = Array.isArray(baseArr) ? baseArr as PendingRaw[] : []
 		console.log('[pending][GET] counts', { total: rawArr.length })
+		debug.total = rawArr.length
 
 		const sliced = rawArr.slice(offset, offset + limit)
 		const items = sliced
@@ -117,11 +123,13 @@ export async function GET(req: Request) {
 			})
 			.filter((v): v is { userId: string; imageUrl: string } => v !== null)
 		console.log('[pending][GET] items', { count: items.length })
+		debug.count = items.length
 
-		return NextResponse.json({ items }, { headers })
+		return NextResponse.json({ items, debug }, { headers })
 	} catch (e) {
 		console.error('[pending][GET] error', e)
-		return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
+		debug.error = e instanceof Error ? e.message : String(e)
+		return NextResponse.json({ error: 'Internal error', debug }, { status: 500, headers })
 	}
 }
 
