@@ -71,7 +71,7 @@ export async function GET(req: Request) {
 			return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
 		}
 
-		// Use the canonical field 'pendingmatch_array' per matching/trigger route
+		// Use actual database field 'pendingmatch_array' written by matching/trigger
 		const baseArr: unknown = (userDoc as { pendingmatch_array?: unknown }).pendingmatch_array
 		const rawArr: PendingRaw[] = Array.isArray(baseArr) ? baseArr as PendingRaw[] : []
 
@@ -79,9 +79,15 @@ export async function GET(req: Request) {
 		const items = sliced
 			.map((entry) => {
 				if (!entry || typeof entry !== 'object') return null
-				const uid = (entry as Record<string, unknown>).userId
+				const uidRaw = (entry as Record<string, unknown>).userId
 				const img = (entry as Record<string, unknown>).imageUrl
-				return (typeof uid === 'string' && typeof img === 'string' && uid && img) ? { userId: uid, imageUrl: img } : null
+				let uid: string | null = null
+				if (typeof uidRaw === 'string') {
+					uid = uidRaw
+				} else if (uidRaw && typeof uidRaw === 'object' && typeof (uidRaw as { toHexString?: unknown }).toHexString === 'function') {
+					try { uid = (uidRaw as { toHexString: () => string }).toHexString() } catch { uid = null }
+				}
+				return (uid && typeof img === 'string' && img) ? { userId: uid, imageUrl: img } : null
 			})
 			.filter((v): v is { userId: string; imageUrl: string } => v !== null)
 
