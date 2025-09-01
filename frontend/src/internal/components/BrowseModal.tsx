@@ -4,6 +4,9 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Virtual, Keyboard } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/virtual'
+import type { Swiper as SwiperClass } from 'swiper/types'
+
+import { useRef } from 'react'
 
 type PendingItem = { userId: string; imageUrl: string }
 type ProfilePublic = { displayName: string | null; age: number | null; heightCm?: number | null; bio: string | null }
@@ -33,6 +36,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 	const [thumbsCache, setThumbsCache] = useState<Record<string, ByIdImages>>({})
 	const [profileCache, setProfileCache] = useState<Record<string, ProfilePublic>>({})
     const [limitOpen, setLimitOpen] = useState(false)
+    const verticalSwipersRef = useRef<Record<number, SwiperClass | undefined>>({})
 
 	// fetch pending items once when opened
 	useEffect(() => {
@@ -98,6 +102,30 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 		} catch {}
 	}
 
+	// Route ArrowUp/ArrowDown keys to the active vertical swiper
+	useEffect(() => {
+		function handleKeyDown(e: KeyboardEvent) {
+			if (!isOpen) return
+			// Do not handle when overlay panel is open
+			if (bioOpenIndex !== null) return
+			if (e.key === 'ArrowUp') {
+				const s = verticalSwipersRef.current[activeIdx]
+				if (s) {
+					e.preventDefault()
+					s.slidePrev()
+				}
+			} else if (e.key === 'ArrowDown') {
+				const s = verticalSwipersRef.current[activeIdx]
+				if (s) {
+					e.preventDefault()
+					s.slideNext()
+				}
+			}
+		}
+		window.addEventListener('keydown', handleKeyDown)
+		return () => window.removeEventListener('keydown', handleKeyDown)
+	}, [isOpen, activeIdx, bioOpenIndex])
+
 	if (!isOpen) return null
 
 	const total = items.length
@@ -144,7 +172,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 							return (
 								<SwiperSlide key={it.userId} virtualIndex={index} style={{ position: 'relative', width: '100%', height: '100%' }}>
 									<div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: '1fr', overflow: 'hidden' }}>
-										<Swiper direction="vertical" nested keyboard={{ enabled: true }} style={{ width: '100%', height: '100%' }}>
+										<Swiper direction="vertical" nested keyboard={{ enabled: true }} style={{ width: '100%', height: '100%' }} onSwiper={(s) => { verticalSwipersRef.current[index] = s }}>
 											{(() => {
 												const urls: string[] = []
 												if (byId?.main) urls.push(byId.main)
