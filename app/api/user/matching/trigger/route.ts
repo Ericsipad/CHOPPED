@@ -147,9 +147,16 @@ export async function POST(req: Request) {
       const imagesCol = await getUserProfileImagesCollection()
       const ids = toAdd.map((a) => a.userId)
       // Convert to ObjectId for lookup in images collection
-      const idsObj = ids.map((s) => ({ ok: true as const, id: s })).map((x) => x.id) // keep as string array first
+      const idsObj: ObjectId[] = []
+      for (const s of ids) {
+        try {
+          idsObj.push(new ObjectId(s))
+        } catch {
+          // skip invalid ids
+        }
+      }
       const imageDocs = await imagesCol
-        .find({ userId: { $in: idsObj as unknown as ObjectId[] } })
+        .find({ userId: { $in: idsObj } })
         .project<{ userId: ObjectId; main?: string | null }>({ userId: 1, main: 1 })
         .toArray()
       const userIdToImage = new Map<string, string>()
@@ -267,8 +274,15 @@ async function runMatchSearch(profileCol: Awaited<ReturnType<typeof getProfileMa
 
         const match: Record<string, unknown> = { ...base, ...ageFilter, ...buildHealthFilter(tier) }
 
-        // Exclude known IDs
-        const excludeObjectIds = Array.from(excludeIds).map((id) => id)
+        // Exclude known IDs (convert strings to ObjectId for DB match)
+        const excludeObjectIds: ObjectId[] = []
+        for (const id of Array.from(excludeIds)) {
+          try {
+            excludeObjectIds.push(new ObjectId(id))
+          } catch {
+            // ignore invalid ids
+          }
+        }
 
         // Build pipeline with $match and $sample to randomize; limit per step conservatively
         const remaining = needed - results.length
