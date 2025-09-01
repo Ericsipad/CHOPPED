@@ -3,6 +3,10 @@ import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getProfileMatchingCollection } from '@/lib/mongo'
 import { ObjectId } from 'mongodb'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const ALLOWED_METHODS = ['GET', 'OPTIONS'] as const
 
 function getAllowedOrigins(): string[] {
@@ -28,6 +32,7 @@ function buildCorsHeaders(allowedOrigins: string[], requestOrigin: string | null
 		'Access-Control-Allow-Methods': ALLOWED_METHODS.join(', '),
 		'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 		'Access-Control-Allow-Credentials': 'true',
+		'Cache-Control': 'no-store',
 		'Vary': 'Origin',
 	}
 }
@@ -51,19 +56,22 @@ export async function GET(req: Request) {
 	const allowedOrigins = getAllowedOrigins()
 	const requestOrigin = req.headers.get('origin')
 	const headers = buildCorsHeaders(allowedOrigins, requestOrigin)
+	const url = new URL(req.url)
+	const debug: Record<string, unknown> = { origin: requestOrigin, method: 'GET' }
 	try {
 		console.log('[profile-matching/public][GET] start', { origin: requestOrigin })
 		const supabase = createSupabaseRouteClient()
 		const { data: { user } } = await supabase.auth.getUser()
+		debug.userPresent = !!user
 		if (!user) {
 			console.warn('[profile-matching/public][GET] unauthorized')
-			return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers })
+			return NextResponse.json({ error: 'Unauthorized', debug }, { status: 401, headers })
 		}
 
-		const url = new URL(req.url)
 		const userIdParam = url.searchParams.get('userId') || ''
+		debug.userIdParam = userIdParam
 		if (!userIdParam) {
-			return NextResponse.json({ error: 'Missing userId' }, { status: 400, headers })
+			return NextResponse.json({ error: 'Missing userId', debug }, { status: 400, headers })
 		}
 
 		let targetId: ObjectId
@@ -71,8 +79,9 @@ export async function GET(req: Request) {
 			targetId = new ObjectId(userIdParam)
 		} catch {
 			console.warn('[profile-matching/public][GET] invalid userId', { userIdParam })
-			return NextResponse.json({ error: 'Invalid userId' }, { status: 400, headers })
+			return NextResponse.json({ error: 'Invalid userId', debug }, { status: 400, headers })
 		}
+		debug.targetId = String(targetId)
 
 		const collection = await getProfileMatchingCollection()
 		const doc = await collection.findOne<{ userId: ObjectId; displayName?: string; age?: number; heightCm?: number; bio?: string }>(
@@ -81,7 +90,7 @@ export async function GET(req: Request) {
 		)
 		if (!doc) {
 			console.warn('[profile-matching/public][GET] not found', { userIdParam })
-			return NextResponse.json({ displayName: null, age: null, heightCm: null, bio: null }, { headers })
+			return NextResponse.json({ displayName: null, age: null, heightCm: null, bio: null, debug }, { headers })
 		}
 
 		const displayName = typeof doc?.displayName === 'string' ? doc!.displayName : null
@@ -89,10 +98,11 @@ export async function GET(req: Request) {
 		const heightCm = typeof doc?.heightCm === 'number' ? doc!.heightCm : null
 		const bio = typeof doc?.bio === 'string' ? doc!.bio : null
 
-		return NextResponse.json({ displayName, age, heightCm, bio }, { headers })
+		return NextResponse.json({ displayName, age, heightCm, bio, debug }, { headers })
 	} catch (e) {
 		console.error('[profile-matching/public][GET] error', e)
-		return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
+		debug.error = e instanceof Error ? e.message : String(e)
+		return NextResponse.json({ error: 'Internal error', debug }, { status: 500, headers })
 	}
 }
 
