@@ -23,7 +23,7 @@ function toImperial(heightCm?: number | null): string | null {
 	const totalInches = Math.round(heightCm / 2.54)
 	const feet = Math.floor(totalInches / 12)
 	const inches = totalInches % 12
-	return `${feet}'${inches}\"`
+	return `${feet}'${inches}"`
 }
 
 export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -142,11 +142,17 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 								<SwiperSlide key={it.userId} virtualIndex={index} style={{ position: 'relative', width: '100%', height: '100%' }}>
 									<div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: '1fr', overflow: 'hidden' }}>
 										<Swiper direction="vertical" nested keyboard={{ enabled: true }} style={{ width: '100%', height: '100%' }}>
-											{(thumbs.length > 0 ? thumbs.map((t) => t.url) : [byId?.main || it.imageUrl]).map((src, i) => (
-												<SwiperSlide key={i} style={{ width: '100%', height: '100%' }}>
-													<img src={src} alt="profile" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-												</SwiperSlide>
-											))}
+											{(() => {
+												const urls: string[] = []
+												if (byId?.main) urls.push(byId.main)
+												if (thumbs.length > 0) urls.push(...thumbs.map((t) => t.url))
+												if (urls.length === 0) urls.push(byId?.main || it.imageUrl)
+												return urls.filter(Boolean).map((src, i) => (
+													<SwiperSlide key={i} style={{ width: '100%', height: '100%' }}>
+														<img src={src} alt="profile" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+													</SwiperSlide>
+												))
+											})()}
 										</Swiper>
 
 										<div style={{ position: 'absolute', top: 0, left: bioOpenIndex === index ? 0 : '-100%', width: '100%', height: '100%', background: 'rgba(17,17,17,0.9)', color: '#fff', transition: 'left 0.3s ease', padding: 20, display: 'flex', flexDirection: 'column' }}>
@@ -179,8 +185,8 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 									</div>
 								</SwiperSlide>
 							)
-							})}
-						</Swiper>
+						})}
+					</Swiper>
 				)}
 			</div>
 		</div>
