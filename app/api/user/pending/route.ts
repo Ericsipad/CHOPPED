@@ -71,9 +71,9 @@ export async function GET(req: Request) {
 			return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
 		}
 
-		const rawArr: PendingRaw[] = Array.isArray((userDoc as { pendingmatch_array?: unknown }).pendingmatch_array)
-			? ((userDoc as { pendingmatch_array?: PendingRaw[] }).pendingmatch_array as PendingRaw[])
-			: []
+		// Use the canonical field 'pendingmatch_array' per matching/trigger route
+		const baseArr: unknown = (userDoc as { pendingmatch_array?: unknown }).pendingmatch_array
+		const rawArr: PendingRaw[] = Array.isArray(baseArr) ? baseArr as PendingRaw[] : []
 
 		const sliced = rawArr.slice(offset, offset + limit)
 		const items = sliced
