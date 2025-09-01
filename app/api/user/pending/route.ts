@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
-import { getProfileMatchingCollection } from '@/lib/mongo'
-import { ObjectId } from 'mongodb'
+import { getUsersCollection } from '@/lib/mongo'
 
 const ALLOWED_METHODS = ['GET', 'OPTIONS'] as const
 
@@ -47,6 +46,8 @@ export async function OPTIONS(req: Request) {
 	})
 }
 
+type PendingRaw = { userId?: unknown; imageUrl?: unknown } | null | undefined
+
 export async function GET(req: Request) {
 	const allowedOrigins = getAllowedOrigins()
 	const requestOrigin = req.headers.get('origin')
@@ -59,30 +60,32 @@ export async function GET(req: Request) {
 		}
 
 		const url = new URL(req.url)
-		const userIdParam = url.searchParams.get('userId') || ''
-		if (!userIdParam) {
-			return NextResponse.json({ error: 'Missing userId' }, { status: 400, headers })
+		const limitParam = url.searchParams.get('limit')
+		const offsetParam = url.searchParams.get('offset')
+		const limit = Number.isFinite(Number(limitParam)) ? Math.max(0, Math.min(500, Number(limitParam))) : 500
+		const offset = Number.isFinite(Number(offsetParam)) ? Math.max(0, Number(offsetParam)) : 0
+
+		const usersCol = await getUsersCollection()
+		const userDoc = await usersCol.findOne<{ pendingmatch_array?: unknown; supabaseUserId?: string }>({ supabaseUserId: user.id })
+		if (!userDoc) {
+			return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
 		}
 
-		let targetId: ObjectId
-		try {
-			targetId = new ObjectId(userIdParam)
-		} catch {
-			return NextResponse.json({ error: 'Invalid userId' }, { status: 400, headers })
-		}
+		const rawArr: PendingRaw[] = Array.isArray((userDoc as { pendingmatch_array?: unknown }).pendingmatch_array)
+			? ((userDoc as { pendingmatch_array?: PendingRaw[] }).pendingmatch_array as PendingRaw[])
+			: []
 
-		const collection = await getProfileMatchingCollection()
-		const doc = await collection.findOne<{ userId: ObjectId; displayName?: string; age?: number; heightCm?: number; bio?: string }>(
-			{ userId: targetId },
-			{ projection: { _id: 0, userId: 0, displayName: 1, age: 1, heightCm: 1, bio: 1 } }
-		)
+		const sliced = rawArr.slice(offset, offset + limit)
+		const items = sliced
+			.map((entry) => {
+				if (!entry || typeof entry !== 'object') return null
+				const uid = (entry as Record<string, unknown>).userId
+				const img = (entry as Record<string, unknown>).imageUrl
+				return (typeof uid === 'string' && typeof img === 'string' && uid && img) ? { userId: uid, imageUrl: img } : null
+			})
+			.filter((v): v is { userId: string; imageUrl: string } => v !== null)
 
-		const displayName = typeof doc?.displayName === 'string' ? doc!.displayName : null
-		const age = typeof doc?.age === 'number' ? doc!.age : null
-		const heightCm = typeof doc?.heightCm === 'number' ? doc!.heightCm : null
-		const bio = typeof doc?.bio === 'string' ? doc!.bio : null
-
-		return NextResponse.json({ displayName, age, heightCm, bio }, { headers })
+		return NextResponse.json({ items }, { headers })
 	} catch {
 		return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
 	}

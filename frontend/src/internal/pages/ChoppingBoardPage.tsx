@@ -9,6 +9,7 @@ import '../styles/internal.css'
 import { fetchUserMatchArray, type MatchSlot } from '../../lib/matches'
 import MatchProfileModal from '../components/MatchProfileModal'
 import { getBackendApi } from '../../lib/config'
+import BrowseModal from '../components/BrowseModal'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -22,6 +23,7 @@ export default function ChoppingBoardPage() {
     const searchInFlightRef = useRef(false)
     const [profileModalOpen, setProfileModalOpen] = useState(false)
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+    const [browseOpen, setBrowseOpen] = useState(false)
 
     useEffect(() => {
         let cancelled = false
@@ -81,7 +83,7 @@ export default function ChoppingBoardPage() {
 		'Calibrating cupid algorithms…',
 	]), [])
 
-	async function triggerMatchSearchFlow() {
+	async function triggerMatchSearchFlow(doTrigger: boolean = true) {
 		if (searchInFlightRef.current) return
 		searchInFlightRef.current = true
 		setSearchModalOpen(true)
@@ -92,13 +94,15 @@ export default function ChoppingBoardPage() {
 		}, 3000)
 		searchIntervalRef.current = interval as unknown as number
 		try {
-			// Fire and forget the trigger; we don't block the modal on it
-			await fetch(getBackendApi('/api/user/matching/trigger'), {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({})
-			}).catch(() => null)
+			// Optionally fire and forget the trigger; we don't block the modal on it
+			if (doTrigger) {
+				await fetch(getBackendApi('/api/user/matching/trigger'), {
+					method: 'POST',
+					credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({})
+				}).catch(() => null)
+			}
 		} finally {
 			// Ensure modal stays visible for at least ~10-12s
 			setTimeout(() => {
@@ -112,13 +116,29 @@ export default function ChoppingBoardPage() {
 		}
 	}
 
+	async function getPendingCount(): Promise<number> {
+		try {
+			const res = await fetch(getBackendApi('/api/user/pending'), { credentials: 'include' })
+			if (!res.ok) return 0
+			const data = await res.json().catch(() => null) as { items?: Array<{ userId: string; imageUrl: string }> }
+			return Array.isArray(data?.items) ? data!.items!.length : 0
+		} catch { return 0 }
+	}
+
+	async function runBrowseFlow() {
+		const count = await getPendingCount()
+		const shouldTrigger = count < 200
+		await triggerMatchSearchFlow(shouldTrigger)
+		setTimeout(() => { setBrowseOpen(true) }, 10050)
+	}
+
 	const handleCardClick = (index: number) => {
 		const isActive = index < activeSlotsCount
 		const hasProfile = images[index]?.hasProfile
 		if (!isActive) return
 		// Whole active empty card triggers the gate
 		if (!hasProfile) {
-			triggerMatchSearchFlow()
+			runBrowseFlow()
 		} else {
 			const slot = slots[index]
 			if (slot && typeof slot.matchedUserId === 'string') {
@@ -208,6 +228,7 @@ export default function ChoppingBoardPage() {
 					onChat={() => { /* integrate when chat is built */ }}
 					onChop={() => { /* integrate when chop is built */ }}
 				/>
+				<BrowseModal isOpen={browseOpen} onClose={() => setBrowseOpen(false)} />
 			</div>
 		</PageFrame>
 	)
