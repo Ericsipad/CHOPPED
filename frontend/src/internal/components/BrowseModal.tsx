@@ -131,6 +131,9 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 						virtual
 						keyboard={{ enabled: true }}
 						slidesPerView={1}
+						allowTouchMove={bioOpenIndex === null}
+						noSwiping
+						noSwipingClass="no-swipe"
 						onSlideChange={(s) => setActiveIdx(s.activeIndex)}
 						onReachEnd={() => setLimitOpen(true)}
 						style={{ width: '100%', height: '100%' }}
@@ -148,14 +151,14 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 												if (thumbs.length > 0) urls.push(...thumbs.map((t) => t.url))
 												if (urls.length === 0) urls.push(byId?.main || it.imageUrl)
 												return urls.filter(Boolean).map((src, i) => (
-													<SwiperSlide key={i} style={{ width: '100%', height: '100%' }}>
-														<img src={src} alt="profile" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+													<SwiperSlide key={i} style={{ width: '100%', height: '100%', background: '#000' }}>
+														<img src={src} alt="profile" style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center', display: 'block' }} />
 													</SwiperSlide>
 												))
 											})()}
 										</Swiper>
 
-										<div style={{ position: 'absolute', top: 0, left: bioOpenIndex === index ? 0 : '-100%', width: '100%', height: '100%', background: 'rgba(17,17,17,0.9)', color: '#fff', transition: 'left 0.3s ease', padding: 20, display: 'flex', flexDirection: 'column' }}>
+										<div className="no-swipe" style={{ position: 'absolute', top: 0, left: bioOpenIndex === index ? 0 : '-25%', width: '25%', height: '100%', background: 'rgba(17,17,17,0.9)', color: '#fff', transition: 'left 0.3s ease', padding: 20, display: 'flex', flexDirection: 'column', zIndex: 20, pointerEvents: 'auto' }}>
 											<button onClick={() => setBioOpenIndex(null)} aria-label="Close panel" style={{ alignSelf: 'flex-end', background: 'transparent', color: '#fff', border: 'none', fontSize: 28, lineHeight: 1, cursor: 'pointer' }}>×</button>
 											<div style={{ flex: 1, overflowY: 'auto' }}>
 												{(() => {
