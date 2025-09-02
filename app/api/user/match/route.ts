@@ -117,7 +117,8 @@ export async function POST(req: Request) {
         : (typeof rec.mainImageUrl === 'string' && rec.mainImageUrl ? rec.mainImageUrl : null)
       const status = typeof rec.status === 'string' && rec.status ? rec.status
         : (typeof rec.matchStatus === 'string' && rec.matchStatus ? (rec.matchStatus as string) : null)
-      return { userId: uid, imageUrl: img, status, createdAt: (rec as any)?.createdAt }
+      const createdAt = (rec as { createdAt?: unknown }).createdAt
+      return { userId: uid, imageUrl: img, status, createdAt }
     }
 
     function dedupeByUserId(arr: Array<{ userId: string; imageUrl: string | null; status: string | null; createdAt?: unknown }>): Array<{ userId: string; imageUrl: string | null; status: string | null; createdAt?: unknown }> {
@@ -176,7 +177,7 @@ export async function POST(req: Request) {
     )
 
     return NextResponse.json({ ok: true }, { headers })
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers: buildCorsHeaders(getAllowedOrigins(), req.headers.get('origin')) })
   }
 }
