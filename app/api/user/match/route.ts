@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getUsersCollection } from '@/lib/mongo'
-import { ObjectId } from 'mongodb'
+import { ObjectId, type UpdateFilter, type Filter, type Document } from 'mongodb'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -169,11 +169,11 @@ export async function POST(req: Request) {
     }
 
     await users.updateOne(
-      { _id: viewerObjectId },
-      {
+      ({ _id: viewerObjectId } as unknown) as Filter<Document>,
+      (({
         $set: setDoc,
         $pull: { pendingmatch_array: { userId: targetUserId } },
-      },
+      }) as unknown) as UpdateFilter<Document>,
     )
 
     return NextResponse.json({ ok: true }, { headers })
