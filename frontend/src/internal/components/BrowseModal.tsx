@@ -66,6 +66,34 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 		return () => { cancelled = true }
 	}, [isOpen])
 
+	async function handleAction(action: 'chat' | 'chop', index: number) {
+		const it = items[index]
+		if (!it) return
+		let viewerId: string | null = null
+		try {
+			const raw = localStorage.getItem('chopped.mongoUserId')
+			if (raw) {
+				const parsed = JSON.parse(raw) as { id?: string; ts?: number }
+				if (parsed && typeof parsed.id === 'string' && parsed.id) viewerId = parsed.id
+			}
+		} catch {}
+		if (!viewerId) return
+		try {
+			await fetch(getBackendApi('/api/user/match'), {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ viewerId, targetUserId: it.userId, imageUrl: it.imageUrl, action })
+			})
+			setItems((prev) => {
+				const next = prev.slice()
+				next.splice(index, 1)
+				return next
+			})
+			setBioOpenIndex(null)
+		} catch {}
+	}
+
 	// prefetch thumbs for +-5 around active index
 	useEffect(() => {
 		if (!isOpen || items.length === 0) return
@@ -217,8 +245,8 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 												})()}
 											</div>
 											<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
-												<button aria-label="Chat" style={{ background: '#16a34a', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 700 }}>Chat</button>
-												<button aria-label="Chop" style={{ background: '#dc2626', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 700 }}>Chop</button>
+												<button onClick={() => handleAction('chat', index)} aria-label="Chat" style={{ background: '#16a34a', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 700 }}>Chat</button>
+												<button onClick={() => handleAction('chop', index)} aria-label="Chop" style={{ background: '#dc2626', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 700 }}>Chop</button>
 											</div>
 										</div>
 
