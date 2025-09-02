@@ -136,10 +136,19 @@ export default function ChoppingBoardPage() {
 	}
 
 	async function runBrowseFlow() {
-		const count = await getPendingCount()
-		const shouldTrigger = count < 200
-		await triggerMatchSearchFlow(shouldTrigger)
-		setTimeout(() => { setBrowseOpen(true) }, 10050)
+		triggerMatchSearchFlow(false)
+		setBrowseOpen(true)
+		try {
+			const count = await getPendingCount()
+			if (count < 200) {
+				fetch(getBackendApi('/api/user/matching/trigger'), {
+					method: 'POST',
+					credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({})
+				}).catch(() => null)
+			}
+		} catch { /* ignore */ }
 	}
 
 	const handleCardClick = (index: number) => {
