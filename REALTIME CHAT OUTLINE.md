@@ -100,3 +100,110 @@
 7) Test end-to-end and verify RLS is enforced
 
 
+## Troubleshooting
+
+### Symptom: Message bubble shows "error" and only the token endpoint is called
+- Likely RLS failure when inserting into `chat_messages` because the client cannot safely set `sender_supabase_id = auth.uid()` or because required headers (apikey/Authorization) aren’t reaching PostgREST.
+
+### Resolution A (recommended): Insert via server-side RPC using auth.uid()
+- Add a SECURITY DEFINER function that inserts rows with `sender_supabase_id = auth.uid()` and grant `authenticated` role EXECUTE.
+
+```sql
+create or replace function public.insert_chat_message(
+  _thread_id text,
+  _sender_mongo_id text,
+  _recipient_mongo_id text,
+  _body text
+)
+returns public.chat_messages
+language plpgsql
+security definer
+as $$
+declare
+  new_row public.chat_messages;
+begin
+  insert into public.chat_messages(
+    thread_id,
+    sender_supabase_id,
+    sender_mongo_id,
+    recipient_mongo_id,
+    body
+  )
+  values (
+    _thread_id,
+    auth.uid(),
+    _sender_mongo_id,
+    _recipient_mongo_id,
+    _body
+  )
+  returning * into new_row;
+  return new_row;
+end;
+$$;
+
+grant execute on function public.insert_chat_message(text, text, text, text) to authenticated;
+```
+
+- Frontend: call the RPC instead of a direct insert.
+
+Edited file: `frontend/src/lib/chat.ts`
+```ts
+export async function insertMessage(row: {
+  thread_id: string
+  sender_mongo_id: string
+  recipient_mongo_id: string
+  body: string
+}): Promise<DbChatMessage> {
+  const supabase = createAuthedClient()
+  const { data, error } = await supabase
+    .rpc('insert_chat_message', {
+      _thread_id: row.thread_id,
+      _sender_mongo_id: row.sender_mongo_id,
+      _recipient_mongo_id: row.recipient_mongo_id,
+      _body: row.body,
+    })
+  if (error) throw error
+  return (data as any) as DbChatMessage
+}
+```
+
+Edited file: `frontend/src/internal/components/ChatModal.tsx` (within `handleSend()`)
+```ts
+await insertMessage({
+  thread_id: localThreadId,
+  sender_mongo_id: myMongoId,
+  recipient_mongo_id: otherUserId,
+  body: text,
+})
+```
+
+### Resolution B: Ensure PostgREST has correct headers
+- Include `Authorization: Bearer <access_token>` and `apikey: <anon key>` headers for PostgREST requests.
+
+Edited file: `frontend/src/lib/supabase.ts`
+```ts
+client = createClient(url, anon, {
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  global: { headers: { apikey: anon } },
+})
+
+export function createAuthedClient(): SupabaseClient {
+  const headers: Record<string, string> = {}
+  if (currentAccessToken) headers['Authorization'] = `Bearer ${currentAccessToken}`
+  if (anon) headers['apikey'] = anon
+  return createClient(url, anon, { auth: { ... }, global: { headers } })
+}
+```
+
+### Resolution C: Ensure the thread exists (FK)
+- Before inserting a message, upsert the thread on the backend:
+
+Edited file: `app/api/chat/threads/ensure/route.ts` (POST)
+```ts
+const { error } = await supabase
+  .from('chat_threads')
+  .upsert({ thread_id, user_a_mongo_id, user_b_mongo_id, user_a_supabase_id, user_b_supabase_id }, { onConflict: 'thread_id' })
+```
+
+If this troubleshooting change is undesired later, revert the RPC call to a direct insert and ensure RLS policy/headers are correctly configured.
+
