@@ -271,7 +271,7 @@ export default function ChoppingBoardPage() {
 					isOpen={profileModalOpen}
 					userId={selectedUserId}
 					onClose={() => { setProfileModalOpen(false); setSelectedUserId(null) }}
-					onChat={(uid) => { if (uid) setSelectedUserId(uid); setChatOpen(true) }}
+					onChat={(uid) => { if (uid) setSelectedUserId(uid); setProfileModalOpen(false); setChatOpen(true) }}
 					onChop={() => { /* integrate when chop is built */ }}
 				/>
 				<ChatModal

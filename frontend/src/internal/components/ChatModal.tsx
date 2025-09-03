@@ -45,14 +45,16 @@ export default function ChatModal(props: ChatModalProps) {
 
   useEffect(() => {
     if (!isOpen) return
-    // Focus the textarea on open
-    const t = textareaRef.current
-    if (t) {
-      t.focus()
-      // Move caret to end
-      const len = t.value.length
-      try { t.setSelectionRange(len, len) } catch {}
-    }
+    // Focus the textarea on open, but defer one tick to avoid layout issues
+    const id = window.setTimeout(() => {
+      const t = textareaRef.current
+      if (t) {
+        t.focus()
+        const len = t.value.length
+        try { t.setSelectionRange(len, len) } catch {}
+      }
+    }, 0)
+    return () => window.clearTimeout(id)
   }, [isOpen])
 
   // Basic focus trap within the modal
@@ -99,10 +101,12 @@ export default function ChatModal(props: ChatModalProps) {
 
   useEffect(() => {
     if (!isOpen) return
-    // Auto scroll to bottom on open and whenever messages change (if near bottom)
-    const el = scrollRef.current
-    if (!el) return
-    el.scrollTop = el.scrollHeight
+    const id = window.setTimeout(() => {
+      const el = scrollRef.current
+      if (!el) return
+      el.scrollTop = el.scrollHeight
+    }, 0)
+    return () => window.clearTimeout(id)
   }, [isOpen, messages.length])
 
   // Compute myMongoId and threadId when opened
@@ -182,6 +186,8 @@ export default function ChatModal(props: ChatModalProps) {
   }, [isOpen, threadId, myMongoId])
 
   if (!isOpen) return null
+  // If otherUserId is missing, show a minimal fail-safe card instead of crashing
+  const invalidTarget = !otherUserId || otherUserId.length === 0
 
   function handleOverlayClick(e: React.MouseEvent<HTMLDivElement>) {
     // Intentionally do not close on backdrop click, and block propagation
@@ -268,6 +274,11 @@ export default function ChatModal(props: ChatModalProps) {
           <div style={styles.headerTitle}>{otherUserLabel || 'Chat'}</div>
           <button type="button" onClick={onClose} aria-label="Close" style={styles.closeBtn}>×</button>
         </div>
+        {invalidTarget ? (
+          <div style={styles.body}>
+            <div style={styles.empty}>No recipient selected.</div>
+          </div>
+        ) : (
         <div ref={scrollRef} style={styles.body}>
           {messages.length === 0 ? (
             <div style={styles.empty}>
@@ -291,6 +302,7 @@ export default function ChatModal(props: ChatModalProps) {
             </div>
           )}
         </div>
+        )}
         <div style={styles.footer}>
           <textarea
             ref={textareaRef}
