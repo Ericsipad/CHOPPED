@@ -279,7 +279,7 @@ export default function ChatModal(props: ChatModalProps) {
           const token = await authorizeFromBackend()
           if (token) {
             const supabase = getSupabaseClient()
-            const { data: { user } } = await supabase.auth.getUser()
+            await supabase.auth.getUser()
             const localThreadId2 = threadId || (() => {
               const a = myMongoId
               const b = otherUserId
