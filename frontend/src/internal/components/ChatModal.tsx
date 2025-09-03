@@ -305,6 +305,7 @@ export default function ChatModal(props: ChatModalProps) {
           }
         } catch (retryError) {
           console.error('[ChatModal] Token refresh retry failed:', retryError)
+        }
         setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'error' } : msg))
       } finally {
         setIsSending(false)
