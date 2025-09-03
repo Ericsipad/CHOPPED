@@ -26,6 +26,7 @@ export default function ChoppingBoardPage() {
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
     const [browseOpen, setBrowseOpen] = useState(false)
     const [chatOpen, setChatOpen] = useState(false)
+    const [chatDisplayName, setChatDisplayName] = useState<string | null>(null)
 
     useEffect(() => {
         let cancelled = false
@@ -153,6 +154,30 @@ export default function ChoppingBoardPage() {
 		} catch { /* ignore */ }
 	}
 
+	// Fetch display name for chat header when chat opens
+	useEffect(() => {
+		let cancelled = false
+		async function run() {
+			if (!chatOpen || !selectedUserId) {
+				setChatDisplayName(null)
+				return
+			}
+			try {
+				const res = await fetch(getBackendApi(`/api/profile-matching/public?userId=${encodeURIComponent(selectedUserId)}`), { credentials: 'include' })
+				if (!cancelled && res.ok) {
+					const data = await res.json().catch(() => null) as { displayName?: string | null } | null
+					setChatDisplayName(data?.displayName ?? null)
+				} else if (!cancelled) {
+					setChatDisplayName(null)
+				}
+			} catch {
+				if (!cancelled) setChatDisplayName(null)
+			}
+		}
+		run()
+		return () => { cancelled = true }
+	}, [chatOpen, selectedUserId])
+
 	const handleCardClick = (index: number) => {
 		const isActive = index < activeSlotsCount
 		const hasProfile = images[index]?.hasProfile
@@ -252,7 +277,7 @@ export default function ChoppingBoardPage() {
 				<ChatModal
 					isOpen={chatOpen}
 					onClose={() => setChatOpen(false)}
-					otherUserLabel={selectedUserId ? `User ${selectedUserId.slice(0, 6)}` : 'Chat'}
+					otherUserLabel={chatDisplayName || 'Chat'}
 				/>
 				<BrowseModal isOpen={browseOpen} onClose={() => setBrowseOpen(false)} />
 			</div>
