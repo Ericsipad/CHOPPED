@@ -1,4 +1,4 @@
-import { createAuthedClientAsync } from './supabase'
+import { getBackendApi } from './config'
 
 export type DbChatMessage = {
   id: string
@@ -11,28 +11,31 @@ export type DbChatMessage = {
 }
 
 export async function fetchLatestMessages(threadId: string, limit = 50): Promise<DbChatMessage[]> {
-  const supabase = await createAuthedClientAsync()
-  const { data, error } = await supabase
-    .from('chat_messages')
-    .select('*')
-    .eq('thread_id', threadId)
-    .order('created_at', { ascending: false })
-    .limit(limit)
-  if (error) throw error
-  return (data as DbChatMessage[]) || []
+  const response = await fetch(getBackendApi(`/api/chat/history?threadId=${encodeURIComponent(threadId)}&limit=${limit}`), {
+    method: 'GET',
+    credentials: 'include',
+  })
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch messages: ${response.status}`)
+  }
+  
+  const data = await response.json()
+  return data.messages || []
 }
 
 export async function fetchOlderMessages(threadId: string, beforeCreatedAt: string, limit = 50): Promise<DbChatMessage[]> {
-  const supabase = await createAuthedClientAsync()
-  const { data, error } = await supabase
-    .from('chat_messages')
-    .select('*')
-    .eq('thread_id', threadId)
-    .lt('created_at', beforeCreatedAt)
-    .order('created_at', { ascending: false })
-    .limit(limit)
-  if (error) throw error
-  return (data as DbChatMessage[]) || []
+  const response = await fetch(getBackendApi(`/api/chat/history?threadId=${encodeURIComponent(threadId)}&before=${encodeURIComponent(beforeCreatedAt)}&limit=${limit}`), {
+    method: 'GET',
+    credentials: 'include',
+  })
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch older messages: ${response.status}`)
+  }
+  
+  const data = await response.json()
+  return data.messages || []
 }
 
 export async function insertMessage(row: {
@@ -41,16 +44,27 @@ export async function insertMessage(row: {
   recipient_mongo_id: string
   body: string
 }): Promise<DbChatMessage> {
-  const supabase = await createAuthedClientAsync()
-  const { data, error } = await supabase
-    .rpc('insert_chat_message', {
-      _thread_id: row.thread_id,
-      _sender_mongo_id: row.sender_mongo_id,
-      _recipient_mongo_id: row.recipient_mongo_id,
-      _body: row.body,
-    })
-  if (error) throw error
-  return (data as any) as DbChatMessage
+  const response = await fetch(getBackendApi('/api/chat/send'), {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      threadId: row.thread_id,
+      senderMongoId: row.sender_mongo_id,
+      recipientMongoId: row.recipient_mongo_id,
+      body: row.body,
+    }),
+  })
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+    throw new Error(errorData.error || `Failed to send message: ${response.status}`)
+  }
+  
+  const data = await response.json()
+  return data.message
 }
 
 
