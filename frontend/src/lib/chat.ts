@@ -37,19 +37,20 @@ export async function fetchOlderMessages(threadId: string, beforeCreatedAt: stri
 
 export async function insertMessage(row: {
   thread_id: string
-  sender_supabase_id: string
   sender_mongo_id: string
   recipient_mongo_id: string
   body: string
 }): Promise<DbChatMessage> {
   const supabase = createAuthedClient()
   const { data, error } = await supabase
-    .from('chat_messages')
-    .insert([row])
-    .select('*')
-    .single()
+    .rpc('insert_chat_message', {
+      _thread_id: row.thread_id,
+      _sender_mongo_id: row.sender_mongo_id,
+      _recipient_mongo_id: row.recipient_mongo_id,
+      _body: row.body,
+    })
   if (error) throw error
-  return data as DbChatMessage
+  return (data as any) as DbChatMessage
 }
 
 

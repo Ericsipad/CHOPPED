@@ -268,7 +268,6 @@ export default function ChatModal(props: ChatModalProps) {
         // Insert into DB
         await insertMessage({
           thread_id: localThreadId,
-          sender_supabase_id: senderId,
           sender_mongo_id: myMongoId,
           recipient_mongo_id: otherUserId,
           body: text,
@@ -288,7 +287,7 @@ export default function ChatModal(props: ChatModalProps) {
               const b = otherUserId
               return a && b ? (a < b ? `${a}__${b}` : `${b}__${a}`) : ''
             })()
-            await insertMessage({ thread_id: localThreadId2, sender_supabase_id: senderId2!, sender_mongo_id: myMongoId, recipient_mongo_id: otherUserId, body: text })
+            await insertMessage({ thread_id: localThreadId2, sender_mongo_id: myMongoId, recipient_mongo_id: otherUserId, body: text })
             setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'sent' } : msg))
             return
           }
