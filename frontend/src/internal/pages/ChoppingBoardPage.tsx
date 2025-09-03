@@ -10,6 +10,7 @@ import { fetchUserMatchArray, type MatchSlot } from '../../lib/matches'
 import MatchProfileModal from '../components/MatchProfileModal'
 import { getBackendApi } from '../../lib/config'
 import BrowseModal from '../components/BrowseModal'
+import ChatModal from '../components/ChatModal'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -24,6 +25,7 @@ export default function ChoppingBoardPage() {
     const [profileModalOpen, setProfileModalOpen] = useState(false)
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
     const [browseOpen, setBrowseOpen] = useState(false)
+    const [chatOpen, setChatOpen] = useState(false)
 
     useEffect(() => {
         let cancelled = false
@@ -244,8 +246,13 @@ export default function ChoppingBoardPage() {
 					isOpen={profileModalOpen}
 					userId={selectedUserId}
 					onClose={() => { setProfileModalOpen(false); setSelectedUserId(null) }}
-					onChat={() => { /* integrate when chat is built */ }}
+					onChat={() => { setChatOpen(true) }}
 					onChop={() => { /* integrate when chop is built */ }}
+				/>
+				<ChatModal
+					isOpen={chatOpen}
+					onClose={() => setChatOpen(false)}
+					otherUserLabel={selectedUserId ? `User ${selectedUserId.slice(0, 6)}` : 'Chat'}
 				/>
 				<BrowseModal isOpen={browseOpen} onClose={() => setBrowseOpen(false)} />
 			</div>
