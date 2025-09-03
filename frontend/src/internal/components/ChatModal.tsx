@@ -268,6 +268,9 @@ export default function ChatModal(props: ChatModalProps) {
         try {
           const info = getSupabaseRestInfo()
           console.log('[ChatModal] RPC insert to', info.url, { hasToken: !!info.accessToken })
+          const cfgRes = await fetch(getBackendApi('/api/config/supabase'))
+          const cfg = await cfgRes.json().catch(() => ({}))
+          console.log('[ChatModal] Backend-configured Supabase URL matches:', cfg?.url === info.url)
         } catch {}
         await insertMessage({
           thread_id: localThreadId,
