@@ -3,6 +3,8 @@ import { getBackendApi } from './config'
 
 let client: SupabaseClient | null = null
 let currentAccessToken: string | null = null
+let cachedUrl: string | null = null
+let cachedAnon: string | null = null
 
 export function getSupabaseClient(): SupabaseClient {
   if (client) return client
@@ -12,6 +14,8 @@ export function getSupabaseClient(): SupabaseClient {
     console.error('Supabase env vars missing (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)')
     throw new Error('Supabase env vars missing')
   }
+  cachedUrl = url
+  cachedAnon = anon
   client = createClient(url, anon, {
     auth: {
       persistSession: false,
@@ -44,8 +48,8 @@ export function getCurrentAccessToken(): string | null {
 }
 
 export function createAuthedClient(): SupabaseClient {
-  const url = ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_URL || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_URL) as string
-  const anon = ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_ANON_KEY || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY) as string
+  const url = cachedUrl || ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_URL || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_URL) as string
+  const anon = cachedAnon || ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_ANON_KEY || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY) as string
   const headers: Record<string, string> = {}
   if (currentAccessToken) {
     headers['Authorization'] = `Bearer ${currentAccessToken}`
@@ -59,6 +63,12 @@ export function createAuthedClient(): SupabaseClient {
     },
     global: { headers },
   })
+}
+
+export function getSupabaseRestInfo(): { url: string; anon: string; accessToken: string | null } {
+  const url = cachedUrl || ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_URL || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_URL) as string
+  const anon = cachedAnon || ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_ANON_KEY || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY) as string
+  return { url, anon, accessToken: currentAccessToken }
 }
 
 

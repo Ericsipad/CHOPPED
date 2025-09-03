@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { getSupabaseClient, authorizeFromBackend, getCurrentAccessToken } from '../../lib/supabase'
+import { getSupabaseClient, authorizeFromBackend, getCurrentAccessToken, getSupabaseRestInfo } from '../../lib/supabase'
 import { getBackendApi } from '../../lib/config'
 import { fetchLatestMessages, fetchOlderMessages, insertMessage, type DbChatMessage } from '../../lib/chat'
 
@@ -265,6 +265,10 @@ export default function ChatModal(props: ChatModalProps) {
           return a && b ? (a < b ? `${a}__${b}` : `${b}__${a}`) : ''
         })()
         // Insert into DB
+        try {
+          const info = getSupabaseRestInfo()
+          console.log('[ChatModal] RPC insert to', info.url, { hasToken: !!info.accessToken })
+        } catch {}
         await insertMessage({
           thread_id: localThreadId,
           sender_mongo_id: myMongoId,
@@ -285,6 +289,10 @@ export default function ChatModal(props: ChatModalProps) {
               const b = otherUserId
               return a && b ? (a < b ? `${a}__${b}` : `${b}__${a}`) : ''
             })()
+            try {
+              const info = getSupabaseRestInfo()
+              console.log('[ChatModal] RPC retry insert to', info.url, { hasToken: !!info.accessToken })
+            } catch {}
             await insertMessage({ thread_id: localThreadId2, sender_mongo_id: myMongoId, recipient_mongo_id: otherUserId, body: text })
             setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'sent' } : msg))
             return
