@@ -1,4 +1,4 @@
-import { createAuthedClient } from './supabase'
+import { createAuthedClientAsync } from './supabase'
 
 export type DbChatMessage = {
   id: string
@@ -11,7 +11,7 @@ export type DbChatMessage = {
 }
 
 export async function fetchLatestMessages(threadId: string, limit = 50): Promise<DbChatMessage[]> {
-  const supabase = createAuthedClient()
+  const supabase = await createAuthedClientAsync()
   const { data, error } = await supabase
     .from('chat_messages')
     .select('*')
@@ -23,7 +23,7 @@ export async function fetchLatestMessages(threadId: string, limit = 50): Promise
 }
 
 export async function fetchOlderMessages(threadId: string, beforeCreatedAt: string, limit = 50): Promise<DbChatMessage[]> {
-  const supabase = createAuthedClient()
+  const supabase = await createAuthedClientAsync()
   const { data, error } = await supabase
     .from('chat_messages')
     .select('*')
@@ -41,7 +41,7 @@ export async function insertMessage(row: {
   recipient_mongo_id: string
   body: string
 }): Promise<DbChatMessage> {
-  const supabase = createAuthedClient()
+  const supabase = await createAuthedClientAsync()
   const { data, error } = await supabase
     .rpc('insert_chat_message', {
       _thread_id: row.thread_id,
