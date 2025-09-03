@@ -1,4 +1,4 @@
-import { createAuthedClient, getSupabaseClient } from './supabase'
+import { createAuthedClient } from './supabase'
 
 export type DbChatMessage = {
   id: string
