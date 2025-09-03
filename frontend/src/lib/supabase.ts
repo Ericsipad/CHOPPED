@@ -6,10 +6,11 @@ let currentAccessToken: string | null = null
 
 export function getSupabaseClient(): SupabaseClient {
   if (client) return client
-  const url = (import.meta as any).env?.NEXT_PUBLIC_SUPABASE_URL as string
-  const anon = (import.meta as any).env?.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+  const url = ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_URL || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_URL) as string
+  const anon = ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_ANON_KEY || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY) as string
   if (!url || !anon) {
-    throw new Error('Supabase env vars missing (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)')
+    console.error('Supabase env vars missing (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)')
+    throw new Error('Supabase env vars missing')
   }
   client = createClient(url, anon, {
     auth: {
@@ -17,9 +18,7 @@ export function getSupabaseClient(): SupabaseClient {
       autoRefreshToken: false,
       detectSessionInUrl: false,
     },
-    global: {
-      headers: {},
-    },
+    global: { headers: { apikey: anon } },
   })
   return client
 }
@@ -45,12 +44,13 @@ export function getCurrentAccessToken(): string | null {
 }
 
 export function createAuthedClient(): SupabaseClient {
-  const url = (import.meta as any).env?.NEXT_PUBLIC_SUPABASE_URL as string
-  const anon = (import.meta as any).env?.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+  const url = ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_URL || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_URL) as string
+  const anon = ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_ANON_KEY || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY) as string
   const headers: Record<string, string> = {}
   if (currentAccessToken) {
     headers['Authorization'] = `Bearer ${currentAccessToken}`
   }
+  if (anon) headers['apikey'] = anon
   return createClient(url, anon, {
     auth: {
       persistSession: false,
