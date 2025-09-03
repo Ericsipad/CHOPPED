@@ -136,9 +136,9 @@ export default function ChatModal(props: ChatModalProps) {
   useEffect(() => {
     if (!isOpen || !threadId) return
     let cancelled = false
-    const supabase = getSupabaseClient()
     async function run() {
       try {
+        const supabase = getSupabaseClient()
         const token = await authorizeFromBackend()
         if (!token || cancelled) return
         const { data: { user } } = await supabase.auth.getUser()
@@ -186,7 +186,8 @@ export default function ChatModal(props: ChatModalProps) {
   }, [isOpen, threadId, myMongoId])
 
   if (!isOpen) return null
-  // If otherUserId is missing, show a minimal fail-safe card instead of crashing
+  // Allow modal to render visually before any async logic
+  // We only guard async effects using threadId; UI should still render
   const invalidTarget = !otherUserId || otherUserId.length === 0
 
   function handleOverlayClick(e: React.MouseEvent<HTMLDivElement>) {
