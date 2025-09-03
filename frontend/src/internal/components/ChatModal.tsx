@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { getSupabaseClient, authorizeFromBackend, getCurrentAccessToken, getSupabaseRestInfo } from '../../lib/supabase'
+import { getSupabaseClient, authorizeFromBackend, getCurrentAccessToken } from '../../lib/supabase'
 import { getBackendApi } from '../../lib/config'
 import { fetchLatestMessages, fetchOlderMessages, insertMessage, type DbChatMessage } from '../../lib/chat'
 
