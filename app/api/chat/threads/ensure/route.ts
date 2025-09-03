@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getUsersCollection } from '@/lib/mongo'
+import { ObjectId } from 'mongodb'
 
 const ALLOWED_METHODS = ['POST', 'OPTIONS'] as const
 
@@ -58,15 +59,21 @@ export async function POST(req: Request) {
     }
 
     const users = await getUsersCollection()
-    const meDoc = await users.findOne({ supabaseUserId: user.id })
+    type UserDoc = { _id: ObjectId; supabaseUserId?: string }
+    const meDoc = await users.findOne<UserDoc>({ supabaseUserId: user.id })
     if (!meDoc?._id) {
       return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
     }
 
-    const otherDoc = await users.findOne({ _id: (meDoc as any)?._id?.constructor ? (new (meDoc as any)._id.constructor(otherUserMongoId)) : otherUserMongoId })
-    // Fallback: attempt by string match of _id
-    const other = otherDoc || await users.findOne({ _id: (otherUserMongoId as any) })
-    if (!other?._id || !other?.supabaseUserId) {
+    let otherObjectId: ObjectId
+    try {
+      otherObjectId = new ObjectId(otherUserMongoId)
+    } catch {
+      return NextResponse.json({ error: 'Invalid otherUserMongoId' }, { status: 400, headers })
+    }
+
+    const other = await users.findOne<UserDoc>({ _id: otherObjectId })
+    if (!other?._id || !other.supabaseUserId) {
       return NextResponse.json({ error: 'Other user not found' }, { status: 404, headers })
     }
 

@@ -177,7 +177,7 @@ export default function ChatModal(props: ChatModalProps) {
         // ignore
       }
     }
-    const cleanupPromise = run()
+    run()
     return () => { cancelled = true }
   }, [isOpen, threadId, myMongoId])
 
