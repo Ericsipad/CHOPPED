@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { getSupabaseClient, authorizeFromBackend } from '../../lib/supabase'
+import { getSupabaseClient, authorizeFromBackend, getCurrentAccessToken } from '../../lib/supabase'
 import { getBackendApi } from '../../lib/config'
 import { fetchLatestMessages, fetchOlderMessages, insertMessage, type DbChatMessage } from '../../lib/chat'
 
@@ -214,6 +214,10 @@ export default function ChatModal(props: ChatModalProps) {
   function handleSend() {
     const text = pendingText.trim()
     if (!text) return
+    if (!otherUserId) {
+      console.error('[ChatModal] Missing otherUserId; cannot send')
+      return
+    }
     setIsSending(true)
     const optimistic: ChatMessage = {
       id: 'local-' + Date.now().toString(36),
@@ -226,27 +230,65 @@ export default function ChatModal(props: ChatModalProps) {
     setPendingText('')
     ;(async () => {
       try {
+        // Ensure auth token available for PostgREST
+        if (!getCurrentAccessToken()) {
+          await authorizeFromBackend().catch(() => null)
+        }
+        // Ensure we know Supabase user id for RLS equality
+        const supabase = getSupabaseClient()
+        if (!mySupabaseId) {
+          const { data: { user } } = await supabase.auth.getUser()
+          if (user?.id) setMySupabaseId(user.id)
+        }
+        const senderId = mySupabaseId || (await supabase.auth.getUser()).data.user?.id || ''
+        // Ensure thread exists (idempotent)
+        try {
+          await fetch(getBackendApi('/api/chat/threads/ensure'), {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ otherUserMongoId: otherUserId }),
+          })
+        } catch {}
+        // Compute local thread id if state not yet updated
+        const localThreadId = threadId || (() => {
+          if (!myMongoId) {
+            try {
+              const raw = localStorage.getItem('chopped.mongoUserId')
+              if (raw) {
+                const parsed = JSON.parse(raw) as { id?: string }
+                if (parsed?.id) setMyMongoId(parsed.id)
+              }
+            } catch {}
+          }
+          const a = myMongoId
+          const b = otherUserId
+          return a && b ? (a < b ? `${a}__${b}` : `${b}__${a}`) : ''
+        })()
         // Insert into DB
         await insertMessage({
-          thread_id: threadId,
-          sender_supabase_id: mySupabaseId,
+          thread_id: localThreadId,
+          sender_supabase_id: senderId,
           sender_mongo_id: myMongoId,
-          recipient_mongo_id: otherUserId || '',
+          recipient_mongo_id: otherUserId,
           body: text,
         })
         setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'sent' } : msg))
-      } catch {
+      } catch (e) {
+        console.error('[ChatModal] send failed', e)
         // Try to refresh token once, then retry insert
         try {
           const token = await authorizeFromBackend()
           if (token) {
-            await insertMessage({
-              thread_id: threadId,
-              sender_supabase_id: mySupabaseId,
-              sender_mongo_id: myMongoId,
-              recipient_mongo_id: otherUserId || '',
-              body: text,
-            })
+            const supabase = getSupabaseClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            const senderId2 = user?.id || mySupabaseId
+            const localThreadId2 = threadId || (() => {
+              const a = myMongoId
+              const b = otherUserId
+              return a && b ? (a < b ? `${a}__${b}` : `${b}__${a}`) : ''
+            })()
+            await insertMessage({ thread_id: localThreadId2, sender_supabase_id: senderId2!, sender_mongo_id: myMongoId, recipient_mongo_id: otherUserId, body: text })
             setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'sent' } : msg))
             return
           }
