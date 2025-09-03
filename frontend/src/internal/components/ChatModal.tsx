@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { getSupabaseClient, authorizeFromBackend } from '../../lib/supabase'
+import { getBackendApi } from '../../lib/config'
+import { fetchLatestMessages, fetchOlderMessages, insertMessage, type DbChatMessage } from '../../lib/chat'
 
 type ChatMessage = {
   id: string
@@ -13,16 +16,21 @@ type ChatModalProps = {
   onClose: () => void
   otherUserLabel?: string
   initialMessages?: ChatMessage[]
+  otherUserId?: string
 }
 
 export default function ChatModal(props: ChatModalProps) {
-  const { isOpen, onClose, otherUserLabel, initialMessages } = props
+  const { isOpen, onClose, otherUserLabel, initialMessages, otherUserId } = props
   const [messages, setMessages] = useState<ChatMessage[]>(() => initialMessages || [])
   const [pendingText, setPendingText] = useState('')
   const [isSending, setIsSending] = useState(false)
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const dialogRef = useRef<HTMLDivElement | null>(null)
+  const [threadId, setThreadId] = useState<string>('')
+  const [myMongoId, setMyMongoId] = useState<string>('')
+  const [mySupabaseId, setMySupabaseId] = useState<string>('')
+  const [loadingOlder, setLoadingOlder] = useState(false)
 
   // Colors (best guess per request)
   const magenta = '#ff2ec6'
@@ -97,11 +105,103 @@ export default function ChatModal(props: ChatModalProps) {
     el.scrollTop = el.scrollHeight
   }, [isOpen, messages.length])
 
+  // Compute myMongoId and threadId when opened
+  useEffect(() => {
+    if (!isOpen) return
+    try {
+      const raw = localStorage.getItem('chopped.mongoUserId')
+      if (raw) {
+        const parsed = JSON.parse(raw) as { id?: string; ts?: number }
+        if (parsed && typeof parsed.id === 'string' && parsed.id) {
+          setMyMongoId(parsed.id)
+        }
+      }
+    } catch {}
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isOpen) return
+    if (!myMongoId || !otherUserId) { setThreadId(''); return }
+    const a = myMongoId
+    const b = otherUserId
+    const tid = a < b ? `${a}__${b}` : `${b}__${a}`
+    setThreadId(tid)
+  }, [isOpen, myMongoId, otherUserId])
+
+  // Fetch access token, set realtime auth, fetch supabase user id, load latest messages, subscribe
+  useEffect(() => {
+    if (!isOpen || !threadId) return
+    let cancelled = false
+    const supabase = getSupabaseClient()
+    async function run() {
+      try {
+        const token = await authorizeFromBackend()
+        if (!token || cancelled) return
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user && !cancelled) setMySupabaseId(user.id)
+
+        // Ensure thread exists via backend to satisfy FK
+        try {
+          const ensureRes = await fetch(getBackendApi('/api/chat/threads/ensure'), {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ otherUserMongoId: otherUserId }),
+          })
+          if (!ensureRes.ok) {
+            // proceed anyway; insert will fail if FK missing
+          }
+        } catch {}
+
+        const latest = await fetchLatestMessages(threadId, 50)
+        if (cancelled) return
+        const mapped = latest
+          .slice()
+          .reverse()
+          .map(rowToUi(myMongoId))
+        setMessages(mapped)
+
+        const channel = supabase.channel(`chat:${threadId}`, { config: { broadcast: { self: false }, presence: { key: myMongoId }, private: true } as any })
+        channel.on('broadcast', { event: 'INSERT' }, (payload: any) => {
+          try {
+            const rec = (payload?.payload?.record || payload?.record) as DbChatMessage | undefined
+            if (!rec || rec.thread_id !== threadId) return
+            const ui = rowToUi(myMongoId)(rec)
+            setMessages((m) => [...m, ui])
+          } catch {}
+        })
+        await channel.subscribe()
+
+        return () => { supabase.removeChannel(channel) }
+      } catch {
+        // ignore
+      }
+    }
+    const cleanupPromise = run()
+    return () => { cancelled = true }
+  }, [isOpen, threadId, myMongoId])
+
   if (!isOpen) return null
 
   function handleOverlayClick(e: React.MouseEvent<HTMLDivElement>) {
     // Intentionally do not close on backdrop click, and block propagation
     e.stopPropagation()
+  }
+
+  async function handleLoadOlder() {
+    if (loadingOlder || messages.length === 0 || !threadId) return
+    setLoadingOlder(true)
+    try {
+      const oldest = messages[0]
+      const rows = await fetchOlderMessages(threadId, new Date(oldest.createdAt).toISOString(), 50)
+      const mapped = rows
+        .slice()
+        .reverse()
+        .map(rowToUi(myMongoId))
+      setMessages((m) => [...mapped, ...m])
+    } finally {
+      setLoadingOlder(false)
+    }
   }
 
   function handleSend() {
@@ -117,12 +217,38 @@ export default function ChatModal(props: ChatModalProps) {
     }
     setMessages((m) => [...m, optimistic])
     setPendingText('')
-
-    // Stubbed send: simulate latency then mark sent
-    window.setTimeout(() => {
-      setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'sent' } : msg))
-      setIsSending(false)
-    }, 500)
+    ;(async () => {
+      try {
+        // Insert into DB
+        await insertMessage({
+          thread_id: threadId,
+          sender_supabase_id: mySupabaseId,
+          sender_mongo_id: myMongoId,
+          recipient_mongo_id: otherUserId || '',
+          body: text,
+        })
+        setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'sent' } : msg))
+      } catch {
+        // Try to refresh token once, then retry insert
+        try {
+          const token = await authorizeFromBackend()
+          if (token) {
+            await insertMessage({
+              thread_id: threadId,
+              sender_supabase_id: mySupabaseId,
+              sender_mongo_id: myMongoId,
+              recipient_mongo_id: otherUserId || '',
+              body: text,
+            })
+            setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'sent' } : msg))
+            return
+          }
+        } catch {}
+        setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'error' } : msg))
+      } finally {
+        setIsSending(false)
+      }
+    })()
   }
 
   function handleTextareaKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -149,6 +275,9 @@ export default function ChatModal(props: ChatModalProps) {
             </div>
           ) : (
             <div style={styles.list}>
+              <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0' }}>
+                <button type="button" onClick={handleLoadOlder} disabled={loadingOlder || !threadId} style={{ ...styles.sendBtn, opacity: (loadingOlder || !threadId) ? 0.6 : 1 }}>Load older</button>
+              </div>
               {messages.map((msg) => (
                 <MessageBubble
                   key={msg.id}
@@ -215,6 +344,16 @@ function toRgba(hex: string, alpha: number): string {
   const g = (bigint >> 8) & 255
   const b = bigint & 255
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+function rowToUi(myMongoId: string) {
+  return (row: DbChatMessage): ChatMessage => ({
+    id: row.id,
+    text: row.body,
+    sender: row.sender_mongo_id === myMongoId ? 'me' : 'other',
+    createdAt: new Date(row.created_at).getTime(),
+    status: 'sent',
+  })
 }
 
 const styles: Record<string, React.CSSProperties> = {

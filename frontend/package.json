@@ -17,6 +17,7 @@
     "@chakra-ui/react": "^3.25.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@supabase/supabase-js": "^2.57.0",
     "chopped": "file:..",
     "country-state-city": "^3.2.1",
     "framer-motion": "^12.23.12",

@@ -271,13 +271,14 @@ export default function ChoppingBoardPage() {
 					isOpen={profileModalOpen}
 					userId={selectedUserId}
 					onClose={() => { setProfileModalOpen(false); setSelectedUserId(null) }}
-					onChat={() => { setChatOpen(true) }}
+					onChat={(uid) => { if (uid) setSelectedUserId(uid); setChatOpen(true) }}
 					onChop={() => { /* integrate when chop is built */ }}
 				/>
 				<ChatModal
 					isOpen={chatOpen}
 					onClose={() => setChatOpen(false)}
 					otherUserLabel={chatDisplayName || 'Chat'}
+					otherUserId={selectedUserId || ''}
 				/>
 				<BrowseModal isOpen={browseOpen} onClose={() => setBrowseOpen(false)} />
 			</div>
