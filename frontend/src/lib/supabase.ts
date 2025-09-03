@@ -8,12 +8,20 @@ let cachedAnon: string | null = null
 
 export function getSupabaseClient(): SupabaseClient {
   if (client) return client
-  const url = ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_URL || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_URL) as string
-  const anon = ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_ANON_KEY || (window as any)?.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY) as string
+  
+  // Try multiple sources for Supabase configuration
+  const url = ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_URL || 
+               (window as any)?.env?.NEXT_PUBLIC_SUPABASE_URL ||
+               'https://pnvbhxmemotrrmjyacen.supabase.co') as string // Fallback to known project URL
+  const anon = ((import.meta as any).env?.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
+                (window as any)?.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBudmJoeG1lbW90cnJtanlhY2VuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxNTAwNDAsImV4cCI6MjA3MTcyNjA0MH0.Xquu_IYlFMvTZ1wdaJHPLaIsyqjRJn5myQ2z1FsAF5s') as string // Fallback to known anon key
+  
   if (!url || !anon) {
     console.error('Supabase env vars missing (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)')
     throw new Error('Supabase env vars missing')
   }
+  
   cachedUrl = url
   cachedAnon = anon
   client = createClient(url, anon, {
@@ -68,8 +76,23 @@ export async function getSupabaseClientAsync(): Promise<SupabaseClient> {
   try {
     return getSupabaseClient()
   } catch {
+    // Try to load config from backend as fallback
     const cfg = await loadConfigFromBackend()
-    if (!cfg) throw new Error('Supabase config unavailable')
+    if (!cfg) {
+      console.warn('Backend config unavailable, using hardcoded fallback')
+      // Use known project configuration as final fallback
+      const url = 'https://pnvbhxmemotrrmjyacen.supabase.co'
+      const anon = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBudmJoeG1lbW90cnJtanlhY2VuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxNTAwNDAsImV4cCI6MjA3MTcyNjA0MH0.Xquu_IYlFMvTZ1wdaJHPLaIsyqjRJn5myQ2z1FsAF5s'
+      cachedUrl = url
+      cachedAnon = anon
+      client = createClient(url, anon, {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+        global: { headers: { apikey: anon } },
+      })
+      return client
+    }
+    cachedUrl = cfg.url
+    cachedAnon = cfg.anon
     client = createClient(cfg.url, cfg.anon, {
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
       global: { headers: { apikey: cfg.anon } },

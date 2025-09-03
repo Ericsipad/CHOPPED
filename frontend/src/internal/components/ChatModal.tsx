@@ -141,6 +141,10 @@ export default function ChatModal(props: ChatModalProps) {
         const supabase = getSupabaseClient()
         const token = await authorizeFromBackend()
         if (!token || cancelled) return
+        
+        // ✅ CRITICAL FIX: Set realtime auth for private channels
+        await supabase.realtime.setAuth(token)
+        
         const { data: { user } } = await supabase.auth.getUser()
         if (user && !cancelled) setMySupabaseId(user.id)
 
@@ -165,14 +169,23 @@ export default function ChatModal(props: ChatModalProps) {
           .map(rowToUi(myMongoId))
         setMessages(mapped)
 
-        const channel = supabase.channel(`chat:${threadId}`, { config: { broadcast: { self: false }, presence: { key: myMongoId }, private: true } as any })
+        // ✅ CRITICAL FIX: Simplified private channel configuration
+        const channel = supabase.channel(`chat:${threadId}`, { 
+          config: { private: true }
+        })
+        
+        // ✅ CRITICAL FIX: Listen for broadcast events from database trigger
         channel.on('broadcast', { event: 'INSERT' }, (payload: any) => {
           try {
-            const rec = (payload?.payload?.record || payload?.record) as DbChatMessage | undefined
+            console.log('[ChatModal] Received broadcast:', payload)
+            // The trigger sends: { event: 'INSERT', payload: { record: DbChatMessage } }
+            const rec = payload?.payload?.record as DbChatMessage | undefined
             if (!rec || rec.thread_id !== threadId) return
             const ui = rowToUi(myMongoId)(rec)
             setMessages((m) => [...m, ui])
-          } catch {}
+          } catch (e) {
+            console.error('[ChatModal] Error processing broadcast:', e)
+          }
         })
         await channel.subscribe()
 
@@ -264,14 +277,7 @@ export default function ChatModal(props: ChatModalProps) {
           const b = otherUserId
           return a && b ? (a < b ? `${a}__${b}` : `${b}__${a}`) : ''
         })()
-        // Insert into DB
-        try {
-          const info = getSupabaseRestInfo()
-          console.log('[ChatModal] RPC insert to', info.url, { hasToken: !!info.accessToken })
-          const cfgRes = await fetch(getBackendApi('/api/config/supabase'))
-          const cfg = await cfgRes.json().catch(() => ({}))
-          console.log('[ChatModal] Backend-configured Supabase URL matches:', cfg?.url === info.url)
-        } catch {}
+        // Insert into DB using RPC function
         await insertMessage({
           thread_id: localThreadId,
           sender_mongo_id: myMongoId,
@@ -286,21 +292,19 @@ export default function ChatModal(props: ChatModalProps) {
           const token = await authorizeFromBackend()
           if (token) {
             const supabase = getSupabaseClient()
+            await supabase.realtime.setAuth(token)
             await supabase.auth.getUser()
             const localThreadId2 = threadId || (() => {
               const a = myMongoId
               const b = otherUserId
               return a && b ? (a < b ? `${a}__${b}` : `${b}__${a}`) : ''
             })()
-            try {
-              const info = getSupabaseRestInfo()
-              console.log('[ChatModal] RPC retry insert to', info.url, { hasToken: !!info.accessToken })
-            } catch {}
             await insertMessage({ thread_id: localThreadId2, sender_mongo_id: myMongoId, recipient_mongo_id: otherUserId, body: text })
             setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'sent' } : msg))
             return
           }
-        } catch {}
+        } catch (retryError) {
+          console.error('[ChatModal] Token refresh retry failed:', retryError)
         setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'error' } : msg))
       } finally {
         setIsSending(false)
