@@ -296,7 +296,9 @@ export default function ChatModal(props: ChatModalProps) {
           recipient_mongo_id: otherUserId,
           body: text,
         })
-        setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'sent' } : msg))
+        
+        // Remove the optimistic message since the real-time broadcast will show the actual message
+        setMessages((m) => m.filter((msg) => msg.id !== optimistic.id))
       } catch (e) {
         console.error('[ChatModal] send failed', e)
         // Try to refresh token once, then retry insert
@@ -312,7 +314,9 @@ export default function ChatModal(props: ChatModalProps) {
               return a && b ? (a < b ? `${a}__${b}` : `${b}__${a}`) : ''
             })()
             await insertMessage({ thread_id: localThreadId2, sender_mongo_id: myMongoId, recipient_mongo_id: otherUserId, body: text })
-            setMessages((m) => m.map((msg) => msg.id === optimistic.id ? { ...msg, status: 'sent' } : msg))
+            
+            // Remove the optimistic message since the real-time broadcast will show the actual message
+            setMessages((m) => m.filter((msg) => msg.id !== optimistic.id))
             return
           }
         } catch (retryError) {
