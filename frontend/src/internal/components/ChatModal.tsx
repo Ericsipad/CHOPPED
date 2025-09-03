@@ -240,7 +240,6 @@ export default function ChatModal(props: ChatModalProps) {
           const { data: { user } } = await supabase.auth.getUser()
           if (user?.id) setMySupabaseId(user.id)
         }
-        const senderId = mySupabaseId || (await supabase.auth.getUser()).data.user?.id || ''
         // Ensure thread exists (idempotent)
         try {
           await fetch(getBackendApi('/api/chat/threads/ensure'), {
@@ -281,7 +280,6 @@ export default function ChatModal(props: ChatModalProps) {
           if (token) {
             const supabase = getSupabaseClient()
             const { data: { user } } = await supabase.auth.getUser()
-            const senderId2 = user?.id || mySupabaseId
             const localThreadId2 = threadId || (() => {
               const a = myMongoId
               const b = otherUserId
