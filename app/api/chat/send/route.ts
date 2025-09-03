@@ -63,19 +63,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400, headers })
     }
 
-    // Ensure thread exists first
-    try {
-      await fetch(`${req.url.replace('/chat/send', '/chat/threads/ensure')}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Cookie': req.headers.get('cookie') || '',
-        },
-        body: JSON.stringify({ otherUserMongoId: body.recipientMongoId }),
-      })
-    } catch {
-      // Continue anyway - the RPC will fail if thread doesn't exist
-    }
+    // For now, skip thread ensure and let the RPC handle it
+    // The existing /api/chat/threads/ensure endpoint can be called separately if needed
 
     // Use the RPC function to insert the message
     const { data, error } = await supabase.rpc('insert_chat_message', {

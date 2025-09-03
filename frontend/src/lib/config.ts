@@ -7,13 +7,18 @@ export function getBackendUrl(): string {
   const fromNextPublic = (import.meta as unknown as { env?: ImportMetaEnv }).env?.NEXT_PUBLIC_BACKEND_URL
   const fromWindow = (window as unknown as { env?: WindowEnv }).env?.NEXT_PUBLIC_API_BASE_URL || (window as unknown as { env?: WindowEnv }).env?.VITE_BACKEND_URL || (window as unknown as { env?: WindowEnv }).env?.NEXT_PUBLIC_BACKEND_URL
   let url = (fromNextPublicApi || fromVite || fromNextPublic || fromWindow) as string | undefined
+  
+  // For static deployment, hardcode the backend URL since env vars aren't available
   if (!url) {
-    console.warn('Backend URL not configured (expected NEXT_PUBLIC_API_BASE_URL, VITE_BACKEND_URL, or NEXT_PUBLIC_BACKEND_URL).')
+    // TODO: Replace with your actual backend URL
+    url = 'https://your-backend-url.com' // You need to replace this with the actual backend URL
+    console.log('[Config] Using hardcoded backend URL:', url)
   }
+  
   if (url) {
     url = url.replace(/\/+$/g, '')
   }
-  return (url as string)
+  return url
 }
 
 export function getFrontendUrl(): string {

@@ -157,9 +157,15 @@ export default function ChatModal(props: ChatModalProps) {
             body: JSON.stringify({ otherUserMongoId: otherUserId }),
           })
           if (!ensureRes.ok) {
+            const errorText = await ensureRes.text().catch(() => 'Unknown error')
+            console.error('[ChatModal] Thread ensure failed:', ensureRes.status, errorText)
             // proceed anyway; insert will fail if FK missing
+          } else {
+            console.log('[ChatModal] Thread ensure successful')
           }
-        } catch {}
+        } catch (error) {
+          console.error('[ChatModal] Thread ensure request failed:', error)
+        }
 
         const latest = await fetchLatestMessages(threadId, 50)
         if (cancelled) return
@@ -255,13 +261,19 @@ export default function ChatModal(props: ChatModalProps) {
         }
         // Ensure thread exists (idempotent)
         try {
-          await fetch(getBackendApi('/api/chat/threads/ensure'), {
+          const ensureRes = await fetch(getBackendApi('/api/chat/threads/ensure'), {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ otherUserMongoId: otherUserId }),
           })
-        } catch {}
+          if (!ensureRes.ok) {
+            const errorText = await ensureRes.text().catch(() => 'Unknown error')
+            console.error('[ChatModal] Send - Thread ensure failed:', ensureRes.status, errorText)
+          }
+        } catch (error) {
+          console.error('[ChatModal] Send - Thread ensure request failed:', error)
+        }
         // Compute local thread id if state not yet updated
         const localThreadId = threadId || (() => {
           if (!myMongoId) {
