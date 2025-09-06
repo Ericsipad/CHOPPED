@@ -25,6 +25,9 @@ html, body, #root {
 	height: 100%;
 	background: #000000;
 	border-bottom: none;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 /* Nav layout inside header */
@@ -442,4 +445,182 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	.subscription-button-container {
 		justify-content: center;
 	}
+}
+
+/* ===== USER INDICATOR STYLES ===== */
+
+/* User indicator container - handles positioning */
+.user-indicator-container {
+	position: relative;
+}
+
+/* Main user indicator - avatar + name + chevron */
+.user-indicator {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	padding: 6px 12px;
+	border-radius: 8px;
+	transition: background-color 160ms ease, transform 160ms ease;
+	user-select: none;
+}
+
+.user-indicator:hover {
+	background-color: rgba(255, 255, 255, 0.05);
+	transform: translateY(-1px);
+}
+
+.user-indicator:active {
+	transform: translateY(0);
+}
+
+.user-indicator--active {
+	background-color: rgba(255, 255, 255, 0.08);
+}
+
+.user-indicator--loading {
+	opacity: 0.7;
+	cursor: default;
+}
+
+.user-indicator--loading:hover {
+	background-color: transparent;
+	transform: none;
+}
+
+/* User avatar - silhouette image */
+.user-avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background-color: rgba(255, 255, 255, 0.05);
+	flex-shrink: 0;
+}
+
+/* User name text */
+.user-name {
+	font-family: 'Dancing Script', 'Great Vibes', cursive;
+	font-size: 18px;
+	font-weight: 400;
+	letter-spacing: 0.3px;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+/* Authenticated user name - white */
+.user-name--authenticated {
+	color: #ffffff;
+}
+
+/* Unauthenticated user name - red */
+.user-name--unauthenticated {
+	color: #ff4444;
+	font-weight: 500;
+}
+
+/* Dropdown chevron icon */
+.dropdown-chevron {
+	color: rgba(255, 255, 255, 0.7);
+	transition: transform 160ms ease, color 160ms ease;
+	flex-shrink: 0;
+}
+
+.dropdown-chevron--open {
+	transform: rotate(180deg);
+	color: #ffffff;
+}
+
+/* ===== USER DROPDOWN STYLES ===== */
+
+/* Dropdown container */
+.user-dropdown {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	margin-top: 8px;
+	z-index: 1000;
+	animation: dropdownFadeIn 200ms ease-out;
+}
+
+@keyframes dropdownFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Dropdown content - glass morphism dark theme */
+.user-dropdown__content {
+	min-width: 160px;
+	background: rgba(18, 18, 18, 0.95);
+	backdrop-filter: blur(12px) saturate(120%);
+	-webkit-backdrop-filter: blur(12px) saturate(120%);
+	border-radius: 12px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+	padding: 8px;
+	overflow: hidden;
+}
+
+/* Dropdown menu items */
+.user-dropdown__item {
+	width: 100%;
+	padding: 12px 16px;
+	border: none;
+	background: transparent;
+	color: #ffffff;
+	font-family: 'Dancing Script', 'Great Vibes', cursive;
+	font-size: 16px;
+	font-weight: 400;
+	letter-spacing: 0.3px;
+	text-align: left;
+	cursor: pointer;
+	border-radius: 8px;
+	transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+	display: flex;
+	align-items: center;
+}
+
+.user-dropdown__item:hover {
+	background-color: rgba(255, 255, 255, 0.08);
+	transform: translateX(2px);
+}
+
+.user-dropdown__item:active {
+	background-color: rgba(255, 255, 255, 0.12);
+	transform: translateX(1px);
+}
+
+/* Special styling for logout button */
+.user-dropdown__item--logout:hover {
+	background-color: rgba(255, 68, 68, 0.15);
+	color: #ff6b6b;
+}
+
+/* Special styling for login button */
+.user-dropdown__item--login {
+	color: #4ade80;
+}
+
+.user-dropdown__item--login:hover {
+	background-color: rgba(74, 222, 128, 0.15);
+	color: #6ee7b7;
+}
+
+/* Dropdown item text */
+.user-dropdown__item-text {
+	flex: 1;
+}
+
+/* Dropdown divider */
+.user-dropdown__divider {
+	height: 1px;
+	background: rgba(255, 255, 255, 0.08);
+	margin: 4px 8px;
 }

@@ -1,0 +1,67 @@
+import { forwardRef } from 'react'
+import { logout, redirectToLogin } from '../../lib/auth'
+
+interface UserDropdownProps {
+  isAuthenticated: boolean
+  onClose: () => void
+}
+
+const UserDropdown = forwardRef<HTMLDivElement, UserDropdownProps>(
+  ({ isAuthenticated, onClose }, ref) => {
+    const handleLogout = () => {
+      onClose()
+      logout()
+    }
+
+    const handleLogin = () => {
+      onClose()
+      redirectToLogin()
+    }
+
+    const handleNavigation = (href: string) => {
+      onClose()
+      window.location.href = href
+    }
+
+    return (
+      <div ref={ref} className="user-dropdown">
+        <div className="user-dropdown__content">
+          {isAuthenticated ? (
+            <>
+              <button
+                className="user-dropdown__item"
+                onClick={() => handleNavigation('/account.html')}
+              >
+                <span className="user-dropdown__item-text">Account</span>
+              </button>
+              <button
+                className="user-dropdown__item"
+                onClick={() => handleNavigation('/profile.html')}
+              >
+                <span className="user-dropdown__item-text">Profile</span>
+              </button>
+              <div className="user-dropdown__divider"></div>
+              <button
+                className="user-dropdown__item user-dropdown__item--logout"
+                onClick={handleLogout}
+              >
+                <span className="user-dropdown__item-text">Logout</span>
+              </button>
+            </>
+          ) : (
+            <button
+              className="user-dropdown__item user-dropdown__item--login"
+              onClick={handleLogin}
+            >
+              <span className="user-dropdown__item-text">Login</span>
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+)
+
+UserDropdown.displayName = 'UserDropdown'
+
+export default UserDropdown

@@ -1,4 +1,5 @@
 import Container from './Container'
+import UserIndicator from './UserIndicator'
 import '../styles/internal.css'
 
 export default function TopHeader() {
@@ -35,6 +36,7 @@ export default function TopHeader() {
 							Profile
 						</a>
 					</nav>
+					<UserIndicator />
 				</div>
 			</Container>
 		</header>
