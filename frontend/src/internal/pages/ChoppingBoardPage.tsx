@@ -27,6 +27,7 @@ export default function ChoppingBoardPage() {
     const [browseOpen, setBrowseOpen] = useState(false)
     const [chatOpen, setChatOpen] = useState(false)
     const [chatDisplayName, setChatDisplayName] = useState<string | null>(null)
+    const chopInFlightRef = useRef(false)
 
     useEffect(() => {
         let cancelled = false
@@ -118,6 +119,54 @@ export default function ChoppingBoardPage() {
 			}, 10000)
 		}
 	}
+
+    async function handleChop(targetUserId: string) {
+        if (chopInFlightRef.current) return
+        chopInFlightRef.current = true
+        try {
+            let viewerId: string | null = null
+            try {
+                const raw = localStorage.getItem('chopped.mongoUserId')
+                if (raw) {
+                    const parsed = JSON.parse(raw) as { id?: string; ts?: number }
+                    if (parsed && typeof parsed.id === 'string' && parsed.id) viewerId = parsed.id
+                }
+            } catch { /* ignore */ }
+            if (!viewerId) {
+                // Attempt a sync via /api/user/me as used elsewhere, then retry fetch from localStorage
+                try {
+                    const resMe = await fetch(getBackendApi('/api/user/me'), { credentials: 'include' })
+                    const dataMe = await resMe.json().catch(() => null) as { userId?: string | null }
+                    if (dataMe && typeof dataMe.userId === 'string' && dataMe.userId) {
+                        try { localStorage.setItem('chopped.mongoUserId', JSON.stringify({ id: dataMe.userId, ts: Date.now() })) } catch { /* ignore */ }
+                        viewerId = dataMe.userId
+                    }
+                } catch { /* ignore */ }
+            }
+            if (!viewerId) return
+
+            // Find imageUrl for the selected user from current slots for backend payload
+            const imageUrl = (slots.find(s => s?.matchedUserId === targetUserId)?.mainImageUrl) || null
+
+            await fetch(getBackendApi('/api/user/match'), {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ viewerId, targetUserId, imageUrl, action: 'chop' })
+            })
+
+            setProfileModalOpen(false)
+            setSelectedUserId(null)
+
+            // Refresh matches so UI reflects chopped entry removal
+            try {
+                const refreshed = await fetchUserMatchArray()
+                setSlots(refreshed)
+            } catch { /* ignore */ }
+        } finally {
+            chopInFlightRef.current = false
+        }
+    }
 
 	async function getPendingCount(): Promise<number> {
 		try {
@@ -272,7 +321,7 @@ export default function ChoppingBoardPage() {
 					userId={selectedUserId}
 					onClose={() => { setProfileModalOpen(false); setSelectedUserId(null) }}
 					onChat={(uid) => { if (uid) setSelectedUserId(uid); setProfileModalOpen(false); setChatOpen(true) }}
-					onChop={() => { /* integrate when chop is built */ }}
+					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
 				<ChatModal
 					isOpen={chatOpen}
