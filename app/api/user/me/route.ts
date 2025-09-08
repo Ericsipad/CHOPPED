@@ -76,10 +76,12 @@ export async function GET(req: Request) {
     const mongoUserId = doc?._id?.toString() || null
     const subscription = doc?.subscription || 3
     const subscriptionUpdatedAt = doc?.subscriptionUpdatedAt
+    const stripeCustomerId = (doc as { stripeCustomerId?: string } | null)?.stripeCustomerId || null
     return NextResponse.json({
       userId: mongoUserId,
       subscription,
-      subscriptionUpdatedAt
+      subscriptionUpdatedAt,
+      stripeCustomerId
     }, { headers })
   } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })

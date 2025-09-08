@@ -24,9 +24,23 @@ export default function SubscriptionContainer({ currentSubscription, onSubscribe
   const handleSubscribe = async (slots: number) => {
     setLoading(slots)
     try {
-      // TODO: Integrate with Stripe later
-      console.log(`Subscribing to ${slots} slots`)
-      onSubscribe(slots)
+      const backend = getBackendApi('/api/billing/checkout')
+      const res = await fetch(backend, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: slots }),
+      })
+      if (!res.ok) {
+        console.error('Checkout session creation failed')
+        return
+      }
+      const data = await res.json() as { url?: string }
+      if (data.url) {
+        window.location.replace(data.url)
+        return
+      }
+      console.error('No checkout URL returned')
     } catch (error) {
       console.error('Subscription error:', error)
     } finally {

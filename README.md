@@ -11,6 +11,21 @@
   - Settings  Environment Variables  Add variables matching `.env.example` keys
   - Redeploy to apply changes
 
+### Stripe configuration
+- Required backend env vars:
+  - `STRIPE_SECRET_KEY`
+  - `STRIPE_WEBHOOK_SECRET`
+  - `STRIPE_PRICE_10` (monthly price ID for $10 tier)
+  - `STRIPE_PRICE_20` (monthly price ID for $20 tier)
+  - `STRIPE_PRICE_50` (monthly price ID for $50 tier)
+- Required frontend/base URL:
+  - `NEXT_PUBLIC_FRONTEND_URL` (or `FRONTEND_URL`) used for Checkout success/cancel redirects.
+- Webhooks:
+  - Point Stripe to `POST /api/stripe/webhook` and include events: `checkout.session.completed`, `invoice.payment_succeeded`, `invoice.payment_failed`, `customer.subscription.deleted`.
+- Testing locally:
+  - `stripe listen --forward-to http://localhost:3000/api/stripe/webhook`
+  - Perform test-mode Checkout from the Account page subscription buttons.
+
 ## Database
 - Place schema in `database/schema.sql`.
 - Apply schema (PostgreSQL example):
