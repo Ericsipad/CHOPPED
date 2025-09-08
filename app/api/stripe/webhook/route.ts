@@ -122,7 +122,8 @@ export async function POST(req: Request) {
         const currency = invoice.currency || 'usd'
         const paidAt = new Date((invoice.created || Math.floor(Date.now() / 1000)) * 1000)
         const invoiceId = invoice.id
-        const subscriptionId = typeof invoice.subscription === 'string' ? invoice.subscription : ''
+        // Some Stripe typings may not expose `invoice.subscription`; store empty if unavailable
+        const subscriptionId = ''
 
         await users.updateOne(
           { stripeCustomerId: customerId },
