@@ -1,0 +1,126 @@
+import React, { useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Virtual, Keyboard } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/virtual';
+
+type Profile = {
+  name: string;
+  age: number;
+  height: string;
+  bio: string;
+  thumbnails: string[];
+};
+
+const profiles: Profile[] = Array.from({ length: 100 }, (_, i) => ({
+  name: `User ${i + 1}`,
+  age: 20 + (i % 10),
+  height: `${5 + (i % 2)}'${6 + (i % 4)}"`,
+  bio: `This is a sample bio for User ${i + 1}. They enjoy long walks, good coffee, and scalable infrastructure.`,
+  thumbnails: [
+    `https://picsum.photos/seed/${i}-1/300/400`,
+    `https://picsum.photos/seed/${i}-2/300/400`,
+    `https://picsum.photos/seed/${i}-3/300/400`,
+  ],
+}));
+
+export default function ProfileSwiper() {
+  const [activeBioIndex, setActiveBioIndex] = useState<number | null>(null);
+
+  return (
+    <Swiper
+      modules={[Virtual, Keyboard]}
+      direction="horizontal"
+      virtual
+      keyboard={{ enabled: true }}
+      slidesPerView={1}
+      style={{ width: '100%', height: '100vh' }}
+    >
+      {profiles.map((profile, index) => (
+        <SwiperSlide key={index} virtualIndex={index}>
+          <div className="profile-card">
+            {/* Inner vertical swiper for thumbnails */}
+            <Swiper
+              direction="vertical"
+              nested
+              keyboard={{ enabled: true }}
+              style={{ height: '100%', width: '100%' }}
+            >
+              {profile.thumbnails.map((src, i) => (
+                <SwiperSlide key={i}>
+                  <img src={src} alt={`Thumbnail ${i}`} className="thumbnail" />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* Slideable bio panel */}
+            <div className={`bio-panel ${activeBioIndex === index ? 'visible' : ''}`}>
+              <button className="close-btn" onClick={() => setActiveBioIndex(null)}>×</button>
+              <h3>{profile.name}, {profile.age}</h3>
+              <p>Height: {profile.height}</p>
+              <p>{profile.bio}</p>
+            </div>
+
+            <button className="open-bio" onClick={() => setActiveBioIndex(index)}>View Bio</button>
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  );
+}
+
+
+***********************************************
+CSS STYLES BELOW- add to the module 
+***********************************************
+
+.profile-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.thumbnail {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.open-bio {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 5;
+  padding: 10px 20px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.bio-panel {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #f9f9f9;
+  padding: 20px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  transition: left 0.3s ease;
+  z-index: 10;
+}
+
+.bio-panel.visible {
+  left: 0;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

@@ -64,7 +64,7 @@ export async function GET(req: Request) {
     }
 
     const collection = await getProfileMatchingCollection()
-    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string; country?: string; stateProvince?: string; city?: string; locationAnswer?: string; iam?: string; Iwant?: string; healthCondition?: string; Accept_hiv?: boolean; Accept_Herpes?: boolean; Accept_Autism?: boolean; Accept_Physical_Handicap?: boolean }>({ userId: userDoc._id })
+    const doc = await collection.findOne<{ displayName?: string; age?: number; heightCm?: number; bio?: string; country?: string; stateProvince?: string; city?: string; locationAnswer?: string;   iam?: string; Iwant?: string; healthCondition?: string; Accept_hiv?: boolean; Accept_Herpes?: boolean; Accept_Autism?: boolean; Accept_Physical_Handicap?: boolean }>({ userId: userDoc._id })
     const displayName = typeof doc?.displayName === 'string' ? doc!.displayName : null
     const age = typeof doc?.age === 'number' ? doc!.age : null
     const heightCm = typeof doc?.heightCm === 'number' ? doc!.heightCm : null

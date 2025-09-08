@@ -76,13 +76,50 @@ export async function GET(req: Request) {
   }
 }
 
-// Deprecated direct mutation; plan changes now occur via Stripe Checkout and webhooks.
 export async function POST(req: Request) {
   const allowedOrigins = getAllowedOrigins()
   const requestOrigin = req.headers.get('origin')
   const headers = buildCorsHeaders(allowedOrigins, requestOrigin)
   try {
-    return NextResponse.json({ error: 'Use Stripe Checkout to change subscription' }, { status: 400, headers })
+    const supabase = createSupabaseRouteClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers })
+    }
+
+    const body = await req.json()
+    const { subscription } = body
+
+    // Validate subscription value
+    const validSubscriptions = [3, 10, 20, 50]
+    if (!validSubscriptions.includes(subscription)) {
+      return NextResponse.json({
+        error: 'Invalid subscription value. Must be one of: 3, 10, 20, 50'
+      }, { status: 400, headers })
+    }
+
+    const users = await getUsersCollection()
+    const now = new Date()
+
+    const result = await users.updateOne(
+      { supabaseUserId: user.id },
+      {
+        $set: {
+          subscription,
+          subscriptionUpdatedAt: now,
+          updatedAt: now
+        }
+      }
+    )
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404, headers })
+    }
+
+    return NextResponse.json({
+      subscription,
+      subscriptionUpdatedAt: now
+    }, { headers })
   } catch (error) {
     console.error('Subscription POST error:', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })

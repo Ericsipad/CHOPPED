@@ -8,14 +8,11 @@ export function getBackendUrl(): string {
   const fromWindow = (window as unknown as { env?: WindowEnv }).env?.NEXT_PUBLIC_API_BASE_URL || (window as unknown as { env?: WindowEnv }).env?.VITE_BACKEND_URL || (window as unknown as { env?: WindowEnv }).env?.NEXT_PUBLIC_BACKEND_URL
   let url = (fromNextPublicApi || fromVite || fromNextPublic || fromWindow) as string | undefined
   if (!url) {
-    // Fallback for static deployment - replace with your actual backend URL
-    url = 'https://chopped-backend.ondigitalocean.app' // Replace with actual backend URL
-    console.log('[Config] Using fallback backend URL:', url)
+    console.warn('Backend URL not configured (expected NEXT_PUBLIC_API_BASE_URL, VITE_BACKEND_URL, or NEXT_PUBLIC_BACKEND_URL).')
+    return ''
   }
-  if (url) {
-    url = url.replace(/\/+$/g, '')
-  }
-  return (url as string)
+  url = url.replace(/\/+$/g, '')
+  return url
 }
 
 export function getFrontendUrl(): string {

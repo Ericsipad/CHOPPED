@@ -68,7 +68,7 @@ export async function POST(req: Request) {
   if (!stripeSecret || !webhookSecret) {
     return NextResponse.json({ error: 'Stripe not configured' }, { status: 500, headers })
   }
-  const stripe = new Stripe(stripeSecret, { apiVersion: '2024-11-20.acacia' })
+  const stripe = new Stripe(stripeSecret)
 
   let event: Stripe.Event
   try {
@@ -166,5 +166,6 @@ export async function POST(req: Request) {
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+
 
 
