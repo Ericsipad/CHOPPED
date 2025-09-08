@@ -142,7 +142,7 @@ export async function POST(req: Request) {
                 subscriptionId,
               },
             },
-          },
+          } as unknown as import('mongodb').UpdateFilter<import('mongodb').Document>,
           { upsert: false },
         )
         break
