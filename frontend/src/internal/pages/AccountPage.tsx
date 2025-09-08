@@ -36,31 +36,7 @@ export default function AccountPage() {
 		}
 	}
 
-	const handleSubscribe = async (slots: number) => {
-		try {
-			const response = await fetch(getBackendApi('/api/user/subscription'), {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ subscription: slots }),
-			})
 
-			if (response.ok) {
-				const data = await response.json()
-				setCurrentSubscription(data.subscription)
-				// TODO: Integrate Stripe payment flow here
-				console.log(`Successfully subscribed to ${slots} slots`)
-			} else {
-				const errorData = await response.json()
-				setError(errorData.error || 'Failed to update subscription')
-			}
-		} catch (err) {
-			console.error('Subscription update error:', err)
-			setError('Failed to update subscription')
-		}
-	}
 
 	return (
 		<PageFrame>
@@ -107,7 +83,6 @@ export default function AccountPage() {
 							) : (
 								<SubscriptionContainer
 									currentSubscription={currentSubscription}
-									onSubscribe={handleSubscribe}
 								/>
 							)}
 						</div>
