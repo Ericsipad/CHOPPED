@@ -49,8 +49,11 @@ export async function OPTIONS(req: Request) {
 }
 
 function mapPlanFromInvoice(invoice: Stripe.Invoice): 10 | 20 | 50 | 3 {
-  const line = invoice.lines?.data?.[0]
-  const unitAmount = line?.price?.unit_amount ?? null
+  const lineUnknown = invoice.lines?.data?.[0] as unknown
+  const unitAmount: number | null =
+    (lineUnknown as any)?.price?.unit_amount ??
+    (lineUnknown as any)?.plan?.amount ??
+    null
   if (unitAmount === 1000) return 10
   if (unitAmount === 2000) return 20
   if (unitAmount === 5000) return 50
