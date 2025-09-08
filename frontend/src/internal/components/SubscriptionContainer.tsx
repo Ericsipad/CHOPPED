@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getBackendApi } from '../../lib/config'
 
 type SubscriptionPlan = {
   slots: number
@@ -15,10 +16,9 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
 
 type SubscriptionContainerProps = {
   currentSubscription: number
-  onSubscribe: (slots: number) => void
 }
 
-export default function SubscriptionContainer({ currentSubscription, onSubscribe }: SubscriptionContainerProps) {
+export default function SubscriptionContainer({ currentSubscription }: SubscriptionContainerProps) {
   const [loading, setLoading] = useState<number | null>(null)
 
   const handleSubscribe = async (slots: number) => {
