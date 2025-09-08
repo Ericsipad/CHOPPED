@@ -158,8 +158,7 @@ export async function POST(req: Request) {
         )
         break
       }
-      case 'customer.subscription.deleted':
-      case 'customer.subscription.canceled': {
+      case 'customer.subscription.deleted': {
         const sub = event.data.object as Stripe.Subscription
         const customerId = typeof sub.customer === 'string' ? sub.customer : null
         if (!customerId) break
