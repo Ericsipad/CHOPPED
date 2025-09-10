@@ -11,6 +11,7 @@ import MatchProfileModal from '../components/MatchProfileModal'
 import { getBackendApi } from '../../lib/config'
 import BrowseModal from '../components/BrowseModal'
 import ChatModal from '../components/ChatModal'
+import StatusBar from '../components/StatusBar'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -307,6 +308,10 @@ export default function ChoppingBoardPage() {
 							}}
 						>
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
+								{/* Centered status bar */}
+								<div style={{ position: 'absolute', top: 64, left: '50%', transform: 'translateX(-50%)', zIndex: 11 }}>
+									<StatusBar giftsCount={0} matchedMeCount={0} />
+								</div>
 								{/* Glass toggle buttons - top-left */}
 								<div style={{ position: 'absolute', top: 8, left: 12, zIndex: 10 }}>
 									<div className="profile-tabs__nav">

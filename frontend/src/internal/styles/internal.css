@@ -624,3 +624,71 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	background: rgba(255, 255, 255, 0.08);
 	margin: 4px 8px;
 }
+
+/* ===== STATUS BAR ===== */
+.status-bar {
+	background: rgba(0,0,0,0.75);
+	border: 1px solid rgba(76, 255, 137, 0.9);
+	box-shadow: 0 0 0 2px rgba(76, 255, 137, 0.5), 0 0 18px rgba(76, 255, 137, 0.35);
+	border-radius: 12px;
+	width: clamp(200px, 28vw, 560px);
+	color: #ffffff;
+	backdrop-filter: blur(6px) saturate(120%);
+	-webkit-backdrop-filter: blur(6px) saturate(120%);
+}
+
+.status-bar__inner {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: center;
+	gap: 16px;
+	padding: 10px 14px;
+}
+
+.status-bar__legend {
+	display: grid;
+	grid-auto-flow: column;
+	justify-content: start;
+	align-items: end;
+	gap: 18px;
+}
+
+.status-bar__legend-item { display: grid; justify-items: center; gap: 4px; }
+.status-bar__legend-text { font-size: 11px; opacity: 0.95; }
+
+.status-bar__dot {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	border: 1px solid rgba(255,255,255,0.15);
+}
+.status-bar__dot--green { background: #16a34a; box-shadow: 0 0 16px rgba(34,197,94,0.8); }
+.status-bar__dot--yellow { background: #eab308; box-shadow: 0 0 16px rgba(234,179,8,0.8); }
+.status-bar__dot--red { background: #ef4444; box-shadow: 0 0 16px rgba(239,68,68,0.8); }
+
+.status-bar__counters {
+	display: grid;
+	grid-auto-flow: column;
+	align-items: center;
+	gap: 22px;
+}
+
+.status-bar__counter { display: grid; justify-items: center; gap: 4px; min-width: 70px; }
+.status-bar__label { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.status-bar__icon { line-height: 1; opacity: 0.95; }
+.status-bar__value { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; }
+
+.status-bar__info {
+	appearance: none;
+	border: 1px solid rgba(255,255,255,0.18);
+	background: rgba(0,0,0,0.45);
+	color: #ffffff;
+	border-radius: 50%;
+	width: 18px;
+	height: 18px;
+	line-height: 16px;
+	text-align: center;
+	cursor: pointer;
+	font-size: 11px;
+}
+.status-bar__info:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }
