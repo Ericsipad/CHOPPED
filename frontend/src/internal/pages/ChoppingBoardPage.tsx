@@ -29,6 +29,8 @@ export default function ChoppingBoardPage() {
     const [chatDisplayName, setChatDisplayName] = useState<string | null>(null)
     const chopInFlightRef = useRef(false)
     const syncTriggeredRef = useRef(false)
+    const [isChopping, setIsChopping] = useState(false)
+    const [chopSuccessOpen, setChopSuccessOpen] = useState(false)
 
     useEffect(() => {
         let cancelled = false
@@ -124,6 +126,7 @@ export default function ChoppingBoardPage() {
     async function handleChop(targetUserId: string) {
         if (chopInFlightRef.current) return
         chopInFlightRef.current = true
+        setIsChopping(true)
         try {
             let viewerId: string | null = null
             try {
@@ -149,7 +152,7 @@ export default function ChoppingBoardPage() {
             // Find imageUrl for the selected user from current slots for backend payload
             const imageUrl = (slots.find(s => s?.matchedUserId === targetUserId)?.mainImageUrl) || null
 
-            await fetch(getBackendApi('/api/user/match'), {
+            const res = await fetch(getBackendApi('/api/user/match'), {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
@@ -164,8 +167,11 @@ export default function ChoppingBoardPage() {
                 const refreshed = await fetchUserMatchArray()
                 setSlots(refreshed)
             } catch { /* ignore */ }
+
+            try { if (res && (res as Response).ok) setChopSuccessOpen(true) } catch { /* ignore */ }
         } finally {
             chopInFlightRef.current = false
+            setIsChopping(false)
         }
     }
 
@@ -364,6 +370,7 @@ export default function ChoppingBoardPage() {
 					onClose={() => { setProfileModalOpen(false); setSelectedUserId(null) }}
 					onChat={(uid) => { if (uid) setSelectedUserId(uid); setProfileModalOpen(false); setChatOpen(true) }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
+					isActionLoading={isChopping}
 				/>
 				<ChatModal
 					isOpen={chatOpen}
@@ -372,6 +379,13 @@ export default function ChoppingBoardPage() {
 					otherUserId={selectedUserId || ''}
 				/>
 				<BrowseModal isOpen={browseOpen} onClose={() => setBrowseOpen(false)} />
+				<ValidationModal
+					isOpen={chopSuccessOpen}
+					title="Success"
+					onClose={() => setChopSuccessOpen(false)}
+				>
+					<div style={{ padding: '12px 0' }}>Successfully chopped.</div>
+				</ValidationModal>
 			</div>
 		</PageFrame>
 	)

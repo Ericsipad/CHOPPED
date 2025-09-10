@@ -7,13 +7,14 @@ type MatchProfileModalProps = {
 	onClose: () => void
 	onChat?: (userId: string) => void
 	onChop?: (userId: string) => void
+	isActionLoading?: boolean
 }
 
 type PublicImages = { main: string | null; thumbs: Array<{ name: string; url: string }> }
 type PublicProfile = { displayName: string | null; age: number | null; bio: string | null }
 
 export default function MatchProfileModal(props: MatchProfileModalProps) {
-	const { isOpen, userId, onClose, onChat, onChop } = props
+	const { isOpen, userId, onClose, onChat, onChop, isActionLoading } = props
 	const [images, setImages] = useState<PublicImages | null>(null)
 	const [profile, setProfile] = useState<PublicProfile | null>(null)
 	const [error, setError] = useState<string | null>(null)
@@ -135,7 +136,7 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 	}
 
 	function handleChop() {
-		if (userId && onChop) onChop(userId)
+		if (userId && onChop && !isActionLoading) onChop(userId)
 	}
 
 	return (
@@ -148,10 +149,14 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 							<span>CHAT</span>
 						</span>
 					</button>
-					<button type="button" onClick={handleChop} style={styles.chopBtn} aria-label="Chop">
+					<button type="button" onClick={handleChop} style={styles.chopBtn} aria-label="Chop" disabled={!!isActionLoading} aria-busy={!!isActionLoading}>
 						<span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 3h6l4 6-7 7-6-4 3-3" stroke="white" strokeWidth="1.5"/></svg>
-							<span>CHOP</span>
+							{isActionLoading ? (
+								<div aria-hidden style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.5)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+							) : (
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 3h6l4 6-7 7-6-4 3-3" stroke="white" strokeWidth="1.5"/></svg>
+							)}
+							<span>{isActionLoading ? 'Chopping…' : 'CHOP'}</span>
 						</span>
 					</button>
 				</div>
@@ -188,6 +193,7 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 				<div style={styles.footer}>
 					<button type="button" onClick={onClose} style={styles.closeBtn}>Close</button>
 				</div>
+				<style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 			</div>
 		</div>
 	)

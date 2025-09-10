@@ -7,6 +7,7 @@ import 'swiper/css/virtual'
 import type { Swiper as SwiperClass } from 'swiper/types'
 
 import { useRef } from 'react'
+import ValidationModal from './ValidationModal'
 
 type PendingItem = { userId: string; imageUrl: string }
 type ProfilePublic = { displayName: string | null; age: number | null; heightCm?: number | null; bio: string | null }
@@ -38,6 +39,8 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
     const [limitOpen, setLimitOpen] = useState(false)
     const verticalSwipersRef = useRef<Record<number, SwiperClass | undefined>>({})
     const previousBodyOverflowRef = useRef<string | null>(null)
+    const [loadingIndex, setLoadingIndex] = useState<number | null>(null)
+    const [successOpen, setSuccessOpen] = useState(false)
 
 	// fetch pending items once when opened
 	useEffect(() => {
@@ -79,6 +82,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 		} catch {}
 		if (!viewerId) return
 		try {
+			if (action === 'chop') setLoadingIndex(index)
 			await fetch(getBackendApi('/api/user/match'), {
 				method: 'POST',
 				credentials: 'include',
@@ -91,7 +95,10 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 				return next
 			})
 			setBioOpenIndex(null)
-		} catch {}
+			if (action === 'chop') setSuccessOpen(true)
+		} catch {} finally {
+			if (action === 'chop') setLoadingIndex(null)
+		}
 	}
 
 	// prefetch thumbs for +-5 around active index
@@ -245,8 +252,13 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 												})()}
 											</div>
 											<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
-												<button onClick={() => handleAction('chat', index)} aria-label="Chat" style={{ background: '#16a34a', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 700 }}>Chat</button>
-												<button onClick={() => handleAction('chop', index)} aria-label="Chop" style={{ background: '#dc2626', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 700 }}>Chop</button>
+												<button onClick={() => handleAction('chat', index)} aria-label="Chat" disabled={loadingIndex === index} style={{ background: '#16a34a', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: loadingIndex === index ? 'not-allowed' : 'pointer', fontWeight: 700, opacity: loadingIndex === index ? 0.7 : 1 }}>Chat</button>
+												<button onClick={() => handleAction('chop', index)} aria-label="Chop" disabled={loadingIndex === index} style={{ background: '#dc2626', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: loadingIndex === index ? 'not-allowed' : 'pointer', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+													{loadingIndex === index ? (
+														<div aria-hidden style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.5)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+													) : null}
+													<span>{loadingIndex === index ? 'Chopping…' : 'Chop'}</span>
+												</button>
 											</div>
 										</div>
 
@@ -258,7 +270,11 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 					</Swiper>
 				)}
 			</div>
+			<style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 		</div>
+		<ValidationModal isOpen={successOpen} title="Success" onClose={() => setSuccessOpen(false)}>
+			<div style={{ padding: '12px 0' }}>Successfully chopped.</div>
+		</ValidationModal>
 	)
 }
 
