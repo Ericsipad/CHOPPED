@@ -7,6 +7,7 @@ type MatchProfileModalProps = {
 	onClose: () => void
 	onChat?: (userId: string) => void
 	onChop?: (userId: string) => void
+	onGift?: (userId: string) => void
 	isActionLoading?: boolean
 }
 
@@ -14,7 +15,7 @@ type PublicImages = { main: string | null; thumbs: Array<{ name: string; url: st
 type PublicProfile = { displayName: string | null; age: number | null; bio: string | null }
 
 export default function MatchProfileModal(props: MatchProfileModalProps) {
-	const { isOpen, userId, onClose, onChat, onChop, isActionLoading } = props
+	const { isOpen, userId, onClose, onChat, onChop, onGift, isActionLoading } = props
 	const [images, setImages] = useState<PublicImages | null>(null)
 	const [profile, setProfile] = useState<PublicProfile | null>(null)
 	const [error, setError] = useState<string | null>(null)
@@ -139,6 +140,10 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 		if (userId && onChop && !isActionLoading) onChop(userId)
 	}
 
+	function handleGift() {
+		if (userId && onGift) onGift(userId)
+	}
+
 	return (
 		<div role="dialog" aria-modal="true" aria-label="Match profile" aria-describedby="match-profile-desc" onClick={handleOverlayClick} style={styles.overlay}>
 			<div ref={dialogRef} style={styles.card}>
@@ -191,6 +196,14 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 					</div>
 				</div>
 				<div style={styles.footer}>
+					<button type="button" onClick={handleGift} style={styles.giftBtn} aria-label="Send a gift">
+						<span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+								<path d="M20 7h-3.17A3 3 0 0 0 12 4a3 3 0 0 0-4.83 3H4v4h16V7zM4 13v7h7v-7H4zm9 7h7v-7h-7v7zM9 7a1 1 0 1 1 0-2 2 2 0 0 1 0 4H9V7zm6 2h-1a2 2 0 0 1 0-4 1 1 0 1 1 0 2v2z" stroke="#22c55e" strokeWidth="1.5"/>
+							</svg>
+							<span>Send a gift</span>
+						</span>
+					</button>
 					<button type="button" onClick={onClose} style={styles.closeBtn}>Close</button>
 				</div>
 				<style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>

@@ -12,6 +12,7 @@ import { getBackendApi } from '../../lib/config'
 import BrowseModal from '../components/BrowseModal'
 import ChatModal from '../components/ChatModal'
 import StatusBar from '../components/StatusBar'
+import GiftModal from '../components/GiftModal'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -28,6 +29,7 @@ export default function ChoppingBoardPage() {
     const [browseOpen, setBrowseOpen] = useState(false)
     const [chatOpen, setChatOpen] = useState(false)
     const [chatDisplayName, setChatDisplayName] = useState<string | null>(null)
+    const [giftOpen, setGiftOpen] = useState(false)
     const chopInFlightRef = useRef(false)
     const syncTriggeredRef = useRef(false)
     const [isChopping, setIsChopping] = useState(false)
@@ -375,6 +377,7 @@ export default function ChoppingBoardPage() {
 					onClose={() => { setProfileModalOpen(false); setSelectedUserId(null) }}
 					onChat={(uid) => { if (uid) setSelectedUserId(uid); setProfileModalOpen(false); setChatOpen(true) }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
+					onGift={(uid) => { if (uid) setSelectedUserId(uid); setProfileModalOpen(false); setGiftOpen(true) }}
 					isActionLoading={isChopping}
 				/>
 				<ChatModal
@@ -384,6 +387,11 @@ export default function ChoppingBoardPage() {
 					otherUserId={selectedUserId || ''}
 				/>
 				<BrowseModal isOpen={browseOpen} onClose={() => setBrowseOpen(false)} />
+				<GiftModal
+					isOpen={giftOpen}
+					onClose={() => setGiftOpen(false)}
+					otherUserId={selectedUserId || ''}
+				/>
 				<ValidationModal
 					isOpen={chopSuccessOpen}
 					title="Success"
