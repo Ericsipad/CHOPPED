@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { Filter, ObjectId, UpdateFilter } from 'mongodb'
+import { Document, Filter, ObjectId, UpdateFilter } from 'mongodb'
 import { getUsersCollection } from '@/lib/mongo'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 
@@ -129,7 +129,7 @@ export async function POST(req: Request) {
 
 		// Bulk fetch peer docs
 		const peers = await usersCol
-			.find<{ _id: ObjectId; Match_array?: unknown }>({ _id: { $in: peerObjIds } as unknown as Filter<unknown> }, { projection: { Match_array: 1 } })
+			.find<{ _id: ObjectId; Match_array?: unknown }>({ _id: { $in: peerObjIds } } as Filter<Document>, { projection: { Match_array: 1 } })
 			.toArray()
 
 		const viewerIdStr = viewerObjectId.toHexString()
@@ -159,19 +159,15 @@ export async function POST(req: Request) {
 		// Update current user's statuses in two simple operations (skip chopped via arrayFilters)
 		if (mutualPeerIds.length > 0) {
 			await usersCol.updateOne(
-				({ _id: viewerObjectId } as unknown) as Filter<unknown>,
-				({
-					$set: { 'Match_array.$[mutual].status': 'yes' },
-				} as unknown) as UpdateFilter<unknown>,
+				{ _id: viewerObjectId } as Filter<Document>,
+				{ $set: { 'Match_array.$[mutual].status': 'yes' } } as UpdateFilter<Document>,
 				{ arrayFilters: [{ 'mutual.userId': { $in: mutualPeerIds }, 'mutual.status': { $ne: 'chopped' } }] }
 			)
 		}
 		if (nonMutualPeerIds.length > 0) {
 			await usersCol.updateOne(
-				({ _id: viewerObjectId } as unknown) as Filter<unknown>,
-				({
-					$set: { 'Match_array.$[non].status': 'pending' },
-				} as unknown) as UpdateFilter<unknown>,
+				{ _id: viewerObjectId } as Filter<Document>,
+				{ $set: { 'Match_array.$[non].status': 'pending' } } as UpdateFilter<Document>,
 				{ arrayFilters: [{ 'non.userId': { $in: nonMutualPeerIds }, 'non.status': { $ne: 'chopped' } }] }
 			)
 		}
@@ -180,8 +176,8 @@ export async function POST(req: Request) {
 		if (mutualPeerIds.length > 0) {
 			const bulk = mutualPeerIds.map((pid) => ({
 				updateOne: {
-					filter: ({ _id: new ObjectId(pid) } as unknown) as Filter<unknown>,
-					update: ({ $set: { 'Match_array.$[elem].status': 'yes' } } as unknown) as UpdateFilter<unknown>,
+					filter: ({ _id: new ObjectId(pid) } as unknown) as Filter<Document>,
+					update: ({ $set: { 'Match_array.$[elem].status': 'yes' } } as unknown) as UpdateFilter<Document>,
 					arrayFilters: [{ 'elem.userId': viewerIdStr, 'elem.status': { $ne: 'chopped' } }],
 				},
 			}))
@@ -191,7 +187,7 @@ export async function POST(req: Request) {
 		}
 
 		return NextResponse.json({ ok: true }, { headers })
-	} catch (e) {
+	} catch {
 		return NextResponse.json({ error: 'Internal error' }, { status: 500, headers: buildCorsHeaders(getAllowedOrigins(), req.headers.get('origin')) })
 	}
 }
