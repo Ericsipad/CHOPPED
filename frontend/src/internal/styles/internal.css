@@ -684,7 +684,6 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 
 .status-bar__tooltip {
 	position: absolute;
-	bottom: calc(100% + 8px);
 	left: 50%; transform: translateX(-50%);
 	max-width: 320px;
 	background: rgba(10,10,10,0.9);
@@ -697,5 +696,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 	opacity: 0; pointer-events: none; transition: opacity 120ms ease;
 }
+.status-bar__tooltip--below { top: calc(100% + 8px); }
+.status-bar__tooltip:not(.status-bar__tooltip--below) { bottom: calc(100% + 8px); }
 .status-bar__counter:hover .status-bar__tooltip,
 .status-bar__counter:focus-within .status-bar__tooltip { opacity: 1; }

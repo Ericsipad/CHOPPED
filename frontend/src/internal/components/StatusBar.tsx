@@ -39,7 +39,7 @@ export default function StatusBar(props: StatusBarProps) {
 							</svg>
 						</div>
 						<div className="status-bar__value" aria-live="polite">{giftsCount}</div>
-						<div className="status-bar__tooltip" role="tooltip">Someone has sent you a gift from $5 to $20, when you match with them you will be able to receive it directly to your email as a gift card</div>
+						<div className="status-bar__tooltip status-bar__tooltip--below" role="tooltip">Someone has sent you a gift from $5 to $20, when you match with them you will be able to receive it directly to your email as a gift card</div>
 					</div>
 
 					<div className="status-bar__counter" aria-label={`Matched Me ${matchedMeCount}`} tabIndex={0}>
