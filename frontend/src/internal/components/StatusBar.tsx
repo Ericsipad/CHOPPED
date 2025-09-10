@@ -53,16 +53,6 @@ export default function StatusBar(props: StatusBarProps) {
 					</div>
 				</div>
 			</div>
-
-			<ValidationModal
-				isOpen={infoOpen}
-				title="About Gifts"
-				onClose={() => setInfoOpen(false)}
-			>
-				<div style={{ padding: '8px 0' }}>
-					Gifts are special tokens other users can send to stand out. You'll see your total here.
-				</div>
-			</ValidationModal>
 		</div>
 	)
 }
