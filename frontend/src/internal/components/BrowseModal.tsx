@@ -177,6 +177,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 	const reachedEnd = total === 0
 
 	return (
+		<>
 		<div onKeyDownCapture={(e) => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); e.stopPropagation() } }} style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)' }}>
 			<div style={{ width: 'min(1100px, 92vw)', height: '60vh', position: 'relative', borderRadius: 12, overflow: 'hidden', background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)' }}>
 				<button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: 8, right: 10, zIndex: 5, background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 10px', cursor: 'pointer' }}>Close</button>
@@ -275,6 +276,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 		<ValidationModal isOpen={successOpen} title="Success" onClose={() => setSuccessOpen(false)}>
 			<div style={{ padding: '12px 0' }}>Successfully chopped.</div>
 		</ValidationModal>
+		</>
 	)
 }
 
