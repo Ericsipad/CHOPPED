@@ -28,6 +28,7 @@ export default function ChoppingBoardPage() {
     const [chatOpen, setChatOpen] = useState(false)
     const [chatDisplayName, setChatDisplayName] = useState<string | null>(null)
     const chopInFlightRef = useRef(false)
+    const syncTriggeredRef = useRef(false)
 
     useEffect(() => {
         let cancelled = false
@@ -226,6 +227,47 @@ export default function ChoppingBoardPage() {
 		run()
 		return () => { cancelled = true }
 	}, [chatOpen, selectedUserId])
+
+	// Trigger reciprocal match status sync last, after other effects have initialized
+	useEffect(() => {
+		let cancelled = false
+		;(async () => {
+			if (syncTriggeredRef.current) return
+			syncTriggeredRef.current = true
+			try {
+				let viewerId: string | null = null
+				try {
+					const raw = localStorage.getItem('chopped.mongoUserId')
+					if (raw) {
+						const parsed = JSON.parse(raw) as { id?: string; ts?: number }
+						if (parsed && typeof parsed.id === 'string' && parsed.id) viewerId = parsed.id
+					}
+				} catch { /* ignore */ }
+				if (!viewerId) {
+					try {
+						const resMe = await fetch(getBackendApi('/api/user/me'), { credentials: 'include' })
+						const dataMe = await resMe.json().catch(() => null) as { userId?: string | null }
+						if (dataMe && typeof dataMe.userId === 'string' && dataMe.userId) {
+							try { localStorage.setItem('chopped.mongoUserId', JSON.stringify({ id: dataMe.userId, ts: Date.now() })) } catch { /* ignore */ }
+							viewerId = dataMe.userId
+						}
+					} catch { /* ignore */ }
+				}
+				if (!viewerId) return
+				await fetch(getBackendApi('/api/user/matches/sync-reciprocal'), {
+					method: 'POST',
+					credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ viewerId })
+				}).catch(() => null)
+				try {
+					const refreshed = await fetchUserMatchArray()
+					if (!cancelled) setSlots(refreshed)
+				} catch { /* ignore */ }
+			} catch { /* ignore */ }
+		})()
+		return () => { cancelled = true }
+	}, [])
 
 	const handleCardClick = (index: number) => {
 		const isActive = index < activeSlotsCount
