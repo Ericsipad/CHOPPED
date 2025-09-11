@@ -166,13 +166,13 @@ export async function GET(req: Request) {
         displayName: row.displayName ?? null,
         mainImageUrl: row.mainImageUrl ?? null,
         giftMessage: row.giftMessage ?? null,
-        createdAt: typeof row.createdAt === 'string' ? row.createdAt : (row.createdAt instanceof Date ? row.createdAt.toISOString() : new Date().toISOString()),
+        createdAt: String((row as any).createdAt ?? ''),
         is_accepted: !!row.is_accepted,
       })
     }
 
     return NextResponse.json({ items }, { headers })
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
 }

@@ -85,7 +85,7 @@ export async function GET(req: Request) {
 		const first = await cursor.next()
 		const giftsCount = first?.count ?? 0
 		return NextResponse.json({ giftsCount }, { headers })
-	} catch (e) {
+	} catch {
 		return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
 	}
 }
