@@ -14,6 +14,7 @@ import ChatModal from '../components/ChatModal'
 import StatusBar from '../components/StatusBar'
 import GiftModal from '../components/GiftModal'
 import { fetchPendingMatchedMeCount } from '../lib/matchedMe'
+import { fetchUnwithdrawnGiftsCount } from '../lib/gifts'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -36,6 +37,7 @@ export default function ChoppingBoardPage() {
     const [isChopping, setIsChopping] = useState(false)
     const [chopSuccessOpen, setChopSuccessOpen] = useState(false)
     const [matchedMePendingCount, setMatchedMePendingCount] = useState<number>(0)
+    const [giftsCount, setGiftsCount] = useState<number>(0)
 
     useEffect(() => {
         let cancelled = false
@@ -119,6 +121,18 @@ export default function ChoppingBoardPage() {
                 const count = await fetchPendingMatchedMeCount()
                 try { localStorage.setItem(cacheKey, JSON.stringify({ v: count, ts: Date.now() })) } catch { /* ignore */ }
                 if (!cancelled) setMatchedMePendingCount(count)
+            } catch { /* ignore */ }
+        })()
+        return () => { cancelled = true }
+    }, [])
+
+    // Fetch unwithdrawn gifts count
+    useEffect(() => {
+        let cancelled = false
+        ;(async () => {
+            try {
+                const count = await fetchUnwithdrawnGiftsCount()
+                if (!cancelled) setGiftsCount(count)
             } catch { /* ignore */ }
         })()
         return () => { cancelled = true }
@@ -362,7 +376,7 @@ export default function ChoppingBoardPage() {
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
 								{/* Centered status bar */}
 								<div style={{ position: 'absolute', top: 64, left: '50%', transform: 'translateX(-50%)', zIndex: 11 }}>
-									<StatusBar giftsCount={0} matchedMeCount={matchedMePendingCount} />
+									<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} />
 								</div>
 								{/* Glass toggle buttons - top-left */}
 								<div style={{ position: 'absolute', top: 8, left: 12, zIndex: 10 }}>
