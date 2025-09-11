@@ -16,6 +16,7 @@ export default function GiftsInboxModal(props: GiftsInboxModalProps) {
   const [error, setError] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<'current' | 'history' | 'sent'>('current')
 
   useEffect(() => {
     if (!isOpen) return
@@ -38,7 +39,7 @@ export default function GiftsInboxModal(props: GiftsInboxModalProps) {
   }, [isOpen, onClose])
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen || activeTab !== 'current') return
     setLoading(true)
     setError(null)
     ;(async () => {
@@ -51,7 +52,7 @@ export default function GiftsInboxModal(props: GiftsInboxModalProps) {
         setLoading(false)
       }
     })()
-  }, [isOpen])
+  }, [isOpen, activeTab])
 
   if (!isOpen) return null
 
@@ -82,52 +83,72 @@ export default function GiftsInboxModal(props: GiftsInboxModalProps) {
           <button type="button" onClick={onClose} aria-label="Close" style={styles.closeBtn}>×</button>
         </div>
         <div style={styles.body}>
-          {loading ? (
-            <div style={styles.empty}>Loading…</div>
-          ) : error ? (
-            <div style={{ ...styles.empty, color: '#fca5a5' }}>{error}</div>
-          ) : items.length === 0 ? (
-            <div style={styles.empty}>No gifts yet</div>
-          ) : (
-            <div style={styles.list}>
-              {items.map((row) => {
-                const id = `${row.senderUserId}-${row.createdAt}`
-                const long = (row.giftMessage || '').length > 100
-                const showFull = !!expanded[id]
-                const text = row.giftMessage || ''
-                const display = showFull ? text : text.slice(0, 100)
-                return (
-                  <div key={id} style={styles.item}>
-                    <div style={styles.thumbWrap}>
-                      <div style={styles.thumb}>
-                        {row.mainImageUrl ? (
-                          <img src={row.mainImageUrl} alt="Sender" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                        ) : (
-                          <div style={{ width: '100%', height: '100%', background: 'rgba(255,255,255,0.08)' }} />
-                        )}
-                        <div style={styles.overlayBadge}>$?</div>
+          <div style={styles.tabs}>
+            <button type="button" onClick={() => setActiveTab('current')} style={{ ...styles.tab, ...(activeTab === 'current' ? styles.tabActive : undefined) }}>Current</button>
+            <button type="button" onClick={() => setActiveTab('history')} style={{ ...styles.tab, ...(activeTab === 'history' ? styles.tabActive : undefined) }}>History</button>
+            <button type="button" onClick={() => setActiveTab('sent')} style={{ ...styles.tab, ...(activeTab === 'sent' ? styles.tabActive : undefined) }}>Sent</button>
+          </div>
+
+          {activeTab === 'current' && (
+            loading ? (
+              <div style={styles.empty}>Loading…</div>
+            ) : error ? (
+              <div style={{ ...styles.empty, color: '#fca5a5' }}>{error}</div>
+            ) : items.length === 0 ? (
+              <div style={styles.empty}>No gifts yet</div>
+            ) : (
+              <div style={styles.list}>
+                {items.map((row) => {
+                  const id = `${row.senderUserId}-${row.createdAt}`
+                  const long = (row.giftMessage || '').length > 100
+                  const showFull = !!expanded[id]
+                  const text = row.giftMessage || ''
+                  const display = showFull ? text : text.slice(0, 100)
+                  return (
+                    <div key={id} style={styles.item}>
+                      <div style={styles.thumbWrap}>
+                        <div style={styles.thumb}>
+                          {row.mainImageUrl ? (
+                            <img src={row.mainImageUrl} alt="Sender" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                          ) : (
+                            <div style={{ width: '100%', height: '100%', background: 'rgba(255,255,255,0.08)' }} />
+                          )}
+                        </div>
+                      </div>
+                      <div style={styles.middle}>
+                        <div style={styles.name}>
+                          <span>{row.displayName || 'Unknown'}</span>
+                          <span style={styles.giftInline}>
+                            <span aria-hidden>🎁</span>
+                            <span>$?</span>
+                          </span>
+                        </div>
+                        <div style={styles.message}>
+                          {display}
+                          {long && (
+                            <>
+                              {showFull ? '' : '…'}
+                              <button type="button" onClick={() => toggleExpanded(id)} style={styles.moreBtn}>{showFull ? 'Less' : 'More'}</button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div style={styles.actions}>
+                        <button type="button" onClick={() => onChat(row.senderUserId, row.displayName)} style={styles.chatBtn}>Chat</button>
+                        <button type="button" onClick={() => handleChopClick(row)} style={{ ...styles.chopBtn, opacity: actionLoadingId === id ? 0.6 : 1 }} disabled={actionLoadingId === id}>Chop</button>
                       </div>
                     </div>
-                    <div style={styles.middle}>
-                      <div style={styles.name}>{row.displayName || 'Unknown'}</div>
-                      <div style={styles.message}>
-                        {display}
-                        {long && (
-                          <>
-                            {showFull ? '' : '…'}
-                            <button type="button" onClick={() => toggleExpanded(id)} style={styles.moreBtn}>{showFull ? 'Less' : 'More'}</button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div style={styles.actions}>
-                      <button type="button" onClick={() => onChat(row.senderUserId, row.displayName)} style={styles.chatBtn}>Chat</button>
-                      <button type="button" onClick={() => handleChopClick(row)} style={{ ...styles.chopBtn, opacity: actionLoadingId === id ? 0.6 : 1 }} disabled={actionLoadingId === id}>Chop</button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+                  )
+                )})
+              </div>
+            )
+          )}
+
+          {activeTab === 'history' && (
+            <div style={styles.empty}>History coming soon</div>
+          )}
+          {activeTab === 'sent' && (
+            <div style={styles.empty}>Sent coming soon</div>
           )}
         </div>
       </div>
@@ -137,7 +158,7 @@ export default function GiftsInboxModal(props: GiftsInboxModalProps) {
 
 const styles: Record<string, React.CSSProperties> = {
   overlay: {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999,
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 9999, paddingTop: '10vh',
   },
   card: {
     width: 'min(760px, 64vw)', maxWidth: 760, background: 'rgba(10,10,10,0.55)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', color: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.6)'
@@ -154,14 +175,17 @@ const styles: Record<string, React.CSSProperties> = {
   body: {
     maxHeight: '70vh', overflowY: 'auto', padding: 12,
   },
+  tabs: { display: 'flex', gap: 8, marginBottom: 12 },
+  tab: { background: 'rgba(0,0,0,0.35)', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontWeight: 700 },
+  tabActive: { background: '#111827', border: '1px solid rgba(255,255,255,0.3)' },
   empty: { opacity: 0.85, textAlign: 'center', padding: '20px 0' },
   list: { display: 'flex', flexDirection: 'column', gap: 8 },
   item: { display: 'grid', gridTemplateColumns: '56px 1fr auto', gap: 10, alignItems: 'center', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 8, background: 'rgba(0,0,0,0.35)' },
   thumbWrap: { width: 56, height: 56 },
   thumb: { position: 'relative', width: 56, height: 56, overflow: 'hidden', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)' },
-  overlayBadge: { position: 'absolute', left: 4, top: 4, background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '2px 6px', fontSize: 12, borderRadius: 6 },
   middle: { minWidth: 0 },
-  name: { fontSize: 14, fontWeight: 700, marginBottom: 2 },
+  name: { fontSize: 14, fontWeight: 700, marginBottom: 2, display: 'flex', alignItems: 'center', gap: 8 },
+  giftInline: { display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0 6px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.18)', background: 'rgba(0,0,0,0.35)', fontSize: 12 },
   message: { fontSize: 13, opacity: 0.95, lineHeight: 1.35, wordBreak: 'break-word' },
   moreBtn: { marginLeft: 6, background: 'transparent', color: '#60a5fa', border: 'none', cursor: 'pointer' },
   actions: { display: 'flex', gap: 8 },
