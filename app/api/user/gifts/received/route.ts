@@ -166,7 +166,11 @@ export async function GET(req: Request) {
         displayName: row.displayName ?? null,
         mainImageUrl: row.mainImageUrl ?? null,
         giftMessage: row.giftMessage ?? null,
-        createdAt: String((row as any).createdAt ?? ''),
+        createdAt: typeof (row as { createdAt?: unknown }).createdAt === 'string'
+          ? (row as { createdAt: string }).createdAt
+          : (row as { createdAt?: Date }).createdAt instanceof Date
+            ? ((row as { createdAt: Date }).createdAt.toISOString())
+            : '',
         is_accepted: !!row.is_accepted,
       })
     }
