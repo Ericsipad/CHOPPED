@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
 html, body, #root, .landing-root {
 	margin: 0;
 	padding: 0;
@@ -36,7 +37,7 @@ html, body, #root, .landing-root {
 	color: #ffffff;
 	font-size: 44px;
 	line-height: 1.1;
-	font-family: "Brush Script MT", "Lucida Handwriting", "Segoe Script", cursive;
+	font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 	text-shadow: 0 2px 12px rgba(0,0,0,0.6);
 }
 
@@ -56,7 +57,7 @@ html, body, #root, .landing-root {
 	border-radius: 9999px;
 	padding: 10px 22px;
 	font-size: 20px;
-	font-family: "Brush Script MT", "Lucida Handwriting", "Segoe Script", cursive;
+	font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 	cursor: pointer;
 	box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 	transition: transform 160ms ease, box-shadow 160ms ease;

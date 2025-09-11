@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
 
 html, body, #root {
 	margin: 0;
@@ -41,7 +40,7 @@ html, body, #root {
 
 /* Text-only links with calligraphy styling */
 .internal-nav-link {
-	font-family: 'Dancing Script', 'Great Vibes', cursive;
+	font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 	font-size: 24px;
 	font-weight: 400;
 	letter-spacing: 0.5px;
@@ -501,7 +500,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 
 /* User name text */
 .user-name {
-	font-family: 'Dancing Script', 'Great Vibes', cursive;
+	font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 	font-size: 18px;
 	font-weight: 400;
 	letter-spacing: 0.3px;
@@ -575,7 +574,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	border: none;
 	background: transparent;
 	color: #ffffff;
-	font-family: 'Dancing Script', 'Great Vibes', cursive;
+	font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 	font-size: 16px;
 	font-weight: 400;
 	letter-spacing: 0.3px;
@@ -703,3 +702,39 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 .status-bar__tooltip:not(.status-bar__tooltip--below) { bottom: calc(100% + 8px); }
 .status-bar__counter:hover .status-bar__tooltip,
 .status-bar__counter:focus-within .status-bar__tooltip { opacity: 1; }
+
+/* Small desktop tightening and centering */
+@media (max-width: 1280px) {
+	.status-bar {
+		width: clamp(260px, 40vw, 560px);
+	}
+	.status-bar__inner {
+		grid-template-columns: auto auto;
+		justify-content: center;
+		gap: 12px;
+		padding: 8px 10px;
+	}
+	.status-bar__legend {
+		gap: 12px;
+	}
+	.status-bar__counters {
+		gap: 10px;
+	}
+	.status-bar__counter {
+		min-width: 48px;
+	}
+}
+
+/* Tablet/very small desktop: stack and center */
+@media (max-width: 1024px) {
+	.status-bar__inner {
+		grid-template-columns: 1fr;
+		justify-items: center;
+		row-gap: 8px;
+	}
+	.status-bar__legend,
+	.status-bar__counters {
+		justify-content: center;
+		justify-items: center;
+	}
+}
