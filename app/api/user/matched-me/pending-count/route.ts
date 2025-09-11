@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getUsersCollection } from '@/lib/mongo'
-import { ObjectId, type Filter } from 'mongodb'
+import { ObjectId, type Filter, type Document } from 'mongodb'
 
 const ALLOWED_METHODS = ['GET', 'OPTIONS'] as const
 
@@ -68,7 +68,7 @@ export async function GET(req: Request) {
 		const viewerIdStr = viewer._id.toHexString()
 
 		// Count other users whose Match_array contains an entry for this viewer with status 'pending'
-		const filter: Filter<any> = {
+		const filter: Filter<Document> = {
 			Match_array: {
 				$elemMatch: {
 					$and: [
