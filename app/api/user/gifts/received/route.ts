@@ -88,13 +88,10 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
     }
 
-    // Build aggregation to join displayName and main image
-    const profileCol = await getProfileMatchingCollection()
-    const imagesCol = await getUserProfileImagesCollection()
-    // Touch to ensure indexes exist (no-op reads)
+    // Ensure collections exist (invocation ensures index creation in accessors)
     await Promise.all([
-      profileCol.findOne({ _id: null }).catch(() => null),
-      imagesCol.findOne({ _id: null }).catch(() => null),
+      getProfileMatchingCollection().then(() => null).catch(() => null),
+      getUserProfileImagesCollection().then(() => null).catch(() => null),
     ])
 
     const pipeline = [
