@@ -13,6 +13,7 @@ import BrowseModal from '../components/BrowseModal'
 import ChatModal from '../components/ChatModal'
 import StatusBar from '../components/StatusBar'
 import GiftModal from '../components/GiftModal'
+import GiftsInboxModal from '../components/GiftsInboxModal'
 import { fetchPendingMatchedMeCount } from '../lib/matchedMe'
 import { fetchUnwithdrawnGiftsCount } from '../lib/gifts'
 
@@ -32,6 +33,7 @@ export default function ChoppingBoardPage() {
     const [chatOpen, setChatOpen] = useState(false)
     const [chatDisplayName, setChatDisplayName] = useState<string | null>(null)
     const [giftOpen, setGiftOpen] = useState(false)
+    const [giftsInboxOpen, setGiftsInboxOpen] = useState(false)
     const chopInFlightRef = useRef(false)
     const syncTriggeredRef = useRef(false)
     const [isChopping, setIsChopping] = useState(false)
@@ -376,7 +378,7 @@ export default function ChoppingBoardPage() {
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
 								{/* Centered status bar */}
 								<div style={{ position: 'absolute', top: 64, left: '50%', transform: 'translateX(-50%)', zIndex: 11 }}>
-									<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} />
+									<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
 								</div>
 								{/* Glass toggle buttons - top-left */}
 								<div style={{ position: 'absolute', top: 8, left: 12, zIndex: 10 }}>
@@ -455,6 +457,12 @@ export default function ChoppingBoardPage() {
 					isOpen={giftOpen}
 					onClose={() => setGiftOpen(false)}
 					otherUserId={selectedUserId || ''}
+				/>
+				<GiftsInboxModal
+					isOpen={giftsInboxOpen}
+					onClose={() => setGiftsInboxOpen(false)}
+					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
+					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
 				<ValidationModal
 					isOpen={chopSuccessOpen}

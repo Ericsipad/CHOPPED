@@ -149,6 +149,7 @@ end; $$;
 --     giftProvider: 'stripe' | string,
 --     withdrawTransactionId: string | null,
 --     giftMessage: string                  -- long free-text message
+--     is_accepted: boolean                 -- acceptance state; default false
 --   }
 -- ]
 --
@@ -163,6 +164,7 @@ end; $$;
 --     giftProvider: 'stripe' | string,
 --     withdrawTransactionId: string | null,
 --     giftMessage: string
+--     is_accepted: boolean                 -- acceptance state; default false
 --   }
 -- ]
 --

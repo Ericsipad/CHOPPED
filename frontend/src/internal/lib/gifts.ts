@@ -11,4 +11,39 @@ export async function fetchUnwithdrawnGiftsCount(): Promise<number> {
 	}
 }
 
+export type ReceivedGift = {
+  senderUserId: string
+  displayName: string | null
+  mainImageUrl: string | null
+  giftMessage: string | null
+  createdAt: string
+  is_accepted: boolean
+}
+
+export async function fetchReceivedGifts(limit = 50, offset = 0): Promise<ReceivedGift[]> {
+  try {
+    const url = getBackendApi(`/api/user/gifts/received?limit=${encodeURIComponent(String(limit))}&offset=${encodeURIComponent(String(offset))}`)
+    const res = await fetch(url, { credentials: 'include' })
+    if (!res.ok) return []
+    const data = await res.json().catch(() => null) as { items?: ReceivedGift[] } | null
+    return Array.isArray(data?.items) ? data!.items! : []
+  } catch {
+    return []
+  }
+}
+
+export async function updateGiftAcceptance(senderUserId: string, createdAt: string, accepted: boolean): Promise<boolean> {
+  try {
+    const res = await fetch(getBackendApi('/api/user/gifts/acceptance'), {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ senderUserId, createdAt, accepted })
+    })
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
 

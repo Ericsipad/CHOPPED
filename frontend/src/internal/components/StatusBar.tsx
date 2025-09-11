@@ -3,10 +3,11 @@ import '../styles/internal.css'
 type StatusBarProps = {
 	giftsCount?: number
 	matchedMeCount?: number
+	onGiftsClick?: () => void
 }
 
 export default function StatusBar(props: StatusBarProps) {
-	const { giftsCount = 0, matchedMeCount = 0 } = props
+	const { giftsCount = 0, matchedMeCount = 0, onGiftsClick } = props
 
 	return (
 		<div className="status-bar" role="region" aria-label="Status bar">
@@ -29,7 +30,7 @@ export default function StatusBar(props: StatusBarProps) {
 
 				{/* Counters - right */}
 				<div className="status-bar__counters">
-					<div className="status-bar__counter" aria-label={`Gifts ${giftsCount}`} tabIndex={0}>
+					<button className="status-bar__counter" aria-label={`Gifts ${giftsCount}`} tabIndex={0} type="button" onClick={onGiftsClick} style={{ background: 'transparent', border: 'none', padding: 0, cursor: onGiftsClick ? 'pointer' : 'default' }}>
 						<div className="status-bar__icon" aria-hidden="true">
 							<svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 								<path d="M20 12H4v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8Z" fill="#3b82f6"/>
@@ -40,7 +41,7 @@ export default function StatusBar(props: StatusBarProps) {
 						</div>
 						<div className="status-bar__value" aria-live="polite">{giftsCount}</div>
 						<div className="status-bar__tooltip status-bar__tooltip--below" role="tooltip">Someone has sent you a gift from $5 to $20, when you match with them you will be able to receive it directly to your email as a gift card</div>
-					</div>
+					</button>
 
 					<div className="status-bar__counter" aria-label={`Matched Me ${matchedMeCount}`} tabIndex={0}>
 						<div className="status-bar__icon" aria-hidden="true">
