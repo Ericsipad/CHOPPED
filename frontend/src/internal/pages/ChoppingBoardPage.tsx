@@ -13,6 +13,7 @@ import BrowseModal from '../components/BrowseModal'
 import ChatModal from '../components/ChatModal'
 import StatusBar from '../components/StatusBar'
 import GiftModal from '../components/GiftModal'
+import { fetchPendingMatchedMeCount } from '../lib/matchedMe'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -34,6 +35,7 @@ export default function ChoppingBoardPage() {
     const syncTriggeredRef = useRef(false)
     const [isChopping, setIsChopping] = useState(false)
     const [chopSuccessOpen, setChopSuccessOpen] = useState(false)
+    const [matchedMePendingCount, setMatchedMePendingCount] = useState<number>(0)
 
     useEffect(() => {
         let cancelled = false
@@ -312,7 +314,7 @@ export default function ChoppingBoardPage() {
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
 								{/* Centered status bar */}
 								<div style={{ position: 'absolute', top: 64, left: '50%', transform: 'translateX(-50%)', zIndex: 11 }}>
-									<StatusBar giftsCount={0} matchedMeCount={0} />
+									<StatusBar giftsCount={0} matchedMeCount={matchedMePendingCount} />
 								</div>
 								{/* Glass toggle buttons - top-left */}
 								<div style={{ position: 'absolute', top: 8, left: 12, zIndex: 10 }}>
