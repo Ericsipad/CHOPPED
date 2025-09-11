@@ -170,7 +170,7 @@ export async function GET(req: Request) {
         giftMessage: row.giftMessage ?? null,
         createdAt: row.createdAt,
         is_accepted: !!row.is_accepted,
-        amountCents: typeof (row as any).amountCents === 'number' ? (row as any).amountCents : 0,
+        amountCents: typeof row.amountCents === 'number' ? row.amountCents : 0,
       })
     }
 
