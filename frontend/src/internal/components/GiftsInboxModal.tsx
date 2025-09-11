@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { fetchReceivedGifts, type ReceivedGift, updateGiftAcceptance } from '../lib/gifts'
+import { getBackendApi } from '../../lib/config'
 
 type GiftsInboxModalProps = {
   isOpen: boolean
@@ -62,6 +63,41 @@ export default function GiftsInboxModal(props: GiftsInboxModalProps) {
 
   function toggleExpanded(id: string) {
     setExpanded(prev => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  async function handleChatClick(row: ReceivedGift) {
+    if (actionLoadingId) return
+    const id = `${row.senderUserId}-${row.createdAt}`
+    setActionLoadingId(id)
+    setError(null)
+    try {
+      let viewerId: string | null = null
+      try {
+        const raw = localStorage.getItem('chopped.mongoUserId')
+        if (raw) {
+          const parsed = JSON.parse(raw) as { id?: string; ts?: number }
+          if (parsed && typeof parsed.id === 'string' && parsed.id) viewerId = parsed.id
+        }
+      } catch {}
+      if (!viewerId) {
+        setError('Could not start chat. Please try again.')
+        return
+      }
+      const res = await fetch(getBackendApi('/api/user/match'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ viewerId, targetUserId: row.senderUserId, imageUrl: row.mainImageUrl ?? null, action: 'chat' })
+      })
+      if (!res.ok) {
+        setError('Could not start chat. Please try again.')
+        return
+      }
+      await new Promise(resolve => setTimeout(resolve, 300))
+      onChat(row.senderUserId, row.displayName)
+    } finally {
+      setActionLoadingId(null)
+    }
   }
 
   async function handleChopClick(row: ReceivedGift) {
@@ -134,7 +170,7 @@ export default function GiftsInboxModal(props: GiftsInboxModalProps) {
                         </div>
                       </div>
                       <div style={styles.actions}>
-                        <button type="button" onClick={() => onChat(row.senderUserId, row.displayName)} style={styles.chatBtn}>Chat</button>
+                        <button type="button" onClick={() => handleChatClick(row)} style={{ ...styles.chatBtn, opacity: actionLoadingId === id ? 0.6 : 1 }} disabled={actionLoadingId === id}>Chat</button>
                         <button type="button" onClick={() => handleChopClick(row)} style={{ ...styles.chopBtn, opacity: actionLoadingId === id ? 0.6 : 1 }} disabled={actionLoadingId === id}>Chop</button>
                       </div>
                     </div>
