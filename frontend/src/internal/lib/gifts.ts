@@ -18,6 +18,7 @@ export type ReceivedGift = {
   giftMessage: string | null
   createdAt: string
   is_accepted: boolean
+  amountCents: number
 }
 
 export async function fetchReceivedGifts(limit = 50, offset = 0): Promise<ReceivedGift[]> {
@@ -43,6 +44,22 @@ export async function updateGiftAcceptance(senderUserId: string, createdAt: stri
     return res.ok
   } catch {
     return false
+  }
+}
+
+
+export type SenderPendingGift = { senderUserId: string; createdAt: string; amountCents: number }
+
+export async function fetchPendingGiftFromSender(senderUserId: string): Promise<SenderPendingGift | null> {
+  try {
+    const rows = await fetchReceivedGifts(50, 0)
+    const filtered = rows.filter(r => r.senderUserId === senderUserId && !r.is_accepted)
+    if (filtered.length === 0) return null
+    filtered.sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0))
+    const top = filtered[0]
+    return { senderUserId: top.senderUserId, createdAt: top.createdAt, amountCents: typeof top.amountCents === 'number' ? top.amountCents : 0 }
+  } catch {
+    return null
   }
 }
 

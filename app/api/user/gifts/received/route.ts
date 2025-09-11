@@ -59,6 +59,7 @@ type ApiItem = {
   giftMessage: string | null
   createdAt: string
   is_accepted: boolean
+  amountCents: number
 }
 
 export async function GET(req: Request) {
@@ -98,7 +99,7 @@ export async function GET(req: Request) {
       { $match: { _id: viewer._id } },
       { $project: { gifts: { $ifNull: ['$gifts_got', []] } } },
       { $unwind: '$gifts' },
-      { $match: { 'gifts.is_accepted': false } },
+      { $match: { 'gifts.is_accepted': false, 'gifts.withdrawn': false } },
       {
         $set: {
           senderStr: '$gifts.senderUserId',
@@ -154,6 +155,7 @@ export async function GET(req: Request) {
           giftMessage: { $ifNull: ['$gifts.giftMessage', null] },
           createdAt: { $toString: '$gifts.createdAt' },
           is_accepted: { $ifNull: ['$gifts.is_accepted', false] },
+          amountCents: { $ifNull: ['$gifts.amountCents', 0] },
         }
       }
     ] as import('mongodb').Document[]
@@ -168,6 +170,7 @@ export async function GET(req: Request) {
         giftMessage: row.giftMessage ?? null,
         createdAt: row.createdAt,
         is_accepted: !!row.is_accepted,
+        amountCents: typeof (row as any).amountCents === 'number' ? (row as any).amountCents : 0,
       })
     }
 

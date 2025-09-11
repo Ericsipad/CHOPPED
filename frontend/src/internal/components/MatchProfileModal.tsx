@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getBackendApi } from '../../lib/config'
+import { fetchPendingGiftFromSender, updateGiftAcceptance } from '../lib/gifts'
 
 type MatchProfileModalProps = {
 	isOpen: boolean
@@ -22,6 +23,9 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 	const [loading, setLoading] = useState(false)
 	const [activeIndex, setActiveIndex] = useState<number>(0)
 	const dialogRef = useRef<HTMLDivElement | null>(null)
+	const [pendingGift, setPendingGift] = useState<{ createdAt: string; amountCents: number } | null>(null)
+	const [accepting, setAccepting] = useState(false)
+	const [showCelebration, setShowCelebration] = useState(false)
 
 	useEffect(() => {
 		if (!isOpen) return
@@ -89,6 +93,10 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 					const data = await profRes.json().catch(() => null) as PublicProfile | null
 					if (data) setProfile({ displayName: data.displayName ?? null, age: typeof data.age === 'number' ? data.age : null, bio: data.bio ?? null })
 				}
+				if (!cancelled && userId) {
+					const g = await fetchPendingGiftFromSender(userId)
+					if (g) setPendingGift({ createdAt: g.createdAt, amountCents: g.amountCents })
+				}
 				if (!cancelled) setActiveIndex(0)
 			} catch {
 				if (!cancelled) setError('Failed to load')
@@ -144,6 +152,38 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 		if (userId && onGift) onGift(userId)
 	}
 
+	async function handleAcceptGift() {
+		if (!userId || !pendingGift || accepting) return
+		setAccepting(true)
+		try {
+			const ok = await updateGiftAcceptance(userId, pendingGift.createdAt, true)
+			if (ok) {
+				setPendingGift(null)
+				setShowCelebration(true)
+				try {
+					const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext
+					if (Ctx) {
+						const ctx = new Ctx()
+						const o = ctx.createOscillator()
+						const g = ctx.createGain()
+						o.type = 'triangle'
+						o.frequency.setValueAtTime(880, ctx.currentTime)
+						g.gain.setValueAtTime(0.001, ctx.currentTime)
+						g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.02)
+						g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6)
+						o.connect(g)
+						g.connect(ctx.destination)
+						o.start()
+						o.stop(ctx.currentTime + 0.65)
+					}
+				} catch {}
+				setTimeout(() => setShowCelebration(false), 2000)
+			}
+		} finally {
+			setAccepting(false)
+		}
+	}
+
 	return (
 		<div role="dialog" aria-modal="true" aria-label="Match profile" aria-describedby="match-profile-desc" onClick={handleOverlayClick} style={styles.overlay}>
 			<div ref={dialogRef} style={styles.card}>
@@ -194,6 +234,15 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 						{profile?.bio ? <div style={styles.bioText}>{profile.bio}</div> : null}
 						{error ? <div style={styles.error}>{error}</div> : null}
 					</div>
+					{pendingGift && (
+						<div style={styles.giftPanel}>
+							<div style={styles.giftContent}>
+								<span aria-hidden style={{ fontSize: 28 }}>🎁</span>
+								<span style={styles.giftAmount}>{`$${(pendingGift.amountCents / 100).toFixed(2)}`}</span>
+								<button type="button" onClick={handleAcceptGift} style={styles.acceptBtn} disabled={accepting}>{accepting ? 'Accepting…' : 'Accept'}</button>
+							</div>
+						</div>
+					)}
 				</div>
 				<div style={styles.footer}>
 					<button type="button" onClick={handleGift} style={styles.giftBtn} aria-label="Send a gift">
@@ -206,7 +255,14 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 					</button>
 					<button type="button" onClick={onClose} style={styles.closeBtn}>Close</button>
 				</div>
+				{showCelebration && (
+					<div aria-hidden style={styles.celebrationOverlay}>
+						<div style={styles.celebrationGift}>🎁</div>
+						<div style={styles.sparkles} />
+					</div>
+				)}
 				<style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+				<style>{`@keyframes boom { 0% { transform: scale(0.2); opacity: 0 } 20% { opacity: 1 } 100% { transform: scale(6); opacity: 0 } } @keyframes sparkle { 0% { opacity: 0 } 20% { opacity: 1 } 100% { opacity: 0 } }`}</style>
 			</div>
 		</div>
 	)
@@ -255,6 +311,13 @@ const styles: Record<string, React.CSSProperties> = {
 	error: { marginTop: 8, color: '#fca5a5' },
 	footer: { padding: '0 12px 12px', display: 'flex', justifyContent: 'flex-end' },
 	closeBtn: { border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.3)', color: '#fff', padding: '4px 10px', borderRadius: 8, cursor: 'pointer', fontSize: 13 },
+	giftPanel: { marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 12, display: 'flex', justifyContent: 'center' },
+	giftContent: { display: 'inline-flex', alignItems: 'center', gap: 10 },
+	giftAmount: { fontSize: 18, fontWeight: 800 },
+	acceptBtn: { background: '#16a34a', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontWeight: 700 },
+	celebrationOverlay: { position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' },
+	celebrationGift: { fontSize: 48, animation: 'boom 2s ease-out forwards' },
+	sparkles: { position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6), transparent 40%)', mixBlendMode: 'screen', animation: 'sparkle 2s ease-out forwards' },
 }
 
 
