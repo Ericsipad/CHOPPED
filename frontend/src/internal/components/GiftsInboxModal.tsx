@@ -139,7 +139,7 @@ export default function GiftsInboxModal(props: GiftsInboxModalProps) {
                       </div>
                     </div>
                   )
-                )})
+                })}
               </div>
             )
           )}
