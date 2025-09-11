@@ -152,7 +152,7 @@ export async function GET(req: Request) {
           displayName: 1,
           mainImageUrl: 1,
           giftMessage: { $ifNull: ['$gifts.giftMessage', null] },
-          createdAt: '$gifts.createdAt',
+          createdAt: { $toString: '$gifts.createdAt' },
           is_accepted: { $ifNull: ['$gifts.is_accepted', false] },
         }
       }
@@ -166,11 +166,7 @@ export async function GET(req: Request) {
         displayName: row.displayName ?? null,
         mainImageUrl: row.mainImageUrl ?? null,
         giftMessage: row.giftMessage ?? null,
-        createdAt: typeof (row as { createdAt?: unknown }).createdAt === 'string'
-          ? (row as { createdAt: string }).createdAt
-          : (row as { createdAt?: Date }).createdAt instanceof Date
-            ? ((row as { createdAt: Date }).createdAt.toISOString())
-            : '',
+        createdAt: row.createdAt,
         is_accepted: !!row.is_accepted,
       })
     }
