@@ -75,6 +75,54 @@ export default function ChoppingBoardPage() {
         })()
         return () => { cancelled = true }
     }, [])
+
+    // One-time fetch and cache of pending matched-me count after login
+    useEffect(() => {
+        let cancelled = false
+        ;(async () => {
+            try {
+                let currentId: string | null = null
+                try {
+                    const raw = localStorage.getItem('chopped.mongoUserId')
+                    if (raw) {
+                        const parsed = JSON.parse(raw) as { id?: string; ts?: number }
+                        if (parsed && typeof parsed.id === 'string' && parsed.id) currentId = parsed.id
+                    }
+                } catch { /* ignore */ }
+                if (!currentId) {
+                    try {
+                        const resMe = await fetch(getBackendApi('/api/user/me'), { credentials: 'include' })
+                        const dataMe = await resMe.json().catch(() => null) as { userId?: string | null }
+                        if (dataMe && typeof dataMe.userId === 'string' && dataMe.userId) {
+                            try { localStorage.setItem('chopped.mongoUserId', JSON.stringify({ id: dataMe.userId, ts: Date.now() })) } catch { /* ignore */ }
+                            currentId = dataMe.userId
+                        }
+                    } catch { /* ignore */ }
+                }
+                if (!currentId) return
+
+                const cacheKey = `chopped.matchedMePendingCount:${currentId}`
+                let cached: number | null = null
+                try {
+                    const raw = localStorage.getItem(cacheKey)
+                    if (raw !== null) {
+                        const parsed = JSON.parse(raw) as { v?: number; ts?: number } | number
+                        if (typeof parsed === 'number') cached = parsed
+                        else if (parsed && typeof (parsed as any).v === 'number') cached = (parsed as any).v as number
+                    }
+                } catch { /* ignore */ }
+                if (typeof cached === 'number') {
+                    if (!cancelled) setMatchedMePendingCount(cached)
+                    return
+                }
+
+                const count = await fetchPendingMatchedMeCount()
+                try { localStorage.setItem(cacheKey, JSON.stringify({ v: count, ts: Date.now() })) } catch { /* ignore */ }
+                if (!cancelled) setMatchedMePendingCount(count)
+            } catch { /* ignore */ }
+        })()
+        return () => { cancelled = true }
+    }, [])
 	// Build images array from slots with status for glow; fallback to placeholder when empty
 	const placeholderUrl = '/profile-placeholder.svg'
 	const images = new Array(50).fill(null).map((_, i) => {
