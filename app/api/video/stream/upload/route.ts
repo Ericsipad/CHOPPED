@@ -107,9 +107,11 @@ export async function POST(req: Request) {
       const text = await createRes.text().catch(() => '')
       return NextResponse.json({ error: 'BUNNY_CREATE_FAIL', status: createRes.status, detail: text }, { status: 502, headers })
     }
-    type CreateVideoResponse = { guid?: string; Guid?: string }
-    const createJson = await createRes.json().catch(() => null) as CreateVideoResponse | null
-    const guid = String((createJson && (createJson.guid || (createJson as any).Guid)) || '')
+    type CreateVideoResponse = { guid?: string; Guid?: string } | null
+    const createJson = await createRes.json().catch(() => null) as CreateVideoResponse
+    const guid = (createJson && typeof createJson.guid === 'string')
+      ? createJson.guid
+      : ((createJson && typeof createJson?.Guid === 'string') ? createJson!.Guid! : '')
     if (!guid) {
       return NextResponse.json({ error: 'BUNNY_CREATE_NO_GUID' }, { status: 502, headers })
     }
