@@ -96,10 +96,11 @@ export async function POST(req: Request) {
     const expires = Math.floor(Date.now() / 1000) + Math.max(60, Math.min(60 * 60 * 24, Number(expiresInSeconds || 60 * 60)))
     const path = `/${encodeURIComponent(libraryId)}/${encodeURIComponent(guid)}`
 
-    // HMAC-SHA256 over path + expires, Base64URL encoded
-    const hmac = crypto.createHmac('sha256', signingKey)
-    hmac.update(`${path}${expires}`)
-    const token = hmac.digest('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+    // Bunny Stream embed token auth requires SHA256 HEX of: token_security_key + video_id + expiration
+    // Ref: https://docs.bunny.net/docs/stream-embed-token-authentication
+    const sha = crypto.createHash('sha256')
+    sha.update(`${signingKey}${guid}${expires}`)
+    const token = sha.digest('hex')
 
     const signedUrl = `${embedBase}${path}?token=${encodeURIComponent(token)}&expires=${expires}`
     return NextResponse.json({ signedUrl, guid, expires }, { headers })
