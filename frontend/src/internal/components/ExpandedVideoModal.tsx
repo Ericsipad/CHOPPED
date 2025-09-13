@@ -7,7 +7,7 @@ type ExpandedVideoModalProps = {
   videoThumbUrl?: string | null
   videoUrl?: string | null
   onThumbUploaded: (publicUrl: string) => void
-  onVideoUploaded: (videoUrl: string, guid: string) => void
+  onVideoUploaded: (videoUrl: string) => void
   onDelete: () => void
 }
 
@@ -130,11 +130,11 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
                     return
                   }
                   const data = await res.json().catch(() => null) as { videoUrl?: string; guid?: string }
-                  if (!data?.videoUrl || !data?.guid) {
+                  if (!data?.videoUrl) {
                     alert('Invalid response from server')
                     return
                   }
-                  onVideoUploaded(data.videoUrl, data.guid)
+                  onVideoUploaded(data.videoUrl)
                 } finally {
                   setUploadingVideo(false)
                 }

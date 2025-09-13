@@ -279,7 +279,7 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
             return next
           })
         }}
-        onVideoUploaded={async (videoUrl, guid) => {
+        onVideoUploaded={async (videoUrl) => {
           const idx = activeVideoIndex ?? 0
           const existing = videoItems[idx]
           const body = { videoId: existing?.id, video_url: videoUrl }
