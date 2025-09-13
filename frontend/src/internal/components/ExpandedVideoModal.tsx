@@ -25,6 +25,7 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
   const [videoSuccess, setVideoSuccess] = useState<boolean>(false)
   const thumbInputRef = useRef<HTMLInputElement | null>(null)
   const videoInputRef = useRef<HTMLInputElement | null>(null)
+  const [embedUrl, setEmbedUrl] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isOpen) return
@@ -34,6 +35,27 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [isOpen, onClose])
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        setEmbedUrl(null)
+        if (!videoUrl) return
+        const res = await fetch(getBackendApi('/api/video/stream/embed'), {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ videoUrl }),
+        })
+        if (!res.ok) return
+        const data = await res.json().catch(() => null) as { signedUrl?: string }
+        if (!data?.signedUrl || cancelled) return
+        setEmbedUrl(data.signedUrl)
+      } catch { /* noop */ }
+    })()
+    return () => { cancelled = true }
+  }, [videoUrl])
 
   if (!isOpen) return null
 
@@ -128,7 +150,11 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
             <div style={styles.panelHeader}>Video</div>
             <div style={styles.previewWrap}>
               {videoUrl ? (
-                <video src={videoUrl} controls style={styles.previewVideo} />
+                embedUrl ? (
+                  <iframe src={embedUrl} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style={styles.previewVideo as any} />
+                ) : (
+                  <video src={videoUrl} controls style={styles.previewVideo} />
+                )
               ) : (
                 <div style={styles.empty}>No video yet</div>
               )}
