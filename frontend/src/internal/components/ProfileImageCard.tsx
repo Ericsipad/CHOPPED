@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getBackendApi } from '../../lib/config'
 import ExpandedImageModal from './ExpandedImageModal'
+import ExpandedVideoModal from './ExpandedVideoModal'
 
 type ProfileImageCardProps = {
   className?: string
@@ -21,6 +22,10 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalTarget, setModalTarget] = useState<{ kind: 'main' } | { kind: 'thumb', index: number } | null>(null)
+
+  const [videoItems, setVideoItems] = useState<Array<{ id: string; video_thumb: string | null; video_url: string | null }>>([])
+  const [videoModalOpen, setVideoModalOpen] = useState(false)
+  const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null)
 
   const mainUrl = useMemo(() => (mainFile ? URL.createObjectURL(mainFile) : (initialMainUrl ? initialMainUrl : null)), [mainFile, initialMainUrl])
   const thumbUrls = useMemo(() => {
@@ -161,6 +166,21 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
     })()
   }, [])
 
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch(getBackendApi('/api/profile-videos/me'), { credentials: 'include' })
+        if (!res.ok) return
+        const data = await res.json().catch(() => null) as { items?: Array<{ id: string; video_thumb?: string | null; video_url?: string | null }> }
+        if (!data || cancelled) return
+        const items = Array.isArray(data.items) ? data.items.map((it) => ({ id: String(it.id), video_thumb: it.video_thumb ?? null, video_url: it.video_url ?? null })) : []
+        setVideoItems(items)
+      } catch { /* noop */ }
+    })()
+    return () => { cancelled = true }
+  }, [])
+
   return (
     <div className={rootClass}>
       <div className="profile-image-card__content">
@@ -196,18 +216,30 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
         </div>
 
         <div className="profile-image-card__videos">
-          {new Array(6).fill(null).map((_, i) => (
-            <div key={i}
-              className="profile-image-card__video"
-              aria-label={`Video ${i + 1}`}
-            >
-              <div className="profile-image-card__video-placeholder">
-                <div className="profile-image-card__video-playplate">
-                  <span className="profile-image-card__video-play" aria-hidden />
-                </div>
+          {Array.from({ length: 6 }).map((_, i) => {
+            const item = videoItems[i] as { id: string; video_thumb: string | null; video_url: string | null } | undefined
+            const thumb = item?.video_thumb || null
+            return (
+              <div key={i}
+                className="profile-image-card__video"
+                aria-label={`Video ${i + 1}`}
+                role="button"
+                tabIndex={0}
+                onClick={() => { setActiveVideoIndex(i); setVideoModalOpen(true) }}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveVideoIndex(i); setVideoModalOpen(true) } }}
+              >
+                {thumb ? (
+                  <img src={thumb} alt={`Video ${i + 1} thumbnail`} className="profile-image-card__img" />
+                ) : (
+                  <div className="profile-image-card__video-placeholder">
+                    <div className="profile-image-card__video-playplate">
+                      <span className="profile-image-card__video-play" aria-hidden />
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 
@@ -225,6 +257,51 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
       {new Array(6).fill(null).map((_, i) => (
         <input key={i} ref={(el) => { thumbInputRefs.current[i] = el }} type="file" accept="image/*" style={{ display: 'none' }} />
       ))}
+
+      <ExpandedVideoModal
+        isOpen={videoModalOpen}
+        onClose={() => setVideoModalOpen(false)}
+        videoId={activeVideoIndex !== null && videoItems[activeVideoIndex] ? videoItems[activeVideoIndex]!.id : null}
+        videoThumbUrl={activeVideoIndex !== null && videoItems[activeVideoIndex] ? (videoItems[activeVideoIndex]!.video_thumb ?? null) : null}
+        videoUrl={activeVideoIndex !== null && videoItems[activeVideoIndex] ? (videoItems[activeVideoIndex]!.video_url ?? null) : null}
+        onThumbUploaded={async (publicUrl) => {
+          const idx = activeVideoIndex ?? 0
+          const existing = videoItems[idx]
+          const body = { videoId: existing?.id, video_thumb: publicUrl }
+          const res = await fetch(getBackendApi('/api/profile-videos/upsert'), { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+          if (!res.ok) { const t = await res.text().catch(() => ''); alert('Failed to save thumbnail: ' + t); return }
+          const j = await res.json().catch(() => null) as { id?: string }
+          const id = j?.id || existing?.id || ''
+          setVideoItems((prev) => {
+            const next = prev.slice(0, 6)
+            while (next.length < 6) next.push({ id: crypto.randomUUID(), video_thumb: null, video_url: null })
+            next[idx] = { id, video_thumb: publicUrl, video_url: existing?.video_url ?? null }
+            return next
+          })
+        }}
+        onVideoUploaded={async (videoUrl, guid) => {
+          const idx = activeVideoIndex ?? 0
+          const existing = videoItems[idx]
+          const body = { videoId: existing?.id, video_url: videoUrl }
+          const res = await fetch(getBackendApi('/api/profile-videos/upsert'), { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+          if (!res.ok) { const t = await res.text().catch(() => ''); alert('Failed to save video URL: ' + t); return }
+          const j = await res.json().catch(() => null) as { id?: string }
+          const id = j?.id || existing?.id || ''
+          setVideoItems((prev) => {
+            const next = prev.slice(0, 6)
+            while (next.length < 6) next.push({ id: crypto.randomUUID(), video_thumb: null, video_url: null })
+            next[idx] = { id, video_thumb: existing?.video_thumb ?? null, video_url: videoUrl }
+            return next
+          })
+        }}
+        onDelete={async () => {
+          const idx = activeVideoIndex ?? 0
+          const existing = videoItems[idx]
+          if (!existing?.id) { setVideoItems((prev) => { const next = prev.slice(); next[idx] = { id: crypto.randomUUID(), video_thumb: null, video_url: null }; return next }); return }
+          await fetch(getBackendApi('/api/profile-videos/delete'), { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ videoId: existing.id }) })
+          setVideoItems((prev) => { const next = prev.slice(); next[idx] = { id: crypto.randomUUID(), video_thumb: null, video_url: null }; return next })
+        }}
+      />
     </div>
   )
 }
