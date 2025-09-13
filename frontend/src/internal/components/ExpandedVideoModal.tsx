@@ -151,7 +151,14 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
             <div style={styles.previewWrap}>
               {videoUrl ? (
                 embedUrl ? (
-                  <iframe src={embedUrl} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style={styles.previewVideo as any} />
+                  <iframe
+                    src={embedUrl}
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowFullScreen
+                    width="100%"
+                    height="100%"
+                    style={styles.previewIframe}
+                  />
                 ) : (
                   <video src={videoUrl} controls style={styles.previewVideo} />
                 )
@@ -239,7 +246,8 @@ const styles: Record<string, React.CSSProperties> = {
   panelHeader: { fontWeight: 700, marginBottom: 8 },
   previewWrap: { width: '100%', aspectRatio: '4 / 3', borderRadius: 10, overflow: 'hidden', background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   previewImg: { width: '100%', height: '100%', objectFit: 'contain' },
-  previewVideo: { width: '100%', height: '100%', objectFit: 'contain' },
+  previewVideo: { width: '100%', height: '100%' },
+  previewIframe: { width: '100%', height: '100%', border: 0, display: 'block' },
   empty: { color: 'rgba(255,255,255,0.7)' },
   actions: { marginTop: 10, display: 'flex', gap: 8, justifyContent: 'flex-end' },
   primaryBtn: { background: '#fff', color: '#111', border: 'none', borderRadius: 9999, padding: '8px 14px', cursor: 'pointer' },
