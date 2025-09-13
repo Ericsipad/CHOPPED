@@ -84,13 +84,8 @@ export async function POST(req: Request) {
     const now = new Date()
     const id = videoId || crypto.randomUUID()
 
-    // Upsert pattern: ensure array exists; update if found else push new
-    const update: any = {
-      $setOnInsert: { updatedAt: now },
-      $set: { updatedAt: now },
-    }
-
     // Try update existing by id first
+
     const res = await users.updateOne(
       { _id: userDoc._id, 'profile_videos.id': id },
       {
@@ -122,7 +117,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true, id }, { headers })
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
 }

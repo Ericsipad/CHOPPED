@@ -64,17 +64,19 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
     }
 
-    const itemsRaw = Array.isArray((userDoc as any).profile_videos) ? (userDoc as any).profile_videos : []
-    const items = itemsRaw.map((it: any) => ({
+    type UserVideoItem = { id?: string; video_thumb?: unknown; video_url?: unknown; createdAt?: unknown; updatedAt?: unknown }
+    const pv = (userDoc as unknown as { profile_videos?: unknown }).profile_videos
+    const itemsRaw: UserVideoItem[] = Array.isArray(pv) ? (pv as UserVideoItem[]) : []
+    const items = itemsRaw.map((it: UserVideoItem) => ({
       id: String(it?.id || ''),
       video_thumb: typeof it?.video_thumb === 'string' ? it.video_thumb : null,
       video_url: typeof it?.video_url === 'string' ? it.video_url : null,
-      createdAt: it?.createdAt ? new Date(it.createdAt) : null,
-      updatedAt: it?.updatedAt ? new Date(it.updatedAt) : null,
+      createdAt: it?.createdAt ? new Date(it.createdAt as string) : null,
+      updatedAt: it?.updatedAt ? new Date(it.updatedAt as string) : null,
     }))
 
     return NextResponse.json({ items }, { headers })
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500, headers })
   }
 }

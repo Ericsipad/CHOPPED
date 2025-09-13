@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     let formData: FormData
     try {
       formData = await req.formData()
-    } catch (err) {
+    } catch {
       return NextResponse.json({ error: 'FORM_PARSE_FAIL' }, { status: 400, headers })
     }
 
@@ -107,8 +107,9 @@ export async function POST(req: Request) {
       const text = await createRes.text().catch(() => '')
       return NextResponse.json({ error: 'BUNNY_CREATE_FAIL', status: createRes.status, detail: text }, { status: 502, headers })
     }
-    const createJson = await createRes.json().catch(() => null) as any
-    const guid = String(createJson?.guid || createJson?.Guid || '')
+    type CreateVideoResponse = { guid?: string; Guid?: string }
+    const createJson = await createRes.json().catch(() => null) as CreateVideoResponse | null
+    const guid = String((createJson && (createJson.guid || (createJson as any).Guid)) || '')
     if (!guid) {
       return NextResponse.json({ error: 'BUNNY_CREATE_NO_GUID' }, { status: 502, headers })
     }
@@ -118,7 +119,7 @@ export async function POST(req: Request) {
     try {
       const ab = await file.arrayBuffer()
       bodyBlob = new Blob([ab], { type: file.type || 'application/octet-stream' })
-    } catch (err) {
+    } catch {
       return NextResponse.json({ error: 'FILE_READ_FAIL' }, { status: 500, headers })
     }
 
@@ -134,7 +135,7 @@ export async function POST(req: Request) {
 
     const videoUrl = `${embedBase}/${encodeURIComponent(libraryId)}/${encodeURIComponent(guid)}`
     return NextResponse.json({ guid, videoUrl }, { headers })
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'UNKNOWN' }, { status: 500, headers })
   }
 }
