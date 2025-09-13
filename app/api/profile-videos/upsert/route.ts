@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createSupabaseRouteClient } from '@/utils/supabase/server'
 import { getUsersCollection } from '@/lib/mongo'
 import { z } from 'zod'
+import type { Collection } from 'mongodb'
 
 const ALLOWED_METHODS = ['POST', 'OPTIONS'] as const
 
@@ -75,7 +76,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Nothing to update' }, { status: 400, headers })
     }
 
-    const users = await getUsersCollection()
+    type UserVideoItem = { id: string; video_thumb: string | null; video_url: string | null; createdAt: Date; updatedAt: Date }
+    type UserDoc = { _id: unknown; supabaseUserId: string; profile_videos?: UserVideoItem[] }
+    const users = await getUsersCollection() as unknown as Collection<UserDoc>
     const userDoc = await users.findOne({ supabaseUserId: user.id })
     if (!userDoc?._id) {
       return NextResponse.json({ error: 'User not linked' }, { status: 400, headers })
@@ -99,7 +102,7 @@ export async function POST(req: Request) {
     )
 
     if (res.matchedCount === 0) {
-      const newItem = {
+      const newItem: UserVideoItem = {
         id,
         video_thumb: video_thumb ?? null,
         video_url: video_url ?? null,
