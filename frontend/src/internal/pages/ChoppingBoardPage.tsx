@@ -377,7 +377,7 @@ export default function ChoppingBoardPage() {
 						>
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
 								{/* Centered status bar */}
-								<div style={{ position: 'absolute', top: (viewCount === 25 ? 96 : 64), left: '50%', transform: 'translateX(-50%)', zIndex: 11 }}>
+								<div style={{ position: 'absolute', top: 64, left: '50%', transform: 'translateX(-50%)', zIndex: 11 }}>
 									<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
 								</div>
 								{/* Glass toggle buttons - top-left */}
@@ -408,7 +408,7 @@ export default function ChoppingBoardPage() {
 								</div>
 
 								{/* Grid: only 25-view shifts down; others remain centered */}
-								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: (viewCount === 25 ? 'flex-start' : 'center'), marginTop: (viewCount === 25 ? 16 : 0) }}>
+								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: (viewCount === 25 ? 32 : 0) }}>
 									<ProfileGrid images={images} viewCount={viewCount} activeSlotsCount={activeSlotsCount} onCardClick={handleCardClick} />
 								</div>
 							</div>
