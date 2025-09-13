@@ -407,8 +407,8 @@ export default function ChoppingBoardPage() {
 									</div>
 								</div>
 
-								{/* Grid top-aligned with breathing room below the status bar */}
-								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', marginTop: (viewCount === 25 ? 16 : 8) }}>
+								{/* Grid: only 25-view shifts down; others remain centered */}
+								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: (viewCount === 25 ? 'flex-start' : 'center'), marginTop: (viewCount === 25 ? 16 : 0) }}>
 									<ProfileGrid images={images} viewCount={viewCount} activeSlotsCount={activeSlotsCount} onCardClick={handleCardClick} />
 								</div>
 							</div>
