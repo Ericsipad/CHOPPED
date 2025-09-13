@@ -377,6 +377,15 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	margin: 0 auto;
 }
 
+/* Compact variant for embedding in modals (3 side-by-side paid tiers) */
+.subscription-grid--compact {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px;
+	max-width: none;
+	margin: 0;
+}
+
 .subscription-container {
 	background: rgba(18,18,18,0.6);
 	color: #ffffff;
@@ -391,6 +400,11 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	align-items: center;
 	position: relative;
 	transition: all 0.3s ease;
+}
+
+.subscription-container--compact {
+	border-radius: 12px;
+	padding: 12px;
 }
 
 .subscription-container.is-selected {
@@ -417,6 +431,10 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	text-align: center;
 }
 
+.subscription-container--compact .subscription-number {
+	font-size: 36px;
+}
+
 .subscription-text {
 	flex: 1;
 	font-size: 16px;
@@ -429,6 +447,12 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	font-weight: bold;
 	min-width: 80px;
 	text-align: right;
+}
+
+.subscription-container--compact .subscription-price {
+	font-size: 18px;
+	min-width: auto;
+	text-align: center;
 }
 
 .subscription-free {
@@ -458,6 +482,11 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	font-weight: 600;
 	transition: all 0.2s ease;
 	min-width: 100px;
+}
+
+.subscription-container--compact .subscription-button {
+	padding: 8px 12px;
+	min-width: 0;
 }
 
 .subscription-button:hover:not(:disabled) {
@@ -496,6 +525,11 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 
 	.subscription-button-container {
 		justify-content: center;
+	}
+
+	.subscription-grid--compact {
+		grid-template-columns: 1fr;
+		gap: 10px;
 	}
 }
 

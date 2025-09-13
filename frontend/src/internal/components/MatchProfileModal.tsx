@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getBackendApi } from '../../lib/config'
 import { fetchPendingGiftFromSender, updateGiftAcceptance } from '../lib/gifts'
+import ValidationModal from './ValidationModal'
+import SubscriptionContainer from './SubscriptionContainer'
 
 type MatchProfileModalProps = {
 	isOpen: boolean
@@ -10,13 +12,14 @@ type MatchProfileModalProps = {
 	onChop?: (userId: string) => void
 	onGift?: (userId: string) => void
 	isActionLoading?: boolean
+    viewerSubscription?: number
 }
 
 type PublicImages = { main: string | null; thumbs: Array<{ name: string; url: string }> }
 type PublicProfile = { displayName: string | null; age: number | null; bio: string | null }
 
 export default function MatchProfileModal(props: MatchProfileModalProps) {
-	const { isOpen, userId, onClose, onChat, onChop, onGift, isActionLoading } = props
+	const { isOpen, userId, onClose, onChat, onChop, onGift, isActionLoading, viewerSubscription } = props
 	const [images, setImages] = useState<PublicImages | null>(null)
 	const [profile, setProfile] = useState<PublicProfile | null>(null)
 	const [error, setError] = useState<string | null>(null)
@@ -29,6 +32,7 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 	const [videoItems, setVideoItems] = useState<Array<{ id: string; video_thumb: string | null; video_url: string | null }>>([])
 	const [videoActive, setVideoActive] = useState(false)
 	const [embedUrl, setEmbedUrl] = useState<string | null>(null)
+	const [upgradeOpen, setUpgradeOpen] = useState(false)
 
 	useEffect(() => {
 		if (!isOpen) return
@@ -266,6 +270,7 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 							return (
 								<button key={i} type="button" style={styles.videoBtn} onClick={async () => {
 									if (!item?.video_url) return
+									if (i < 2 && (viewerSubscription ?? 0) < 10) { setUpgradeOpen(true); return }
 									try {
 										setVideoActive(true)
 										setEmbedUrl(null)
@@ -329,6 +334,19 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 				<style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 				<style>{`@keyframes boom { 0% { transform: scale(0.2); opacity: 0 } 20% { opacity: 1 } 100% { transform: scale(6); opacity: 0 } } @keyframes sparkle { 0% { opacity: 0 } 20% { opacity: 1 } 100% { opacity: 0 } }`}</style>
 			</div>
+			{/* Upgrade modal for gated videos */}
+			<ValidationModal
+				isOpen={upgradeOpen}
+				title="Upgrade required"
+				onClose={() => setUpgradeOpen(false)}
+			>
+				<div style={{ padding: 12 }}>
+					<div style={{ marginBottom: 12 }}>
+						You must have at least a 10-chat subscription for $10 per month to view videos.
+					</div>
+					<SubscriptionContainer currentSubscription={typeof viewerSubscription === 'number' ? viewerSubscription : 3} onlyPaid compact />
+				</div>
+			</ValidationModal>
 		</div>
 	)
 }

@@ -16,9 +16,11 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
 
 type SubscriptionContainerProps = {
   currentSubscription: number
+  onlyPaid?: boolean
+  compact?: boolean
 }
 
-export default function SubscriptionContainer({ currentSubscription }: SubscriptionContainerProps) {
+export default function SubscriptionContainer({ currentSubscription, onlyPaid, compact }: SubscriptionContainerProps) {
   const [loading, setLoading] = useState<number | null>(null)
 
   const handleSubscribe = async (slots: number) => {
@@ -48,15 +50,17 @@ export default function SubscriptionContainer({ currentSubscription }: Subscript
     }
   }
 
+  const plans = onlyPaid ? SUBSCRIPTION_PLANS.filter(p => p.price !== null) : SUBSCRIPTION_PLANS
+
   return (
-    <div className="subscription-grid">
-      {SUBSCRIPTION_PLANS.map((plan) => {
+    <div className={["subscription-grid", compact ? "subscription-grid--compact" : ""].filter(Boolean).join(" ") }>
+      {plans.map((plan) => {
         const isCurrent = currentSubscription === plan.slots
 
         return (
           <div
             key={plan.slots}
-            className={`subscription-container ${isCurrent ? 'is-selected' : ''}`}
+            className={["subscription-container", isCurrent ? "is-selected" : "", compact ? "subscription-container--compact" : ""].filter(Boolean).join(" ")}
           >
             <div className="subscription-content">
               <div className="subscription-number">{plan.slots}</div>

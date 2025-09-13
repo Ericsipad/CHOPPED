@@ -445,6 +445,7 @@ export default function ChoppingBoardPage() {
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 					onGift={(uid) => { if (uid) setSelectedUserId(uid); setProfileModalOpen(false); setGiftOpen(true) }}
 					isActionLoading={isChopping}
+					viewerSubscription={subscription}
 				/>
 				<ChatModal
 					isOpen={chatOpen}
