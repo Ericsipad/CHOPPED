@@ -7,7 +7,8 @@ type ProfileGridProps = { images: ProfileImage[]; viewCount: 10 | 25 | 50; activ
 export default function ProfileGrid(props: ProfileGridProps) {
 	const { images, viewCount, activeSlotsCount = 0, onCardClick } = props
 
-	const items = images.slice(0, viewCount)
+	const sliceCount = viewCount === 25 ? 20 : viewCount
+	const items = images.slice(0, sliceCount)
 
 	let cardPx = 192
 	let columns = 5

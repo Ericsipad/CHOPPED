@@ -415,7 +415,7 @@ export default function ChoppingBoardPage() {
 											onClick={() => setViewCount(25)}
 											aria-pressed={viewCount === 25}
 										>
-											25
+											20
 										</button>
 										<button
 											className={["profile-tabs__btn", viewCount === 50 ? 'is-active' : ''].filter(Boolean).join(' ')}
