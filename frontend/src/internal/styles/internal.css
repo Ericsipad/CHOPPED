@@ -194,6 +194,15 @@ html, body, #root {
 	justify-content: center;
 }
 
+.profile-image-card__video-overlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+}
+
 .profile-image-card__video-play {
 	display: block;
 	width: 0; height: 0;

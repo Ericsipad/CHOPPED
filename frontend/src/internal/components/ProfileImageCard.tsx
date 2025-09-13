@@ -230,7 +230,14 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveVideoIndex(i); setVideoModalOpen(true) } }}
               >
                 {thumb ? (
-                  <img src={thumb} alt={`Video ${i + 1} thumbnail`} className="profile-image-card__img" />
+                  <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                    <img src={thumb} alt={`Video ${i + 1} thumbnail`} className="profile-image-card__img" />
+                    <div className="profile-image-card__video-overlay">
+                      <div className="profile-image-card__video-playplate">
+                        <span className="profile-image-card__video-play" aria-hidden />
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <div className="profile-image-card__video-placeholder">
                     <div className="profile-image-card__video-playplate">
