@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getBackendApi } from '../../lib/config'
+import { xhrUpload } from '../../lib/xhrUpload'
 import ExpandedImageModal from './ExpandedImageModal'
 import ExpandedVideoModal from './ExpandedVideoModal'
 
@@ -67,13 +68,13 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
       form.append('file', shrinked, file.name)
 
       const url = getBackendApi('/api/uploads/storage')
-      const res = await fetch(url, { method: 'POST', credentials: 'include', body: form })
+      const res = await xhrUpload(url, form, { withCredentials: true })
       if (!res.ok) {
-        const text = await res.text().catch(() => '')
+        const text = (res.json && typeof (res.json as any).error === 'string') ? (res.json as any).error : (res.text || '')
         alert('Upload failed. ' + text)
         return
       }
-      const data = await res.json().catch(() => null)
+      const data = (res.json || null) as any
       const publicUrl = data?.publicUrl as string | undefined
       if (!publicUrl) {
         alert('Upload response invalid')

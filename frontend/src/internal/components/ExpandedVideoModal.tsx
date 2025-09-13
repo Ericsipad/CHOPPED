@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { getBackendApi } from '../../lib/config'
+import { xhrUpload } from '../../lib/xhrUpload'
 
 type ExpandedVideoModalProps = {
   isOpen: boolean
@@ -15,6 +17,12 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
   const { isOpen, onClose, videoId, videoThumbUrl, videoUrl, onThumbUploaded, onVideoUploaded, onDelete } = props
   const [uploadingThumb, setUploadingThumb] = useState(false)
   const [uploadingVideo, setUploadingVideo] = useState(false)
+  const [thumbProgress, setThumbProgress] = useState<number>(0)
+  const [videoProgress, setVideoProgress] = useState<number>(0)
+  const [thumbError, setThumbError] = useState<string | null>(null)
+  const [videoError, setVideoError] = useState<string | null>(null)
+  const [thumbSuccess, setThumbSuccess] = useState<boolean>(false)
+  const [videoSuccess, setVideoSuccess] = useState<boolean>(false)
   const thumbInputRef = useRef<HTMLInputElement | null>(null)
   const videoInputRef = useRef<HTMLInputElement | null>(null)
 
@@ -66,30 +74,54 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
                 return
               }
               setUploadingThumb(true)
+              setThumbProgress(0)
+              setThumbError(null)
+              setThumbSuccess(false)
               ;(async () => {
                 try {
                   const form = new FormData()
                   form.append('slot', 'thumb1')
                   form.append('file', f, f.name)
-                  const res = await fetch((window as any).env?.NEXT_PUBLIC_API_BASE_URL ? `${(window as any).env.NEXT_PUBLIC_API_BASE_URL}/api/uploads/storage` : '/api/uploads/storage', {
-                    method: 'POST', credentials: 'include', body: form,
-                  })
+                  const url = getBackendApi('/api/uploads/storage')
+                  const res = await xhrUpload(url, form, { withCredentials: true, onProgress: (loaded, total) => {
+                    const pct = total > 0 ? Math.round((loaded / total) * 100) : 0
+                    setThumbProgress(pct)
+                  } })
                   if (!res.ok) {
-                    const t = await res.text().catch(() => '')
-                    alert('Upload failed: ' + t)
+                    const msg = (res.json && typeof (res.json as any).error === 'string') ? (res.json as any).error : (res.text || 'Upload failed')
+                    setThumbError(msg || 'Upload failed')
                     return
                   }
-                  const data = await res.json().catch(() => null) as { publicUrl?: string }
+                  const data = (res.json || null) as { publicUrl?: string } | null
                   if (!data?.publicUrl) {
-                    alert('Invalid response')
+                    setThumbError('Invalid response')
                     return
                   }
                   onThumbUploaded(data.publicUrl)
+                  setThumbSuccess(true)
                 } finally {
                   setUploadingThumb(false)
                 }
               })()
             }} style={{ display: 'none' }} />
+            {(uploadingThumb || thumbError || thumbSuccess) ? (
+              <div style={{ marginTop: 8 }}>
+                {uploadingThumb ? (
+                  <div aria-live="polite" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.15)', borderRadius: 9999, overflow: 'hidden' }}>
+                      <div style={{ width: `${thumbProgress}%`, height: '100%', background: '#22c55e' }} />
+                    </div>
+                    <span style={{ fontSize: 12, color: '#ddd' }}>{thumbProgress}%</span>
+                  </div>
+                ) : null}
+                {thumbError ? (
+                  <div style={{ color: '#fca5a5', fontSize: 12, marginTop: 6 }}>Error: {thumbError}</div>
+                ) : null}
+                {thumbSuccess ? (
+                  <div style={{ color: '#86efac', fontSize: 12, marginTop: 6 }}>Thumbnail uploaded</div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
 
           <div style={styles.panel}>
@@ -118,28 +150,53 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
                 return
               }
               setUploadingVideo(true)
+              setVideoProgress(0)
+              setVideoError(null)
+              setVideoSuccess(false)
               ;(async () => {
                 try {
                   const form = new FormData()
                   form.append('file', f, f.name)
-                  const base = (window as any).env?.NEXT_PUBLIC_API_BASE_URL || ''
-                  const res = await fetch(`${base}/api/video/stream/upload`.replace(/\/\/?$/, ''), { method: 'POST', credentials: 'include', body: form })
+                  const url = getBackendApi('/api/video/stream/upload')
+                  const res = await xhrUpload(url, form, { withCredentials: true, onProgress: (loaded, total) => {
+                    const pct = total > 0 ? Math.round((loaded / total) * 100) : 0
+                    setVideoProgress(pct)
+                  } })
                   if (!res.ok) {
-                    const t = await res.text().catch(() => '')
-                    alert('Video upload failed: ' + t)
+                    const msg = (res.json && typeof (res.json as any).error === 'string') ? (res.json as any).error : (res.text || 'Upload failed')
+                    setVideoError(msg || 'Upload failed')
                     return
                   }
-                  const data = await res.json().catch(() => null) as { videoUrl?: string; guid?: string }
+                  const data = (res.json || null) as { videoUrl?: string; guid?: string } | null
                   if (!data?.videoUrl) {
-                    alert('Invalid response from server')
+                    setVideoError('Invalid response from server')
                     return
                   }
                   onVideoUploaded(data.videoUrl)
+                  setVideoSuccess(true)
                 } finally {
                   setUploadingVideo(false)
                 }
               })()
             }} style={{ display: 'none' }} />
+            {(uploadingVideo || videoError || videoSuccess) ? (
+              <div style={{ marginTop: 8 }}>
+                {uploadingVideo ? (
+                  <div aria-live="polite" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.15)', borderRadius: 9999, overflow: 'hidden' }}>
+                      <div style={{ width: `${videoProgress}%`, height: '100%', background: '#22c55e' }} />
+                    </div>
+                    <span style={{ fontSize: 12, color: '#ddd' }}>{videoProgress}%</span>
+                  </div>
+                ) : null}
+                {videoError ? (
+                  <div style={{ color: '#fca5a5', fontSize: 12, marginTop: 6 }}>Error: {videoError}</div>
+                ) : null}
+                {videoSuccess ? (
+                  <div style={{ color: '#86efac', fontSize: 12, marginTop: 6 }}>Video uploaded</div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
