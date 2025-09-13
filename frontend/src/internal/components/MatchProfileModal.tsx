@@ -83,6 +83,7 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 			setError(null)
 			setImages(null)
 			setProfile(null)
+			setPendingGift(null)
 			try {
 				const [imgRes, profRes] = await Promise.all([
 					fetch(getBackendApi(`/api/profile-images/public?userId=${encodeURIComponent(userId)}`), { credentials: 'include' }).catch(() => null),
@@ -98,7 +99,7 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 				}
 				if (!cancelled && userId) {
 					const g = await fetchPendingGiftFromSender(userId)
-					if (g) setPendingGift({ createdAt: g.createdAt, amountCents: g.amountCents })
+					if (!cancelled) setPendingGift(g ? { createdAt: g.createdAt, amountCents: g.amountCents } : null)
 				}
 				if (!cancelled) setActiveIndex(0)
 			} catch {
@@ -109,6 +110,13 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 		})()
 		return () => { cancelled = true }
 	}, [isOpen, userId])
+
+	// Clear pending gift when modal closes to avoid stale display on next open
+	useEffect(() => {
+		if (!isOpen) {
+			setPendingGift(null)
+		}
+	}, [isOpen])
 
 	// Fetch public video items for the viewed user
 	useEffect(() => {
