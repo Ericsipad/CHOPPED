@@ -40,6 +40,8 @@ export default function ChoppingBoardPage() {
     const [chopSuccessOpen, setChopSuccessOpen] = useState(false)
     const [matchedMePendingCount, setMatchedMePendingCount] = useState<number>(0)
     const [giftsCount, setGiftsCount] = useState<number>(0)
+	const statusBarRef = useRef<HTMLDivElement | null>(null)
+	const [statusBarHeight, setStatusBarHeight] = useState(0)
 
     useEffect(() => {
         let cancelled = false
@@ -79,6 +81,24 @@ export default function ChoppingBoardPage() {
         })()
         return () => { cancelled = true }
     }, [])
+
+	// Measure StatusBar height and update on resize for accurate push-down in 25-view
+	useEffect(() => {
+		const el = statusBarRef.current
+		if (!el) return
+		const measure = () => setStatusBarHeight(el.offsetHeight || 0)
+		measure()
+		let ro: ResizeObserver | null = null
+		if (typeof ResizeObserver !== 'undefined') {
+			ro = new ResizeObserver(() => measure())
+			ro.observe(el)
+		}
+		window.addEventListener('resize', measure)
+		return () => {
+			window.removeEventListener('resize', measure)
+			if (ro) ro.disconnect()
+		}
+	}, [])
 
     // One-time fetch and cache of pending matched-me count after login
     useEffect(() => {
@@ -377,7 +397,7 @@ export default function ChoppingBoardPage() {
 						>
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
 								{/* Centered status bar */}
-								<div style={{ position: 'absolute', top: 64, left: '50%', transform: 'translateX(-50%)', zIndex: 11 }}>
+								<div ref={statusBarRef} style={{ position: 'absolute', top: 64, left: '50%', transform: 'translateX(-50%)', zIndex: 11 }}>
 									<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
 								</div>
 								{/* Glass toggle buttons - top-left */}
@@ -408,7 +428,7 @@ export default function ChoppingBoardPage() {
 								</div>
 
 								{/* Grid: only 25-view shifts down; others remain centered */}
-								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: (viewCount === 25 ? 'flex-start' : 'center'), marginTop: (viewCount === 25 ? 24 : 0) }}>
+								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: (viewCount === 25 ? 'flex-start' : 'center'), paddingTop: (viewCount === 25 ? (64 + statusBarHeight + 12) : 0) }}>
 									<ProfileGrid images={images} viewCount={viewCount} activeSlotsCount={activeSlotsCount} onCardClick={handleCardClick} />
 								</div>
 							</div>
