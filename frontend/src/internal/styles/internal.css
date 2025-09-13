@@ -100,15 +100,15 @@ html, body, #root {
 	-webkit-backdrop-filter: blur(10px) saturate(120%);
 	box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05) inset;
 	border: 1px solid rgba(255,255,255,0.08);
-	padding: 16px;
+	padding: 12px;
 }
 
 .profile-image-card__content {
 	display: grid;
 	height: 100%;
-	/* keep consistent proportions: 90% main, 10% thumbs regardless of size */
-	grid-template-rows: 9fr 1fr;
-	gap: 12px;
+	/* main area + two short rows (thumbs + videos) */
+	grid-template-rows: 8fr 1fr 1fr;
+	gap: 8px;
 }
 
 .profile-image-card__main {
@@ -157,6 +157,50 @@ html, body, #root {
 	gap: 8px;
 	height: 100%;
 	align-items: stretch;
+}
+
+/* New video row below thumbnails */
+.profile-image-card__videos {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 8px;
+	height: 100%;
+	align-items: stretch;
+}
+
+.profile-image-card__video {
+	border-radius: 8px;
+	overflow: hidden;
+	border: 1px solid rgba(255,255,255,0.08);
+	background: rgba(0,0,0,0.35);
+}
+
+.profile-image-card__video-placeholder {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.profile-image-card__video-playplate {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: rgba(255,255,255,0.12);
+	border: 1px solid rgba(255,255,255,0.18);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.profile-image-card__video-play {
+	display: block;
+	width: 0; height: 0;
+	border-style: solid;
+	border-width: 8px 0 8px 14px;
+	border-color: transparent transparent transparent rgba(255,255,255,0.9);
+	margin-left: 2px;
 }
 
 .profile-image-card__thumb {

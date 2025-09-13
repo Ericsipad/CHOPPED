@@ -194,6 +194,21 @@ export default function ProfileImageCard(props: ProfileImageCardProps) {
             </div>
           ))}
         </div>
+
+        <div className="profile-image-card__videos">
+          {new Array(6).fill(null).map((_, i) => (
+            <div key={i}
+              className="profile-image-card__video"
+              aria-label={`Video ${i + 1}`}
+            >
+              <div className="profile-image-card__video-placeholder">
+                <div className="profile-image-card__video-playplate">
+                  <span className="profile-image-card__video-play" aria-hidden />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <ExpandedImageModal
