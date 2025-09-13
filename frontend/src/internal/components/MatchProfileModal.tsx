@@ -33,6 +33,7 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 	const [videoActive, setVideoActive] = useState(false)
 	const [embedUrl, setEmbedUrl] = useState<string | null>(null)
 	const [upgradeOpen, setUpgradeOpen] = useState(false)
+	const [upgradeRequiredSlots, setUpgradeRequiredSlots] = useState<number | null>(null)
 
 	useEffect(() => {
 		if (!isOpen) return
@@ -270,7 +271,8 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 							return (
 								<button key={i} type="button" style={styles.videoBtn} onClick={async () => {
 									if (!item?.video_url) return
-									if (i < 2 && (viewerSubscription ?? 0) < 10) { setUpgradeOpen(true); return }
+									const required = i < 2 ? 10 : 20
+									if ((viewerSubscription ?? 0) < required) { setUpgradeRequiredSlots(required); setUpgradeOpen(true); return }
 									try {
 										setVideoActive(true)
 										setEmbedUrl(null)
@@ -338,11 +340,11 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 			<ValidationModal
 				isOpen={upgradeOpen}
 				title="Upgrade required"
-				onClose={() => setUpgradeOpen(false)}
+				onClose={() => { setUpgradeOpen(false); setUpgradeRequiredSlots(null) }}
 			>
 				<div style={{ padding: 12 }}>
 					<div style={{ marginBottom: 12 }}>
-						You must have at least a 10-chat subscription for $10 per month to view videos.
+						{upgradeRequiredSlots === 20 ? 'You must have at least a 20-chat subscription for $20 per month to view these videos.' : 'You must have at least a 10-chat subscription for $10 per month to view videos.'}
 					</div>
 					<SubscriptionContainer currentSubscription={typeof viewerSubscription === 'number' ? viewerSubscription : 3} onlyPaid compact />
 				</div>
