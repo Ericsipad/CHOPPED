@@ -26,6 +26,9 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 	const [pendingGift, setPendingGift] = useState<{ createdAt: string; amountCents: number } | null>(null)
 	const [accepting, setAccepting] = useState(false)
 	const [showCelebration, setShowCelebration] = useState(false)
+	const [videoItems, setVideoItems] = useState<Array<{ id: string; video_thumb: string | null; video_url: string | null }>>([])
+	const [videoActive, setVideoActive] = useState(false)
+	const [embedUrl, setEmbedUrl] = useState<string | null>(null)
 
 	useEffect(() => {
 		if (!isOpen) return
@@ -103,6 +106,26 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 			} finally {
 				if (!cancelled) setLoading(false)
 			}
+		})()
+		return () => { cancelled = true }
+	}, [isOpen, userId])
+
+	// Fetch public video items for the viewed user
+	useEffect(() => {
+		let cancelled = false
+		;(async () => {
+			try {
+				setVideoItems([])
+				setVideoActive(false)
+				setEmbedUrl(null)
+				if (!isOpen || !userId) return
+				const res = await fetch(getBackendApi(`/api/profile-videos/public?userId=${encodeURIComponent(userId)}`), { credentials: 'include' }).catch(() => null)
+				if (!res || !res.ok) return
+				const data = await res.json().catch(() => null) as { items?: Array<{ id?: string; video_thumb?: string | null; video_url?: string | null }> } | null
+				if (cancelled) return
+				const items = Array.isArray(data?.items) ? data!.items!.slice(0, 6).map((it) => ({ id: String(it?.id || ''), video_thumb: it?.video_thumb ?? null, video_url: it?.video_url ?? null })) : []
+				setVideoItems(items)
+			} catch { /* noop */ }
 		})()
 		return () => { cancelled = true }
 	}, [isOpen, userId])
@@ -209,6 +232,8 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 					<div style={styles.mainImageWrap}>
 						{loading ? (
 							<div style={styles.loading}>Loading…</div>
+						) : (videoActive && embedUrl) ? (
+							<iframe src={embedUrl} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style={styles.mainIframe} />
 						) : largeUrl ? (
 							<img src={largeUrl} alt="Selected image" style={styles.mainImage} />
 						) : (
@@ -220,8 +245,40 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 							const idx = i + 1
 							const isActive = activeIndex === idx
 							return (
-								<button key={idx} type="button" onClick={() => setActiveIndex(idx)} aria-pressed={isActive} style={{ ...styles.thumbBtn, outline: isActive ? '2px solid #22c55e' : 'none' }}>
+								<button key={idx} type="button" onClick={() => { setActiveIndex(idx); setVideoActive(false); setEmbedUrl(null) }} aria-pressed={isActive} style={{ ...styles.thumbBtn, outline: isActive ? '2px solid #22c55e' : 'none' }}>
 									{url ? <img src={url} alt={`Thumbnail ${idx} ${profile?.displayName ? `for ${profile.displayName}` : ''}`} loading="lazy" decoding="async" style={styles.thumbImg} /> : <div style={styles.thumbEmpty}>—</div>}
+								</button>
+							)
+						})}
+					</div>
+					<div style={styles.videoRow}>
+						{Array.from({ length: 6 }).map((_, i) => {
+							const item = videoItems[i] as { id: string; video_thumb: string | null; video_url: string | null } | undefined
+							const hasThumb = !!item?.video_thumb
+							return (
+								<button key={i} type="button" style={styles.videoBtn} onClick={async () => {
+									if (!item?.video_url) return
+									try {
+										setVideoActive(true)
+										setEmbedUrl(null)
+										const res = await fetch(getBackendApi('/api/video/stream/embed'), { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ videoUrl: item.video_url }) })
+										if (!res.ok) { setVideoActive(false); return }
+										const j = await res.json().catch(() => null) as { signedUrl?: string } | null
+										if (j?.signedUrl) setEmbedUrl(j.signedUrl)
+									} catch { setVideoActive(false) }
+								}}>
+									{hasThumb ? (
+										<div style={{ position: 'relative', width: '100%', height: '100%' }}>
+											<img src={item!.video_thumb!} alt={`Video ${i + 1} thumbnail`} style={styles.videoThumb} />
+											<div style={styles.videoOverlay}>
+												<div style={styles.playPlate}><span style={styles.playTriangle} aria-hidden /></div>
+											</div>
+										</div>
+									) : (
+										<div style={styles.videoPlaceholder}>
+											<div style={styles.playPlate}><span style={styles.playTriangle} aria-hidden /></div>
+										</div>
+									)}
 								</button>
 							)
 						})}
@@ -293,6 +350,7 @@ const styles: Record<string, React.CSSProperties> = {
 	mainImage: {
 		width: '100%', height: '100%', objectFit: 'cover', display: 'block'
 	},
+	mainIframe: { width: '100%', height: '100%', border: 0, display: 'block' },
 	loading: { opacity: 0.9 },
 	empty: { opacity: 0.75 },
 	thumbs: {
@@ -303,6 +361,13 @@ const styles: Record<string, React.CSSProperties> = {
 	},
 	thumbImg: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
 	thumbEmpty: { width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5 },
+	videoRow: { display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6, marginTop: 6 },
+	videoBtn: { borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.35)', height: 50, cursor: 'pointer' },
+	videoThumb: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
+	videoPlaceholder: { width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+	videoOverlay: { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' },
+	playPlate: { width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+	playTriangle: { display: 'block', width: 0, height: 0, borderStyle: 'solid', borderWidth: '6px 0 6px 10px', borderColor: 'transparent transparent transparent rgba(255,255,255,0.95)', marginLeft: 2 },
 	details: { marginTop: 12 },
 	nameRow: { fontSize: 14, fontWeight: 700, display: 'flex', alignItems: 'baseline' },
 	nameText: { fontSize: 14, fontWeight: 700 },
