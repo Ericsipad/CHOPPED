@@ -1,5 +1,6 @@
-import { forwardRef } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 import { logout, redirectToLogin } from '../../lib/auth'
+import { fetchAvailableGiftsAmountCents } from '../lib/gifts'
 
 interface UserDropdownProps {
   isAuthenticated: boolean
@@ -8,6 +9,24 @@ interface UserDropdownProps {
 
 const UserDropdown = forwardRef<HTMLDivElement, UserDropdownProps>(
   ({ isAuthenticated, onClose }, ref) => {
+    const [availableCents, setAvailableCents] = useState<number | null>(null)
+
+    useEffect(() => {
+      let cancelled = false
+      if (!isAuthenticated) {
+        setAvailableCents(null)
+        return
+      }
+      ;(async () => {
+        try {
+          const cents = await fetchAvailableGiftsAmountCents()
+          if (!cancelled) setAvailableCents(cents)
+        } catch {
+          if (!cancelled) setAvailableCents(0)
+        }
+      })()
+      return () => { cancelled = true }
+    }, [isAuthenticated])
     const handleLogout = () => {
       onClose()
       logout()
@@ -40,6 +59,9 @@ const UserDropdown = forwardRef<HTMLDivElement, UserDropdownProps>(
               >
                 <span className="user-dropdown__item-text">Profile</span>
               </button>
+              <div className="user-dropdown__meta" aria-live="polite">
+                Available {`$${(((availableCents ?? 0) / 100).toFixed(2))}`}
+              </div>
               <div className="user-dropdown__divider"></div>
               <button
                 className="user-dropdown__item user-dropdown__item--logout"
