@@ -14,6 +14,7 @@ export default defineConfig({
   preview: {
     allowedHosts: [
       'chopped-frontend-3kvyp.ondigitalocean.app',
+      'chopped.dating',
     ],
   },
   build: {
