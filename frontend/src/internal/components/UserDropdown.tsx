@@ -59,9 +59,6 @@ const UserDropdown = forwardRef<HTMLDivElement, UserDropdownProps>(
               >
                 <span className="user-dropdown__item-text">Profile</span>
               </button>
-              <div className="user-dropdown__meta" aria-live="polite">
-                Available {`$${(((availableCents ?? 0) / 100).toFixed(2))}`}
-              </div>
               <div className="user-dropdown__divider"></div>
               <button
                 className="user-dropdown__item user-dropdown__item--logout"
@@ -69,6 +66,9 @@ const UserDropdown = forwardRef<HTMLDivElement, UserDropdownProps>(
               >
                 <span className="user-dropdown__item-text">Logout</span>
               </button>
+              <div className="user-dropdown__item" tabIndex={-1} role="note" aria-live="polite" style={{ cursor: 'default' }}>
+                <span className="user-dropdown__item-text">Available {`$${(((availableCents ?? 0) / 100).toFixed(2))}`}</span>
+              </div>
             </>
           ) : (
             <button
