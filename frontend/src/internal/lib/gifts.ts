@@ -19,6 +19,7 @@ export type ReceivedGift = {
   createdAt: string
   is_accepted: boolean
   amountCents: number
+  stripeTransactionId?: string | null
 }
 
 export async function fetchReceivedGifts(limit = 50, offset = 0): Promise<ReceivedGift[]> {
@@ -33,13 +34,24 @@ export async function fetchReceivedGifts(limit = 50, offset = 0): Promise<Receiv
   }
 }
 
-export async function updateGiftAcceptance(senderUserId: string, createdAt: string, accepted: boolean): Promise<boolean> {
+export async function updateGiftAcceptance(
+  arg1: string | { stripeTransactionId?: string | null; senderUserId?: string; createdAt?: string },
+  createdAtOrAccepted?: string | boolean,
+  acceptedMaybe?: boolean
+): Promise<boolean> {
   try {
+    let body: any
+    if (typeof arg1 === 'string') {
+      body = { senderUserId: arg1, createdAt: createdAtOrAccepted as string, accepted: acceptedMaybe as boolean }
+    } else {
+      const { stripeTransactionId, senderUserId, createdAt } = arg1 || {}
+      body = { stripeTransactionId: stripeTransactionId ?? null, senderUserId, createdAt, accepted: (createdAtOrAccepted as boolean) ?? false }
+    }
     const res = await fetch(getBackendApi('/api/user/gifts/acceptance'), {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ senderUserId, createdAt, accepted })
+      body: JSON.stringify(body)
     })
     return res.ok
   } catch {
@@ -49,15 +61,16 @@ export async function updateGiftAcceptance(senderUserId: string, createdAt: stri
 
 
 export type SenderPendingGift = { senderUserId: string; createdAt: string; amountCents: number }
+export type SenderPendingGiftWithStripe = { senderUserId: string; createdAt: string; amountCents: number; stripeTransactionId?: string | null }
 
-export async function fetchPendingGiftFromSender(senderUserId: string): Promise<SenderPendingGift | null> {
+export async function fetchPendingGiftFromSender(senderUserId: string): Promise<SenderPendingGiftWithStripe | null> {
   try {
     const rows = await fetchReceivedGifts(50, 0)
     const filtered = rows.filter(r => r.senderUserId === senderUserId && !r.is_accepted)
     if (filtered.length === 0) return null
     filtered.sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0))
     const top = filtered[0]
-    return { senderUserId: top.senderUserId, createdAt: top.createdAt, amountCents: typeof top.amountCents === 'number' ? top.amountCents : 0 }
+    return { senderUserId: top.senderUserId, createdAt: top.createdAt, amountCents: typeof top.amountCents === 'number' ? top.amountCents : 0, stripeTransactionId: (top as any).stripeTransactionId ?? null }
   } catch {
     return null
   }

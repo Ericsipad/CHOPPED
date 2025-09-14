@@ -26,7 +26,7 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 	const [loading, setLoading] = useState(false)
 	const [activeIndex, setActiveIndex] = useState<number>(0)
 	const dialogRef = useRef<HTMLDivElement | null>(null)
-	const [pendingGift, setPendingGift] = useState<{ createdAt: string; amountCents: number } | null>(null)
+	const [pendingGift, setPendingGift] = useState<{ createdAt: string; amountCents: number; stripeTransactionId?: string | null } | null>(null)
 	const [accepting, setAccepting] = useState(false)
 	const [showCelebration, setShowCelebration] = useState(false)
 	const [videoItems, setVideoItems] = useState<Array<{ id: string; video_thumb: string | null; video_url: string | null }>>([])
@@ -104,7 +104,7 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 				}
 				if (!cancelled && userId) {
 					const g = await fetchPendingGiftFromSender(userId)
-					if (!cancelled) setPendingGift(g ? { createdAt: g.createdAt, amountCents: g.amountCents } : null)
+					if (!cancelled) setPendingGift(g ? { createdAt: g.createdAt, amountCents: g.amountCents, stripeTransactionId: g.stripeTransactionId ?? null } : null)
 				}
 				if (!cancelled) setActiveIndex(0)
 			} catch {
@@ -192,7 +192,10 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 		if (!userId || !pendingGift || accepting) return
 		setAccepting(true)
 		try {
-			const ok = await updateGiftAcceptance(userId, pendingGift.createdAt, true)
+			const ok = await updateGiftAcceptance(
+				pendingGift.stripeTransactionId ? { stripeTransactionId: pendingGift.stripeTransactionId } : { senderUserId: userId, createdAt: pendingGift.createdAt },
+				true
+			)
 			if (ok) {
 				setPendingGift(null)
 				setShowCelebration(true)

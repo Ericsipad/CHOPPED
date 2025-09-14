@@ -60,6 +60,7 @@ type ApiItem = {
   createdAt: string
   is_accepted: boolean
   amountCents: number
+  stripeTransactionId?: string | null
 }
 
 export async function GET(req: Request) {
@@ -156,6 +157,7 @@ export async function GET(req: Request) {
           createdAt: { $toString: '$gifts.createdAt' },
           is_accepted: { $ifNull: ['$gifts.is_accepted', false] },
           amountCents: { $ifNull: ['$gifts.amountCents', 0] },
+          stripeTransactionId: { $ifNull: ['$gifts.stripeTransactionId', null] },
         }
       }
     ] as import('mongodb').Document[]
@@ -171,6 +173,7 @@ export async function GET(req: Request) {
         createdAt: row.createdAt,
         is_accepted: !!row.is_accepted,
         amountCents: typeof row.amountCents === 'number' ? row.amountCents : 0,
+        stripeTransactionId: typeof (row as any).stripeTransactionId === 'string' ? (row as any).stripeTransactionId : null,
       })
     }
 

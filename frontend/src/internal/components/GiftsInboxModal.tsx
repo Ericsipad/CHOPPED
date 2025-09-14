@@ -105,7 +105,10 @@ export default function GiftsInboxModal(props: GiftsInboxModalProps) {
     setActionLoadingId(`${row.senderUserId}-${row.createdAt}`)
     try {
       onChop(row.senderUserId, row.mainImageUrl)
-      await updateGiftAcceptance(row.senderUserId, row.createdAt, false)
+      await updateGiftAcceptance(
+        (row as any).stripeTransactionId ? { stripeTransactionId: (row as any).stripeTransactionId } : { senderUserId: row.senderUserId, createdAt: row.createdAt },
+        false
+      )
     } finally {
       setActionLoadingId(null)
     }
