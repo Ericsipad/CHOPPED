@@ -173,7 +173,7 @@ export async function GET(req: Request) {
         createdAt: row.createdAt,
         is_accepted: !!row.is_accepted,
         amountCents: typeof row.amountCents === 'number' ? row.amountCents : 0,
-        stripeTransactionId: typeof (row as any).stripeTransactionId === 'string' ? (row as any).stripeTransactionId : null,
+        stripeTransactionId: typeof row.stripeTransactionId === 'string' ? row.stripeTransactionId : null,
       })
     }
 
