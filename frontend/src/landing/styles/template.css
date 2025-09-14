@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 35 35% 98%;
+    --foreground: 25 15% 15%;
+    --card: 35 50% 96%;
+    --card-foreground: 25 15% 15%;
+    --popover: 35 50% 96%;
+    --popover-foreground: 25 15% 15%;
+    --primary: 25 85% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-soft: 25 60% 85%;
+    --primary-glow: 25 95% 75%;
+    --secondary: 30 25% 75%;
+    --secondary-foreground: 25 25% 25%;
+    --muted: 35 30% 90%;
+    --muted-foreground: 25 12% 55%;
+    --accent: 120 20% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 120 50% 50%;
+    --success-foreground: 0 0% 100%;
+    --border: 30 30% 85%;
+    --input: 30 30% 88%;
+    --ring: 25 85% 65%;
+    --radius: 1rem;
+    --gradient-warm: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(35 40% 95%) 0%, hsl(25 30% 90%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--card)) 100%);
+    --shadow-warm: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+    --shadow-soft: 0 4px 20px -4px hsl(25 25% 25% / 0.1);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.4);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 25 25% 8%;
+    --foreground: 35 35% 95%;
+    --card: 25 25% 12%;
+    --card-foreground: 35 35% 95%;
+    --primary: 25 85% 70%;
+    --primary-foreground: 25 25% 8%;
+    --secondary: 30 20% 20%;
+    --secondary-foreground: 35 35% 90%;
+    --muted: 25 15% 15%;
+    --muted-foreground: 35 20% 65%;
+    --accent: 120 25% 45%;
+    --accent-foreground: 0 0% 100%;
+    --border: 30 20% 20%;
+    --input: 30 20% 18%;
+    --sidebar-background: 25 25% 10%;
+    --sidebar-foreground: 35 35% 90%;
+    --sidebar-primary: 25 85% 70%;
+    --sidebar-primary-foreground: 25 25% 8%;
+    --sidebar-accent: 30 20% 15%;
+    --sidebar-accent-foreground: 35 35% 90%;
+    --sidebar-border: 30 20% 18%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground font-inter; }
+  h1, h2, h3, h4, h5, h6 { @apply font-poppins; }
+}
+
+@layer components {
+  .btn-hero {
+    @apply bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-8 py-4 rounded-full font-medium text-lg transition-all duration-300 hover:shadow-warm hover:scale-105 active:scale-95;
+  }
+  .btn-hero-outline {
+    @apply border-2 border-primary bg-transparent text-primary px-8 py-4 rounded-full font-medium text-lg transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:shadow-warm hover:scale-105 active:scale-95;
+  }
+  .card-warm {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-soft hover:-translate-y-1;
+  }
+  .bg-gradient-warm { background: var(--gradient-warm); }
+  .bg-gradient-hero { background: var(--gradient-hero); }
+  .bg-gradient-soft { background: var(--gradient-soft); }
+  .animate-float { animation: float 6s ease-in-out infinite; }
+  .animate-pulse-soft { animation: pulse-soft 3s ease-in-out infinite; }
+  .animate-fade-in-up { animation: fade-in-up 0.6s ease-out both; }
+  .hover-lift { @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-warm; }
+}
+
+@layer utilities {
+  .text-shadow-warm { text-shadow: 0 2px 10px hsl(var(--primary) / 0.3); }
+  .backdrop-warm { backdrop-filter: blur(10px) saturate(120%); }
+}
+
+@keyframes float { 0%,100%{ transform: translateY(0px);} 50%{ transform: translateY(-10px);} }
+@keyframes pulse-soft { 0%,100%{opacity:1;} 50%{opacity:0.8;} }
+@keyframes fade-in-up { from{opacity:0; transform: translateY(30px);} to{opacity:1; transform: translateY(0);} }
+@keyframes scale-in { from{opacity:0; transform: scale(0.9);} to{opacity:1; transform: scale(1);} }
+
+
