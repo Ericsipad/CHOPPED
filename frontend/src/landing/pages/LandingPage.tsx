@@ -24,7 +24,7 @@ export default function LandingPage() {
 			<Authenticity />
 			<Testimonials />
 			<Footer />
-			<SignInDialog open={openSignIn} onClose={() => setOpenSignIn(false)} />
+			<SignInDialog open={openSignIn} onClose={() => setOpenSignIn(false)} onSuccess={() => window.location.href = '/profile.html'} />
 			<SignUpDialog open={openSignUp} onClose={() => setOpenSignUp(false)} />
 		</main>
 	)
