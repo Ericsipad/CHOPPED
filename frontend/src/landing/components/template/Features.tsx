@@ -11,7 +11,7 @@ const features = [
   {
     icon: Shield,
     title: "Zero Tolerance for Fakes",
-    description: "Every profile is verified. No AI bots, no catfish, no fake photos. What you see is what you get - real people, real stories.",
+    description: "Every profile image is monitored for AI model generation or professional model likeness. No AI bots, no catfish, no fake photos.",
     gradient: "from-accent to-success"
   },
   {
@@ -69,5 +69,6 @@ const Features: React.FC = () => {
 }
 
 export default Features
+
 
 
