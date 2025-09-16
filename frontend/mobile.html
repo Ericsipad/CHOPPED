@@ -3,14 +3,245 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chopped Mobile (Coming Soon)</title>
+    <meta name="theme-color" content="#1e90ff" />
+    <title>CHOPPED - Install App</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <style>
-      html, body { margin: 0; padding: 0; height: 100%; }
-      .wrap { display: flex; align-items: center; justify-content: center; height: 100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      
+      html, body { 
+        height: 100%; 
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        color: white;
+      }
+      
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        padding: 24px;
+        text-align: center;
+      }
+      
+      .app-icon {
+        width: 96px;
+        height: 96px;
+        background: #1e90ff;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        font-weight: bold;
+        margin-bottom: 32px;
+        box-shadow: 0 8px 24px rgba(30, 144, 255, 0.3);
+      }
+      
+      .title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, #ffffff 0%, #1e90ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .subtitle {
+        font-size: 18px;
+        color: #aaa;
+        margin-bottom: 48px;
+        line-height: 1.4;
+      }
+      
+      .install-section {
+        max-width: 400px;
+        width: 100%;
+      }
+      
+      .install-button {
+        width: 100%;
+        padding: 16px 24px;
+        background: linear-gradient(135deg, #1e90ff 0%, #0066cc 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 16px rgba(30, 144, 255, 0.3);
+      }
+      
+      .install-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(30, 144, 255, 0.4);
+      }
+      
+      .install-button:disabled {
+        background: #333;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      
+      .fallback-text {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.6;
+        margin-top: 24px;
+      }
+      
+      .features {
+        display: grid;
+        gap: 16px;
+        margin-top: 32px;
+        text-align: left;
+      }
+      
+      .feature {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      
+      .feature-icon {
+        width: 24px;
+        height: 24px;
+        background: rgba(30, 144, 255, 0.2);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        margin-top: 2px;
+      }
+      
+      .feature-text {
+        flex: 1;
+        font-size: 14px;
+        color: #ccc;
+        line-height: 1.4;
+      }
     </style>
   </head>
   <body>
-    <div class="wrap">Mobile site coming soon.</div>
+    <div class="container">
+      <div class="app-icon">C</div>
+      
+      <h1 class="title">CHOPPED</h1>
+      <p class="subtitle">Real dating for real people</p>
+      
+      <div class="install-section">
+        <button id="installButton" class="install-button" disabled>
+          Install App
+        </button>
+        
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-text">
+              <strong>Faster experience</strong><br>
+              Launch instantly from your home screen
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">📱</div>
+            <div class="feature-text">
+              <strong>Native app feel</strong><br>
+              Full screen mode without browser UI
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-text">
+              <strong>Enhanced security</strong><br>
+              Isolated app environment
+            </div>
+          </div>
+        </div>
+        
+        <div class="fallback-text" id="fallbackText" style="display: none;">
+          <strong>Can't install the app?</strong><br>
+          Your browser doesn't support app installation. You can still use CHOPPED by bookmarking this page or accessing it through your browser.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let deferredPrompt;
+      const installButton = document.getElementById('installButton');
+      const fallbackText = document.getElementById('fallbackText');
+
+      // Check if already installed
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        installButton.textContent = 'App Already Installed';
+        installButton.style.background = '#28a745';
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      }
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installButton.disabled = false;
+        installButton.textContent = 'Install App';
+      });
+
+      installButton.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          
+          if (outcome === 'accepted') {
+            installButton.textContent = 'Installing...';
+            installButton.disabled = true;
+          } else {
+            installButton.textContent = 'Install Declined';
+            setTimeout(() => {
+              installButton.textContent = 'Install App';
+            }, 2000);
+          }
+          
+          deferredPrompt = null;
+        }
+      });
+
+      window.addEventListener('appinstalled', () => {
+        installButton.textContent = 'Installed Successfully!';
+        installButton.style.background = '#28a745';
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1500);
+      });
+
+      // Show fallback if no PWA support after 3 seconds
+      setTimeout(() => {
+        if (installButton.disabled && installButton.textContent === 'Install App') {
+          installButton.style.display = 'none';
+          fallbackText.style.display = 'block';
+        }
+      }, 3000);
+
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
 
