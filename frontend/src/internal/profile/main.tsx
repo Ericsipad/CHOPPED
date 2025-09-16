@@ -1,23 +1,34 @@
 /* eslint-disable react-refresh/only-export-components */
-import { StrictMode, useEffect, useState } from 'react'
+import { StrictMode, useEffect, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import ProfilePage from '../pages/ProfilePage'
 import usePWAInstallation from '../../shared/hooks/usePWAInstallation'
 import PWAInstallPrompt from '../../shared/components/PWAInstallPrompt'
 import '../styles/internal.css'
 import { useAuth } from '../hooks/useAuth'
+import SignInDialog from '../../shared/auth/SignInDialog'
 
 function PWAAwareGate() {
 	const [showPage, setShowPage] = useState(false)
 	const [showInstallPrompt, setShowInstallPrompt] = useState(false)
+	const [openSignIn, setOpenSignIn] = useState(false)
 	const { isInstalled, canInstall, showInstallPrompt: triggerInstall, dismissPrompt } = usePWAInstallation()
 	const { isAuthenticated, loading } = useAuth()
+
+	const shouldOpenSigninFromQuery = useMemo(() => {
+		try {
+			const url = new URL(window.location.href)
+			return url.searchParams.get('signin') === '1'
+		} catch { return false }
+	}, [])
 	
 	useEffect(() => {
 		if (loading) return
 
+
+
 		if (!isAuthenticated) {
-			window.location.replace('/')
+			setOpenSignIn(true)
 			return
 		}
 
@@ -51,6 +62,11 @@ function PWAAwareGate() {
 		setShowInstallPrompt(false)
 	}
 
+	const handleSigninSuccess = () => {
+		setOpenSignIn(false)
+		window.location.href = '/profile.html'
+	}
+
 	if (!showPage && !showInstallPrompt) {
 		return (
 			<div style={{ 
@@ -69,6 +85,7 @@ function PWAAwareGate() {
 	return (
 		<>
 			{showPage && <ProfilePage />}
+			<SignInDialog open={openSignIn || shouldOpenSigninFromQuery} onClose={() => setOpenSignIn(false)} onSuccess={handleSigninSuccess} />
 			<PWAInstallPrompt
 				isVisible={showInstallPrompt}
 				onInstall={handleInstall}
