@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
+import { getBackendApi } from '../../lib/config'
 
 export type SignInDialogProps = {
 	open: boolean
@@ -7,12 +8,7 @@ export type SignInDialogProps = {
 	initialMessage?: string
 }
 
-type ImportMetaEnv = { NEXT_PUBLIC_API_BASE_URL?: string; VITE_BACKEND_URL?: string }
-function getBackendBaseUrl(): string {
-	const a = (import.meta as unknown as { env?: ImportMetaEnv }).env?.NEXT_PUBLIC_API_BASE_URL as string | undefined
-	const b = (import.meta as unknown as { env?: ImportMetaEnv }).env?.VITE_BACKEND_URL as string | undefined
-	return a && a.length > 0 ? a : b && b.length > 0 ? b : ''
-}
+// Use centralized backend URL resolution via getBackendApi
 
 export default function SignInDialog(props: SignInDialogProps) {
 	const { open, onClose, onSuccess, initialMessage } = props
@@ -34,8 +30,7 @@ export default function SignInDialog(props: SignInDialogProps) {
 		setSubmitting(true)
 		setError(null)
 		try {
-			const backendBaseUrl = getBackendBaseUrl()
-			const url = `${backendBaseUrl}/auth/sign-in`
+			const url = getBackendApi('/auth/sign-in')
 			const res = await fetch(url, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
