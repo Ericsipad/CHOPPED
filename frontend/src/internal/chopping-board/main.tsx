@@ -28,12 +28,17 @@ function PWAAwareGate() {
 			return
 		}
 
+
+		// Mobile: show page only if installed; otherwise show prompt (no page)
 		if (isInstalled) {
 			setShowPage(true)
+			setShowInstallPrompt(false)
 		} else if (canInstall) {
+			setShowPage(false)
 			setShowInstallPrompt(true)
 		} else {
-			window.location.replace('/mobile.html')
+			setShowPage(false)
+			setShowInstallPrompt(false)
 		}
 	}, [loading, isAuthenticated, isInstalled, canInstall])
 
@@ -45,8 +50,6 @@ function PWAAwareGate() {
 	const handleDismiss = () => {
 		dismissPrompt()
 		setShowInstallPrompt(false)
-		// Redirect to mobile page after dismissal
-		window.location.replace('/mobile.html')
 	}
 
 	if (!showPage && !showInstallPrompt) {
