@@ -25,7 +25,11 @@ function PWAAwareGate() {
 	useEffect(() => {
 		if (loading) return
 
-
+		// If explicitly requested, force open sign-in first and skip gating/redirects
+		if (shouldOpenSigninFromQuery) {
+			setOpenSignIn(true)
+			return
+		}
 
 		if (!isAuthenticated) {
 			setOpenSignIn(true)
@@ -50,7 +54,7 @@ function PWAAwareGate() {
 		} else {
 			window.location.replace('/mobile.html')
 		}
-	}, [loading, isAuthenticated, isInstalled, canInstall])
+	}, [loading, isAuthenticated, isInstalled, canInstall, shouldOpenSigninFromQuery])
 
 	const handleInstall = () => {
 		triggerInstall()
