@@ -13,11 +13,11 @@ export function createSupabaseRouteClient() {
         return (cookies() as any).get(name)?.value
       },
       set(name: string, value: string, options: CookieOptions) {
-        const enforced: CookieOptions = { ...options, sameSite: 'none' as any, secure: true }
+        const enforced: CookieOptions = { ...options, sameSite: 'lax' as any, secure: true }
         ;(cookies() as any).set({ name, value, ...enforced })
       },
       remove(name: string, options: CookieOptions) {
-        const enforced: CookieOptions = { ...options, sameSite: 'none' as any, secure: true }
+        const enforced: CookieOptions = { ...options, sameSite: 'lax' as any, secure: true }
         ;(cookies() as any).set({ name, value: '', ...enforced })
       },
     },

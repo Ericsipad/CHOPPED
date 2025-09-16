@@ -6,13 +6,30 @@ export function getBackendUrl(): string {
   const fromVite = (import.meta as unknown as { env?: ImportMetaEnv }).env?.VITE_BACKEND_URL
   const fromNextPublic = (import.meta as unknown as { env?: ImportMetaEnv }).env?.NEXT_PUBLIC_BACKEND_URL
   const fromWindow = (window as unknown as { env?: WindowEnv }).env?.NEXT_PUBLIC_API_BASE_URL || (window as unknown as { env?: WindowEnv }).env?.VITE_BACKEND_URL || (window as unknown as { env?: WindowEnv }).env?.NEXT_PUBLIC_BACKEND_URL
-  let url = (fromNextPublicApi || fromVite || fromNextPublic || fromWindow) as string | undefined
-  if (!url) {
-    console.warn('Backend URL not configured (expected NEXT_PUBLIC_API_BASE_URL, VITE_BACKEND_URL, or NEXT_PUBLIC_BACKEND_URL).')
-    return ''
+  let configured = (fromNextPublicApi || fromVite || fromNextPublic || fromWindow) as string | undefined
+
+  // Prefer same-origin on the client to avoid cross-site cookie restrictions on iOS/Safari
+  if (typeof window !== 'undefined') {
+    const currentOrigin = window.location.origin.replace(/\/+$/g, '')
+    if (!configured || configured.length === 0) {
+      return currentOrigin
+    }
+    try {
+      const configuredOrigin = new URL(configured).origin.replace(/\/+$/g, '')
+      if (configuredOrigin !== currentOrigin && currentOrigin.startsWith('https://')) {
+        return currentOrigin
+      }
+    } catch {
+      // If configured is not a valid URL, fall back to current origin
+      return currentOrigin
+    }
   }
-  url = url.replace(/\/+$/g, '')
-  return url
+
+  configured = (configured || '').replace(/\/+$/g, '')
+  if (!configured) {
+    console.warn('Backend URL not configured (expected NEXT_PUBLIC_API_BASE_URL, VITE_BACKEND_URL, or NEXT_PUBLIC_BACKEND_URL).')
+  }
+  return configured
 }
 
 export function getFrontendUrl(): string {
