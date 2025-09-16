@@ -5,30 +5,36 @@ import AccountPage from '../pages/AccountPage'
 import usePWAInstallation from '../../shared/hooks/usePWAInstallation'
 import PWAInstallPrompt from '../../shared/components/PWAInstallPrompt'
 import '../styles/internal.css'
+import { useAuth } from '../hooks/useAuth'
 
 function PWAAwareGate() {
 	const [showPage, setShowPage] = useState(false)
 	const [showInstallPrompt, setShowInstallPrompt] = useState(false)
 	const { isInstalled, canInstall, showInstallPrompt: triggerInstall, dismissPrompt } = usePWAInstallation()
+	const { isAuthenticated, loading } = useAuth()
 	
 	useEffect(() => {
-		const isDesktop = window.matchMedia('(min-width: 1024px)').matches
-		
-		if (isDesktop) {
-			// Desktop users get normal access
-			setShowPage(true)
-		} else {
-			// Mobile users need PWA installed
-			if (isInstalled) {
-				setShowPage(true)
-			} else if (canInstall) {
-				setShowInstallPrompt(true)
-			} else {
-				// Fallback to mobile page if PWA not available
-				window.location.replace('/mobile.html')
-			}
+		if (loading) return
+
+		if (!isAuthenticated) {
+			window.location.replace('/')
+			return
 		}
-	}, [isInstalled, canInstall])
+
+		const isDesktop = window.matchMedia('(min-width: 1024px)').matches
+		if (isDesktop) {
+			setShowPage(true)
+			return
+		}
+
+		if (isInstalled) {
+			setShowPage(true)
+		} else if (canInstall) {
+			setShowInstallPrompt(true)
+		} else {
+			window.location.replace('/mobile.html')
+		}
+	}, [loading, isAuthenticated, isInstalled, canInstall])
 
 	const handleInstall = () => {
 		triggerInstall()
