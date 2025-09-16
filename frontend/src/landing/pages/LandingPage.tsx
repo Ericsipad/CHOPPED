@@ -19,7 +19,7 @@ export default function LandingPage() {
 
 	return (
 		<main>
-			<Hero onClickSignUp={() => setOpenSignUp(true)} onClickSignIn={() => { window.location.href = '/profile.html?signin=1' }} />
+			<Hero onClickSignUp={() => setOpenSignUp(true)} onClickSignIn={() => setOpenSignIn(true)} />
 			<Features />
 			<Authenticity />
 			<Testimonials />

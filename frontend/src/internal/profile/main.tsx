@@ -73,16 +73,19 @@ function PWAAwareGate() {
 
 	if (!showPage && !showInstallPrompt) {
 		return (
-			<div style={{ 
-				display: 'flex', 
-				alignItems: 'center', 
-				justifyContent: 'center', 
-				height: '100vh',
-				color: 'white',
-				fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif'
-			}}>
-				Loading...
-			</div>
+			<>
+				<div style={{ 
+					display: 'flex', 
+					alignItems: 'center', 
+					justifyContent: 'center', 
+					height: '100vh',
+					color: 'white',
+					fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif'
+				}}>
+					Loading...
+				</div>
+				<SignInDialog open={openSignIn || shouldOpenSigninFromQuery} onClose={() => setOpenSignIn(false)} onSuccess={handleSigninSuccess} />
+			</>
 		)
 	}
 

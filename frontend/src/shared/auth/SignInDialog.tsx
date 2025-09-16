@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { getBackendApi } from '../../lib/config'
+import { getFrontendApi } from '../../lib/config'
 
 export type SignInDialogProps = {
 	open: boolean
@@ -30,7 +30,7 @@ export default function SignInDialog(props: SignInDialogProps) {
 		setSubmitting(true)
 		setError(null)
 		try {
-			const url = getBackendApi('/auth/sign-in')
+			const url = getFrontendApi('/auth/sign-in')
 			const res = await fetch(url, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
