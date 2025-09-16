@@ -28,7 +28,8 @@ function PWAAwareGate() {
 		}
 
 
-		// Mobile: show page only if installed; otherwise show prompt (no page)
+
+		// Mobile: show page only if installed; if prompt available show it; otherwise redirect to mobile install page
 		if (isInstalled) {
 			setShowPage(true)
 			setShowInstallPrompt(false)
@@ -36,8 +37,7 @@ function PWAAwareGate() {
 			setShowPage(false)
 			setShowInstallPrompt(true)
 		} else {
-			setShowPage(false)
-			setShowInstallPrompt(false)
+			window.location.replace('/mobile.html')
 		}
 	}, [loading, isAuthenticated, isInstalled, canInstall])
 
