@@ -163,6 +163,7 @@
       .ios-steps { display: grid; gap: 10px; margin-top: 6px; }
       .ios-step { display: flex; gap: 10px; align-items: flex-start; color: #ddd; font-size: 14px; }
       .ios-step-badge { background: rgba(30,144,255,0.2); color: #6bb7ff; border-radius: 9999px; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; flex: 0 0 auto; }
+      .ios-step-icon { display: inline-flex; align-items: center; justify-content: center; margin-left: 8px; }
       .ios-close {
         margin-top: 16px; width: 100%; padding: 12px 16px; border: none; border-radius: 10px;
         background: rgba(255,255,255,0.1); color: #fff; font-weight: 500; cursor: pointer;
@@ -219,8 +220,8 @@
       <div class="ios-overlay-title">Add CHOPPED to your Home Screen</div>
       <div class="ios-overlay-sub">Install the app on iPhone in three quick steps</div>
       <div class="ios-steps">
-        <div class="ios-step"><span class="ios-step-badge">1</span><span>Tap the <strong>Share</strong> icon in Safari’s toolbar.</span></div>
-        <div class="ios-step"><span class="ios-step-badge">2</span><span>Scroll and choose <strong>Add to Home Screen</strong>.</span></div>
+        <div class="ios-step"><span class="ios-step-badge">1</span><span>Tap the <strong>Share</strong> icon in Safari’s toolbar.<span class="ios-step-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 16V4" stroke="#6bb7ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 9l5-5 5 5" stroke="#6bb7ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="12" width="16" height="8" rx="2" ry="2" stroke="#6bb7ff" stroke-width="2"/></svg></span></span></div>
+        <div class="ios-step"><span class="ios-step-badge">2</span><span>Scroll and choose <strong>Add to Home Screen</strong>.<span class="ios-step-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="16" height="16" rx="3" ry="3" stroke="#6bb7ff" stroke-width="2"/><path d="M12 8v8" stroke="#6bb7ff" stroke-width="2" stroke-linecap="round"/><path d="M8 12h8" stroke="#6bb7ff" stroke-width="2" stroke-linecap="round"/></svg></span></span></div>
         <div class="ios-step"><span class="ios-step-badge">3</span><span>Tap <strong>Add</strong> to install.</span></div>
       </div>
       <button id="iosOverlayClose" class="ios-close">Got it</button>
