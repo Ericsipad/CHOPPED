@@ -236,6 +236,11 @@
       const iosOverlayPanel = document.getElementById('iosOverlayPanel');
       const iosOverlayClose = document.getElementById('iosOverlayClose');
       const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+      // On iOS, beforeinstallprompt never fires, so enable the button to show instructions
+      if (isIOS) {
+        installButton.disabled = false;
+        installButton.textContent = 'Install App';
+      }
       function showIOSOverlay() {
         if (!iosOverlayBackdrop || !iosOverlayPanel) return;
         iosOverlayBackdrop.style.display = 'block';
