@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { z } from 'zod'
-import { getBackendUrl } from '../../lib/config'
+import { getBackendApi } from '../../lib/config'
 
 export type SignUpDialogProps = {
 	open: boolean
@@ -50,8 +50,7 @@ export default function SignUpDialog(props: SignUpDialogProps) {
 				})
 				.refine((v) => v.password === v.repeatPassword, { path: ['repeatPassword'], message: 'Passwords must match' })
 			schema.parse({ email, password, repeatPassword })
-			const backendBaseUrl = getBackendUrl()
-			const url = `${backendBaseUrl}/auth/sign-up`
+            const url = getBackendApi('/auth/sign-up')
 			const res = await fetch(url, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
