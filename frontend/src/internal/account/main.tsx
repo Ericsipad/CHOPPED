@@ -16,8 +16,10 @@ function PWAAwareGate() {
 	useEffect(() => {
 		if (loading) return
 
+
 		if (!isAuthenticated) {
-			window.location.replace('/')
+			const isDesktop = window.matchMedia('(min-width: 1024px)').matches
+			window.location.replace(isDesktop ? '/' : '/mobile.html')
 			return
 		}
 
