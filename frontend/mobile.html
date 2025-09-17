@@ -128,6 +128,45 @@
         color: #ccc;
         line-height: 1.4;
       }
+
+      /* iOS install instructions overlay */
+      .ios-overlay-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        pointer-events: none;
+      }
+      .ios-overlay-backdrop.visible { opacity: 1; pointer-events: auto; }
+
+      .ios-overlay-panel {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        background: #1a1a1a;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.1);
+        z-index: 10000;
+        transform: translateY(100%);
+        transition: transform 0.25s ease-out;
+        padding: 20px 16px 28px 16px;
+      }
+      .ios-overlay-panel.visible { transform: translateY(0); }
+      .ios-overlay-handle {
+        width: 40px; height: 4px; background: rgba(255,255,255,0.3);
+        border-radius: 2px; margin: 0 auto 16px;
+      }
+      .ios-overlay-title { color: #fff; font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 8px; }
+      .ios-overlay-sub { color: #aaa; font-size: 14px; text-align: center; margin-bottom: 14px; }
+      .ios-steps { display: grid; gap: 10px; margin-top: 6px; }
+      .ios-step { display: flex; gap: 10px; align-items: flex-start; color: #ddd; font-size: 14px; }
+      .ios-step-badge { background: rgba(30,144,255,0.2); color: #6bb7ff; border-radius: 9999px; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; flex: 0 0 auto; }
+      .ios-close {
+        margin-top: 16px; width: 100%; padding: 12px 16px; border: none; border-radius: 10px;
+        background: rgba(255,255,255,0.1); color: #fff; font-weight: 500; cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -173,10 +212,51 @@
       </div>
     </div>
 
+    <!-- iOS install instructions overlay -->
+    <div id="iosOverlayBackdrop" class="ios-overlay-backdrop" style="display:none;"></div>
+    <div id="iosOverlayPanel" class="ios-overlay-panel" style="display:none;">
+      <div class="ios-overlay-handle"></div>
+      <div class="ios-overlay-title">Add CHOPPED to your Home Screen</div>
+      <div class="ios-overlay-sub">Install the app on iPhone in three quick steps</div>
+      <div class="ios-steps">
+        <div class="ios-step"><span class="ios-step-badge">1</span><span>Tap the <strong>Share</strong> icon in Safari’s toolbar.</span></div>
+        <div class="ios-step"><span class="ios-step-badge">2</span><span>Scroll and choose <strong>Add to Home Screen</strong>.</span></div>
+        <div class="ios-step"><span class="ios-step-badge">3</span><span>Tap <strong>Add</strong> to install.</span></div>
+      </div>
+      <button id="iosOverlayClose" class="ios-close">Got it</button>
+    </div>
+
     <script>
       let deferredPrompt;
       const installButton = document.getElementById('installButton');
       const fallbackText = document.getElementById('fallbackText');
+
+      // iOS overlay helpers
+      const iosOverlayBackdrop = document.getElementById('iosOverlayBackdrop');
+      const iosOverlayPanel = document.getElementById('iosOverlayPanel');
+      const iosOverlayClose = document.getElementById('iosOverlayClose');
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+      function showIOSOverlay() {
+        if (!iosOverlayBackdrop || !iosOverlayPanel) return;
+        iosOverlayBackdrop.style.display = 'block';
+        iosOverlayPanel.style.display = 'block';
+        // Animate in
+        requestAnimationFrame(() => {
+          iosOverlayBackdrop.classList.add('visible');
+          iosOverlayPanel.classList.add('visible');
+        });
+      }
+      function hideIOSOverlay() {
+        if (!iosOverlayBackdrop || !iosOverlayPanel) return;
+        iosOverlayBackdrop.classList.remove('visible');
+        iosOverlayPanel.classList.remove('visible');
+        setTimeout(() => {
+          iosOverlayBackdrop.style.display = 'none';
+          iosOverlayPanel.style.display = 'none';
+        }, 250);
+      }
+      iosOverlayBackdrop?.addEventListener('click', hideIOSOverlay);
+      iosOverlayClose?.addEventListener('click', hideIOSOverlay);
 
       // Check if already installed
       if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
@@ -210,6 +290,9 @@
           }
           
           deferredPrompt = null;
+        } else if (isIOS) {
+          // Show iOS instructions overlay
+          showIOSOverlay();
         }
       });
 
@@ -221,9 +304,9 @@
         }, 1500);
       });
 
-      // Show fallback if no PWA support after 3 seconds
+      // Show fallback if no PWA support after 3 seconds (non-iOS only)
       setTimeout(() => {
-        if (installButton.disabled && installButton.textContent === 'Install App') {
+        if (!isIOS && installButton.disabled && installButton.textContent === 'Install App') {
           installButton.style.display = 'none';
           fallbackText.style.display = 'block';
         }
