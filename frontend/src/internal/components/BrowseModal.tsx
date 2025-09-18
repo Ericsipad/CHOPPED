@@ -275,17 +275,18 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 												position: 'absolute',
 												bottom: 12,
 												left: 12,
-												zIndex: 5,
+											zIndex: 19,
 												border: 'none',
 												cursor: 'pointer',
-												padding: '10px 18px',
+											padding: '10px 18px',
 												borderRadius: 9999,
 												color: '#fff',
-												fontWeight: 700,
+											fontWeight: 800,
+											textShadow: '0 1px 2px rgba(0,0,0,0.6)',
 												background: 'radial-gradient(circle closest-side, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.55) 58%, rgba(0,0,0,0.0) 100%)',
 												backdropFilter: 'blur(6px) saturate(120%)',
 												WebkitBackdropFilter: 'blur(6px) saturate(120%)',
-												boxShadow: '0 4px 16px rgba(0,0,0,0.45)',
+											boxShadow: '0 4px 16px rgba(0,0,0,0.45)',
 											}}
 										>
 											Info
