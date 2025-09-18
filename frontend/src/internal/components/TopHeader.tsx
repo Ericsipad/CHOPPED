@@ -15,7 +15,7 @@ export default function TopHeader(props: TopHeaderProps) {
                         <UserIndicator />
                     </div>
                     {children ? (
-                        <div style={{ marginLeft: 'auto' }}>
+                        <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
                             {children}
                         </div>
                     ) : null}

@@ -922,8 +922,9 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 }
 
 /* Compact single-row header variant */
+
 .status-bar--header {
-	width: auto;
+	width: 99%;
 	border-radius: 10px;
 	border-width: 1px;
 }
