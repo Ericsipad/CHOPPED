@@ -914,6 +914,8 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 
 	/* Add top spacer so content doesn't hide under fixed tabs */
 	.profile-page-root .profile-page__content { width: 99% !important; max-width: none !important; margin-left: auto; margin-right: auto; box-sizing: border-box; padding-top: calc(44px + env(safe-area-inset-top)); }
+	/* Ensure the image card has enough vertical space to show 16:9 + two 80px rows */
+	.profile-page-root .profile-page__content { min-height: calc( (100vw * (9 / 16)) + 8px + 80px + 8px + 80px ); }
 
 	/* Make the primary card span width, normalize to wide image */
 	.profile-page-root .profile-image-card {
@@ -926,11 +928,12 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 		margin-right: auto;
 		box-sizing: border-box;
 		overflow: visible;
+		aspect-ratio: auto !important;
 	}
 
 	/* Inside the image card, ensure two rows of 6 are fully visible (no scroll) */
 	.profile-page-root .profile-image-card__content { grid-template-rows: auto 80px 80px; height: auto; overflow: visible; }
-	.profile-page-root .profile-image-card__main { height: auto; min-height: 0; aspect-ratio: auto; overflow: hidden; }
+	.profile-page-root .profile-image-card__main { height: auto; min-height: 0; aspect-ratio: 16 / 9; overflow: hidden; }
 	.profile-page-root .profile-image-card__thumbs,
 	.profile-page-root .profile-image-card__videos { display: grid !important; height: 80px; min-height: 80px; margin-top: 8px; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
 	/* Tiles fill the fixed row height */
