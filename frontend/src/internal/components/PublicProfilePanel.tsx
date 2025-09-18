@@ -175,17 +175,19 @@ export default function PublicProfilePanel() {
       </div>
 
       <div className="profile-public-panel__inputs">
-        <div className="profile-public-panel__field profile-public-panel__field--span-2">
+        <div className="profile-public-panel__field profile-public-panel__field--display">
           <label className={["profile-public-panel__label", errors.displayName ? 'profile-public-panel__label--error' : ''].filter(Boolean).join(' ')} htmlFor="displayName">Display Name</label>
           <input id="displayName" className={["profile-public-panel__input", "profile-public-panel__input--wide", errors.displayName ? 'profile-public-panel__input--error' : ''].filter(Boolean).join(' ')} type="text" value={displayName} onChange={(e) => { setDisplayName(e.target.value); if (errors.displayName) setErrors((p) => ({ ...p, displayName: false })) }} placeholder="Your display name" maxLength={60} />
         </div>
-        <div className="profile-public-panel__field profile-public-panel__field--age profile-public-panel__field--inline">
-          <label className={["profile-public-panel__label", errors.age ? 'profile-public-panel__label--error' : ''].filter(Boolean).join(' ')} htmlFor="age">Age</label>
-          <input id="age" className={["profile-public-panel__input", "profile-public-panel__input--xs", errors.age ? 'profile-public-panel__input--error' : ''].filter(Boolean).join(' ')} inputMode="numeric" pattern="[0-9]*" value={ageStr} onChange={(e) => { setAgeStr(e.target.value.replace(/[^0-9]/g, '')); if (errors.age) setErrors((p) => ({ ...p, age: false })) }} placeholder="28" />
-        </div>
-        <div className="profile-public-panel__field profile-public-panel__field--inline">
-          <label className="profile-public-panel__label" htmlFor="height">Height (cm)</label>
-          <input id="height" className="profile-public-panel__input profile-public-panel__input--xs" inputMode="numeric" pattern="[0-9]*" value={heightStr} onChange={(e) => setHeightStr(e.target.value.replace(/[^0-9]/g, ''))} placeholder="180" />
+        <div className="profile-public-panel__row--two">
+          <div className="profile-public-panel__field profile-public-panel__field--age">
+            <label className={["profile-public-panel__label", errors.age ? 'profile-public-panel__label--error' : ''].filter(Boolean).join(' ')} htmlFor="age">Age</label>
+            <input id="age" className={["profile-public-panel__input", "profile-public-panel__input--xs", errors.age ? 'profile-public-panel__input--error' : ''].filter(Boolean).join(' ')} inputMode="numeric" pattern="[0-9]*" value={ageStr} onChange={(e) => { setAgeStr(e.target.value.replace(/[^0-9]/g, '')); if (errors.age) setErrors((p) => ({ ...p, age: false })) }} placeholder="28" />
+          </div>
+          <div className="profile-public-panel__field profile-public-panel__field--height">
+            <label className="profile-public-panel__label" htmlFor="height">Height (cm)</label>
+            <input id="height" className="profile-public-panel__input profile-public-panel__input--xs" inputMode="numeric" pattern="[0-9]*" value={heightStr} onChange={(e) => setHeightStr(e.target.value.replace(/[^0-9]/g, ''))} placeholder="180" />
+          </div>
         </div>
       </div>
 

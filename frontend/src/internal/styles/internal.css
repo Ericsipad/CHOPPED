@@ -298,15 +298,27 @@ html, body, #root {
 
 .profile-public-panel__inputs {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 1fr; /* stack rows by default */
     gap: 12px;
-    align-items: end; /* align inputs and labels baseline for better visual alignment */
 }
 
 .profile-public-panel__field { display: flex; flex-direction: column; gap: 6px; }
 .profile-public-panel__field--inline { flex-direction: row; align-items: center; gap: 8px; }
 .profile-public-panel__field--inline .profile-public-panel__label { margin: 0; }
-.profile-public-panel__field--span-2 { grid-column: span 2; }
+.profile-public-panel__field--display { grid-column: 1 / -1; }
+
+/* Two-column row for age + height with label left, input right */
+.profile-public-panel__row--two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.profile-public-panel__field--age,
+.profile-public-panel__field--height { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; }
+.profile-public-panel__field--age .profile-public-panel__label,
+.profile-public-panel__field--height .profile-public-panel__label { justify-self: start; }
+.profile-public-panel__field--age .profile-public-panel__input,
+.profile-public-panel__field--height .profile-public-panel__input { justify-self: end; }
 
 /* Error styles for inputs/selects/textarea */
 .profile-public-panel__input--error,
@@ -1004,8 +1016,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	/* Ensure grid tile images fill tiles uniformly (override generic rule above) */
 	.profile-page-root .profile-image-card__img { width: 100%; height: 100% !important; object-fit: cover; object-position: center; display: block; }
 
-	/* Collapse complex grids to avoid overflow */
-.profile-page-root .profile-public-panel__inputs { grid-template-columns: 2fr 1fr 1fr; }
-.profile-page-root .profile-public-panel__field--span-2 { grid-column: span 2; }
+/* Mobile: keep display name full row; age + height as two columns */
+.profile-page-root .profile-public-panel__inputs { grid-template-columns: 1fr; }
 	.profile-page-root .profile-iam__grid { grid-template-columns: repeat(2, 1fr); }
 }
