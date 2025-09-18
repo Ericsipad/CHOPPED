@@ -21,40 +21,29 @@ export default function ProfileGrid(props: ProfileGridProps) {
     let cardPx = 192
     let columns = 5
     let gap = '15px'
-	let wobble = true
+    let wobble = false
 		switch (viewCount) {
 		case 10:
 			cardPx = 192
 			columns = 5
 			gap = '15px'
-			wobble = true
+            wobble = false
 			break
 			case 20:
 			cardPx = 120
 			columns = 5
 			gap = '8px'
-			wobble = true
+            wobble = false
 			break
 		case 50:
 			cardPx = 90
 			columns = 5
 			gap = '8px'
-			wobble = false
+            wobble = false
 			break
 	}
 
-    // PWA-only normalization: disable wobble so 10/20 match 50 presentation
-    if (typeof window !== 'undefined') {
-        try {
-            const isStandalone = (
-                (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
-                ((window as any).navigator?.standalone === true)
-            )
-            if (isStandalone) {
-                wobble = false
-            }
-        } catch { /* noop */ }
-    }
+    // Normalize wobble off for consistent sizing on desktop and PWA
 
     const effectiveCardPx = typeof cardPxOverride === 'number' ? cardPxOverride : cardPx
     const effectiveColumns = typeof columnsOverride === 'number' ? columnsOverride : columns

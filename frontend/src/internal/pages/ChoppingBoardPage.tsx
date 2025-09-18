@@ -415,22 +415,22 @@ export default function ChoppingBoardPage() {
 		>
 			<div>
 				<Container className="chopping-page-root with-bottom-nav">
-					{!isMobile && (
-						<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 8, marginBottom: 10 }}>
-							<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
-						</div>
-					)}
 					<div style={{ position: 'relative' }}>
 						<HeroImage />
 						<div style={{ position: 'absolute', top: 52, left: 0, right: 0, bottom: 0, zIndex: 9 }}>
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
 								{!isMobile && (
+									<div style={{ position: 'absolute', top: 0, left: 0, right: 0, display: 'flex', justifyContent: 'center', padding: '8px 0', zIndex: 10 }}>
+										<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
+									</div>
+								)}
+								{!isMobile && (
 									<div style={{ position: 'absolute', top: 0, left: 0, padding: '8px 12px', zIndex: 10 }}>
 										<ViewCountDesktop value={viewCount} onChange={setViewCount} />
 									</div>
 								)}
-								{/* Grid: align to top for consistent behavior across 10/20/50 on mobile */}
-								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: 22 }}>
+								{/* Grid: align to top; provide extra space for desktop overlays */}
+								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: isMobile ? 22 : 76 }}>
 									<ProfileGrid
 										images={images}
 										viewCount={viewCount}
