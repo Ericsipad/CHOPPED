@@ -94,7 +94,7 @@ export function WobblyCard3D(props: WobblyCard3DProps) {
 				}}
 				whileHover={{ scale, transition: { duration } }}
 			>
-				<Box position="relative" zIndex={2}>
+				<Box position="relative" zIndex={2} width="100%" height="100%">
 					{children}
 				</Box>
 

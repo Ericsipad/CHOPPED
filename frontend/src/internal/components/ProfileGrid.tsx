@@ -50,6 +50,15 @@ export default function ProfileGrid(props: ProfileGridProps) {
     const cardSize = `${effectiveCardPx}px`
     const columnsTemplate = `repeat(${effectiveColumns}, ${cardSize})`
 
+    // Restore desktop hover scale; disable on mobile/PWA
+    let hoverScale = 1.05
+    if (typeof window !== 'undefined') {
+        try {
+            const isMobile = window.matchMedia('(max-width: 1024px)').matches
+            if (isMobile) hoverScale = 1
+        } catch { /* noop */ }
+    }
+
 	return (
 		<Box w="100%" display="flex" justifyContent="center" position="relative" zIndex={5}>
 			<Grid
@@ -79,15 +88,15 @@ export default function ProfileGrid(props: ProfileGridProps) {
 						}
 					}
 					return (
-						<GridItem key={idx} w={cardSize} h={cardSize}>
+                        <GridItem key={idx} w={cardSize} h={cardSize} minW={cardSize} minH={cardSize}>
 							<Box position="relative" w="100%" h="100%" role={isActive ? 'button' : undefined} tabIndex={isActive ? 0 : -1} aria-disabled={!isActive} onClick={isActive ? () => onCardClick?.(idx) : undefined} onKeyDown={onKeyDown} style={{ cursor: clickableCursor }}>
-								{wobble ? (
+                                {wobble ? (
                                     <WobblyCard3D
 										p={0}
 										borderRadius="xl"
 										boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'}
 										bg="gray.800"
-                                        scale={1}
+                                        scale={hoverScale}
 										maxRotate={12}
 										perspective={900}
 									>
