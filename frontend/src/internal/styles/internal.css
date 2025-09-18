@@ -297,12 +297,15 @@ html, body, #root {
 .profile-public-panel__save[disabled] { opacity: 0.6; cursor: default; }
 
 .profile-public-panel__inputs {
-	display: grid;
-	grid-template-columns: 2fr 1fr 1fr;
-	gap: 12px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 12px;
+    align-items: end; /* align inputs and labels baseline for better visual alignment */
 }
 
 .profile-public-panel__field { display: flex; flex-direction: column; gap: 6px; }
+.profile-public-panel__field--inline { flex-direction: row; align-items: center; gap: 8px; }
+.profile-public-panel__field--inline .profile-public-panel__label { margin: 0; }
 
 /* Error styles for inputs/selects/textarea */
 .profile-public-panel__input--error,
@@ -312,35 +315,65 @@ select.profile-public-panel__input.profile-public-panel__input--error {
     box-shadow: 0 0 0 1px rgba(255, 77, 77, 0.4) inset;
 }
 .profile-public-panel__label--error { color: #ff6961; }
-.profile-public-panel__field--age { margin-left: 30px; }
-.profile-public-panel__label { font-size: 12px; opacity: 0.85; }
+/* Remove ad-hoc left offset so Age aligns with Height */
+.profile-public-panel__field--age { margin-left: 0; }
+.profile-public-panel__label { font-size: 13px; opacity: 0.9; }
 .profile-public-panel__input {
 	background: rgba(0,0,0,0.35);
 	border: 1px solid rgba(255,255,255,0.12);
 	border-radius: 8px;
 	padding: 10px 12px;
 	color: #ffffff;
-	font-size: 14px;
+    font-size: 15px;
 }
 .profile-public-panel__input--xs { width: 4ch; padding-left: 8px; padding-right: 8px; }
 .profile-public-panel__input--wide { width: 100%; }
 
-.profile-public-panel__status { margin-top: 10px; font-size: 12px; opacity: 0.8; }
-.profile-public-panel__error { margin-top: 10px; color: #ff7070; font-size: 13px; }
-.profile-public-panel__success { margin-top: 10px; color: #7dffa1; font-size: 13px; }
+.profile-public-panel__status { margin-top: 10px; font-size: 13px; opacity: 0.8; }
+.profile-public-panel__error { margin-top: 10px; color: #ff7070; font-size: 14px; }
+.profile-public-panel__success { margin-top: 10px; color: #7dffa1; font-size: 14px; }
 
 .profile-public-panel__bio { margin-top: 16px; display: grid; gap: 8px; }
-.profile-public-panel__bio-header { font-size: 14px; font-weight: 600; opacity: 0.95; }
+.profile-public-panel__bio-header { font-size: 15px; font-weight: 600; opacity: 0.95; }
 .profile-public-panel__textarea {
 	background: rgba(0,0,0,0.35);
 	border: 1px solid rgba(255,255,255,0.12);
 	border-radius: 8px;
 	padding: 10px 12px;
 	color: #ffffff;
-	font-size: 14px;
+    font-size: 15px;
 	resize: vertical;
 }
-.profile-public-panel__counter { font-size: 12px; opacity: 0.7; text-align: right; }
+.profile-public-panel__counter { font-size: 13px; opacity: 0.7; text-align: right; }
+
+/* Modal variant: slightly larger base text for readability */
+.profile-public-panel--modal .profile-public-panel__title { font-size: 18px; }
+.profile-public-panel--modal .profile-public-panel__save { font-size: 15px; }
+.profile-public-panel--modal .profile-public-panel__label { font-size: 14px; }
+.profile-public-panel--modal .profile-public-panel__input { font-size: 16px; }
+.profile-public-panel--modal .profile-public-panel__textarea { font-size: 16px; }
+.profile-public-panel--modal .profile-public-panel__counter { font-size: 14px; }
+
+/* Pulsing green glow behind Save button */
+.profile-public-panel__save--glow {
+    position: relative;
+    z-index: 0;
+}
+.profile-public-panel__save--glow::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 12px;
+    background: radial-gradient(60% 60% at 50% 50%, rgba(76,255,137,0.35), rgba(76,255,137,0) 70%);
+    filter: blur(8px);
+    z-index: -1;
+    animation: profile-save-pulse 2.2s ease-in-out infinite;
+}
+@keyframes profile-save-pulse {
+    0% { opacity: 0.35; transform: scale(0.98); }
+    50% { opacity: 0.8; transform: scale(1.03); }
+    100% { opacity: 0.35; transform: scale(0.98); }
+}
 
 /* IAM selection */
 .profile-iam { margin-top: 16px; border: none; padding: 0; }

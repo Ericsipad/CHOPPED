@@ -12,7 +12,7 @@ export default function ValidationModal(props: ValidationModalProps) {
   if (!isOpen) return null
   return (
     <div role="dialog" aria-modal="true" className="profile-public-panel" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
-      <div className="profile-public-panel" style={{ maxWidth: 520, width: '90%', backdropFilter: 'blur(10px)', background: 'rgba(10, 10, 10, 0.5)', border: '1px solid rgba(0, 200, 120, 0.6)', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+      <div className="profile-public-panel profile-public-panel--modal" style={{ maxWidth: 520, width: '90%', backdropFilter: 'blur(10px)', background: 'rgba(10, 10, 10, 0.5)', border: '1px solid rgba(0, 200, 120, 0.6)', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
         <div className="profile-public-panel__header">
           <div className="profile-public-panel__title">
             <span>{title || 'Action required'}</span>

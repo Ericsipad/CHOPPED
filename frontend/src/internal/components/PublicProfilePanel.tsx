@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import ValidationModal from './ValidationModal'
 import { fetchReadiness } from './readiness'
 import { getBackendApi } from '../../lib/config'
@@ -25,6 +25,7 @@ export default function PublicProfilePanel() {
   const [modalOpen, setModalOpen] = useState(false)
   const [missingFields, setMissingFields] = useState<string[]>([])
   const [errors, setErrors] = useState<{ displayName?: boolean; age?: boolean; bio?: boolean }>({})
+  const bioRef = useRef<HTMLTextAreaElement | null>(null)
 
   const parsedAge = useMemo(() => {
     const n = Number(ageStr)
@@ -86,6 +87,13 @@ export default function PublicProfilePanel() {
     })()
     return () => { cancelled = true }
   }, [])
+
+  useEffect(() => {
+    const el = bioRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [bio])
 
   async function onSave() {
     if (saving) return
@@ -160,7 +168,7 @@ export default function PublicProfilePanel() {
           <span>Public Profile information</span>
         </div>
         <div className="profile-public-panel__right">
-          <button className="profile-public-panel__save" onClick={onSave} disabled={!isValid || saving || loading}>
+          <button className="profile-public-panel__save profile-public-panel__save--glow" onClick={onSave} disabled={!isValid || saving || loading}>
             {saving ? 'Saving…' : 'Save'}
           </button>
         </div>
@@ -171,11 +179,11 @@ export default function PublicProfilePanel() {
           <label className={["profile-public-panel__label", errors.displayName ? 'profile-public-panel__label--error' : ''].filter(Boolean).join(' ')} htmlFor="displayName">Display Name</label>
           <input id="displayName" className={["profile-public-panel__input", "profile-public-panel__input--wide", errors.displayName ? 'profile-public-panel__input--error' : ''].filter(Boolean).join(' ')} type="text" value={displayName} onChange={(e) => { setDisplayName(e.target.value); if (errors.displayName) setErrors((p) => ({ ...p, displayName: false })) }} placeholder="Your display name" maxLength={60} />
         </div>
-        <div className="profile-public-panel__field profile-public-panel__field--age">
+        <div className="profile-public-panel__field profile-public-panel__field--age profile-public-panel__field--inline">
           <label className={["profile-public-panel__label", errors.age ? 'profile-public-panel__label--error' : ''].filter(Boolean).join(' ')} htmlFor="age">Age</label>
           <input id="age" className={["profile-public-panel__input", "profile-public-panel__input--xs", errors.age ? 'profile-public-panel__input--error' : ''].filter(Boolean).join(' ')} inputMode="numeric" pattern="[0-9]*" value={ageStr} onChange={(e) => { setAgeStr(e.target.value.replace(/[^0-9]/g, '')); if (errors.age) setErrors((p) => ({ ...p, age: false })) }} placeholder="28" />
         </div>
-        <div className="profile-public-panel__field">
+        <div className="profile-public-panel__field profile-public-panel__field--inline">
           <label className="profile-public-panel__label" htmlFor="height">Height (cm)</label>
           <input id="height" className="profile-public-panel__input profile-public-panel__input--xs" inputMode="numeric" pattern="[0-9]*" value={heightStr} onChange={(e) => setHeightStr(e.target.value.replace(/[^0-9]/g, ''))} placeholder="180" />
         </div>
@@ -190,6 +198,8 @@ export default function PublicProfilePanel() {
           onChange={(e) => { setBio(e.target.value); if (errors.bio) setErrors((p) => ({ ...p, bio: false })) }}
           placeholder="Tell others about yourself (max 500 characters)"
           rows={6}
+          ref={bioRef}
+          style={{ overflow: 'hidden' }}
         />
         <div className="profile-public-panel__counter">{bio.trim().length}/500</div>
       </div>
