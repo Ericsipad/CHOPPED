@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import Container from './Container'
 import UserIndicator from './UserIndicator'
+import PointsBadge from './PointsBadge'
 import '../styles/internal.css'
 
 type TopHeaderProps = { children?: ReactNode }
@@ -45,7 +46,8 @@ export default function TopHeader(props: TopHeaderProps) {
                     ) : (
                         <div style={{ flex: 1 }} />
                     )}
-                    <div className="internal-user-indicator">
+                    <div className="internal-user-indicator" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <PointsBadge />
                         <UserIndicator />
                     </div>
                 </div>

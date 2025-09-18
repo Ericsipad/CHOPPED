@@ -71,6 +71,18 @@ html, body, #root {
 /* Wrapper for right side to allow hiding on mobile */
 .internal-user-indicator { display: block; }
 
+/* Points badge next to user indicator (desktop only) */
+.points-badge {
+    margin-right: 8px;
+    color: #ffffff;
+    opacity: 0.9;
+    font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
 .internal-container {
 	max-width: 1440px;
 	margin: 0 auto;
