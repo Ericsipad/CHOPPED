@@ -85,13 +85,13 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
               ) : (
                 <div style={styles.empty}>No thumbnail yet</div>
               )}
-              <div style={styles.overlayActions}>
-                <button type="button" onClick={triggerThumbUpload} aria-label="Upload thumbnail" disabled={uploadingThumb} style={styles.iconBtnGreen}>
-                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" style={styles.iconSvg}>
-                    <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                  </svg>
-                </button>
-              </div>
+            </div>
+            <div style={styles.actionsRowLeft}>
+              <button type="button" onClick={triggerThumbUpload} aria-label="Upload thumbnail" disabled={uploadingThumb} style={styles.iconBtnGreen}>
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" style={styles.iconSvg}>
+                  <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                </svg>
+              </button>
             </div>
             <input ref={thumbInputRef} type="file" accept="image/*" onChange={(e) => {
               const f = e.target.files?.[0]
@@ -170,20 +170,20 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
               ) : (
                 <div style={styles.empty}>No video yet</div>
               )}
-              <div style={styles.overlayActions}>
-                <button type="button" onClick={triggerVideoUpload} aria-label="Upload video" disabled={uploadingVideo} style={styles.iconBtnGreen}>
+            </div>
+            <div style={styles.actionsRowRight}>
+              <button type="button" onClick={triggerVideoUpload} aria-label="Upload video" disabled={uploadingVideo} style={styles.iconBtnGreen}>
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" style={styles.iconSvg}>
+                  <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                </svg>
+              </button>
+              {videoId ? (
+                <button type="button" onClick={onDelete} aria-label="Delete video" style={styles.iconBtnRed}>
                   <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" style={styles.iconSvg}>
-                    <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                    <path d="M3 6h18M8 6V4h8v2m-1 0v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6h10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                   </svg>
                 </button>
-                {videoId ? (
-                  <button type="button" onClick={onDelete} aria-label="Delete video" style={styles.iconBtnRed}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" style={styles.iconSvg}>
-                      <path d="M3 6h18M8 6V4h8v2m-1 0v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6h10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                    </svg>
-                  </button>
-                ) : null}
-              </div>
+              ) : null}
             </div>
             <input ref={videoInputRef} type="file" accept="video/*" onChange={(e) => {
               const f = e.target.files?.[0]
@@ -263,6 +263,8 @@ const styles: Record<string, React.CSSProperties> = {
   previewIframe: { width: '100%', height: '100%', border: 0, display: 'block' },
   empty: { color: 'rgba(255,255,255,0.7)' },
   actions: { marginTop: 10, display: 'flex', gap: 8, justifyContent: 'flex-end' },
+  actionsRowLeft: { marginTop: 8, display: 'flex', justifyContent: 'flex-start' },
+  actionsRowRight: { marginTop: 8, display: 'flex', justifyContent: 'flex-end', gap: 8 },
   primaryBtn: { background: '#fff', color: '#111', border: 'none', borderRadius: 9999, padding: '8px 14px', cursor: 'pointer' },
   dangerBtn: { background: '#ef4444', color: '#fff', border: 'none', borderRadius: 9999, padding: '8px 14px', cursor: 'pointer' },
   cancelBtn: { background: '#333', color: '#fff', border: 'none', borderRadius: 9999, padding: '8px 14px', cursor: 'pointer' },

@@ -5,11 +5,42 @@ import ProfileImageCard from '../components/ProfileImageCard'
 import PublicProfilePanel from '../components/PublicProfilePanel'
 import PrivateSettingsPanel from '../components/PrivateSettingsPanel'
 import '../styles/internal.css'
-import { useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
  
  
 export default function ProfilePage() {
 	const [activeTab, setActiveTab] = useState<'pics' | 'bio' | 'settings'>('pics')
+
+	const audioCtxRef = useRef<AudioContext | null>(null)
+	const clickSound = useMemo(() => ({
+		play: () => {
+			try {
+				if (!audioCtxRef.current) {
+					const Ctor: typeof AudioContext = (window as any).AudioContext || (window as any).webkitAudioContext
+					if (!Ctor) return
+					audioCtxRef.current = new Ctor()
+				}
+				const ctx = audioCtxRef.current
+				if (!ctx) return
+				const now = ctx.currentTime
+				const osc = ctx.createOscillator()
+				const gain = ctx.createGain()
+				osc.type = 'square'
+				osc.frequency.setValueAtTime(850, now)
+				gain.gain.setValueAtTime(0.45, now)
+				gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08)
+				osc.connect(gain)
+				gain.connect(ctx.destination)
+				osc.start(now)
+				osc.stop(now + 0.09)
+			} catch { /* noop */ }
+		}
+	}), [])
+
+	function handleTabClick(next: 'pics' | 'bio' | 'settings') {
+		clickSound.play()
+		setActiveTab(next)
+	}
 
 	return (
 		<PageFrame>
@@ -32,23 +63,23 @@ export default function ProfilePage() {
 						>
 							<div className="profile-page__content" style={{ width: 'clamp(30vw, calc(-118vw + 2127px), 90vw)', maxWidth: 1100 }}>
 								<div className="profile-tabs__nav">
-									<button
+							<button
 										className={["profile-tabs__btn", activeTab === 'pics' ? 'is-active' : ''].filter(Boolean).join(' ')}
-										onClick={() => setActiveTab('pics')}
+								onClick={() => handleTabClick('pics')}
 										aria-pressed={activeTab === 'pics'}
 									>
 										Profile pics
 									</button>
 									<button
 										className={["profile-tabs__btn", activeTab === 'bio' ? 'is-active' : ''].filter(Boolean).join(' ')}
-										onClick={() => setActiveTab('bio')}
+								onClick={() => handleTabClick('bio')}
 										aria-pressed={activeTab === 'bio'}
 									>
 										Public BIO
 									</button>
 									<button
 										className={["profile-tabs__btn", activeTab === 'settings' ? 'is-active' : ''].filter(Boolean).join(' ')}
-										onClick={() => setActiveTab('settings')}
+								onClick={() => handleTabClick('settings')}
 										aria-pressed={activeTab === 'settings'}
 									>
 										Settings
