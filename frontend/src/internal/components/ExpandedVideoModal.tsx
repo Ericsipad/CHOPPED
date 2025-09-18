@@ -72,7 +72,10 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
       style={styles.overlay}
     >
       <div style={styles.card}>
-        <div style={styles.header}>Video Editor</div>
+        <div style={styles.header}>
+          <div style={styles.headerTitle}>Video editor</div>
+          <button type="button" onClick={onClose} aria-label="Close" style={styles.closeBtn}>×</button>
+        </div>
         <div style={styles.bodyGrid}>
           <div style={styles.panel}>
             <div style={styles.panelHeader}>Thumbnail</div>
@@ -170,10 +173,9 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
               <button type="button" onClick={triggerVideoUpload} disabled={uploadingVideo} style={styles.primaryBtn}>
                 {uploadingVideo ? 'Uploading…' : (videoUrl ? 'Replace video' : 'Upload video (≤30MB)')}
               </button>
-              {videoId ? (
-                <button type="button" onClick={onDelete} style={styles.dangerBtn}>Delete</button>
-              ) : null}
-              <button type="button" onClick={onClose} style={styles.cancelBtn}>Close</button>
+            {videoId ? (
+              <button type="button" onClick={onDelete} style={styles.dangerBtn}>Delete</button>
+            ) : null}
             </div>
             <input ref={videoInputRef} type="file" accept="video/*" onChange={(e) => {
               const f = e.target.files?.[0]
@@ -240,7 +242,9 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
 const styles: Record<string, React.CSSProperties> = {
   overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1100 },
   card: { position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 'clamp(320px, 90vw, 1000px)', maxHeight: 'calc(100vh - (env(safe-area-inset-top) + env(safe-area-inset-bottom) + 24px))', overflowY: 'auto', background: 'rgba(18,18,18,0.9)', color: '#fff', borderRadius: 16, border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', padding: 16 },
-  header: { fontSize: 18, marginBottom: 12 },
+  header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 18, marginBottom: 12 },
+  headerTitle: { fontWeight: 800 },
+  closeBtn: { height: 28, width: 28, borderRadius: 6, border: '1px solid rgba(255,255,255,0.18)', background: 'rgba(0,0,0,0.45)', color: '#fff', cursor: 'pointer' },
   bodyGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
   panel: { background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 12 },
   panelHeader: { fontWeight: 700, marginBottom: 8 },
