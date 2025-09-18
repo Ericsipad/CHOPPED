@@ -29,23 +29,7 @@ html, body, #root {
 	align-items: center;
 }
 
-/* Left-side hamburger trigger: visible only on mobile */
-.mobile-menu-trigger { display: none; }
-.mobile-menu-trigger__btn {
-	appearance: none;
-	background: transparent;
-	border: none;
-	color: #ffffff;
-	width: 40px;
-	height: 40px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 8px;
-}
-.mobile-menu-trigger__btn:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }
-.mobile-menu-trigger__icon { display: inline-flex; flex-direction: column; gap: 4px; }
-.mobile-menu-trigger__bar { display: block; width: 18px; height: 2px; background: #ffffff; border-radius: 2px; }
+/* Left-side hamburger trigger: removed */
 
 /* (removed) Hamburger styles */
 
@@ -602,7 +586,6 @@ select.profile-public-panel__input.profile-public-panel__input--error {
     /* Hide desktop nav and right user button on tablet/mobile (PWA) */
     .internal-nav { display: none; }
     .internal-user-indicator { display: none; }
-	.mobile-menu-trigger { display: block; }
 	.subscription-content {
 		flex-direction: column;
 		text-align: center;
@@ -837,45 +820,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	margin: 4px 8px;
 }
 
-/* ===== MOBILE MENU (hamburger) ===== */
-.mobile-menu { position: fixed; inset: 0; z-index: 1200; }
-.mobile-menu__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
-.mobile-menu__panel {
-	position: absolute;
-	top: 0; left: 0; right: 0;
-	background: rgba(18, 18, 18, 0.98);
-	backdrop-filter: blur(12px) saturate(120%);
-	-webkit-backdrop-filter: blur(12px) saturate(120%);
-	border-bottom: 1px solid rgba(255,255,255,0.08);
-	border-radius: 0 0 12px 12px;
-	padding: calc(env(safe-area-inset-top) + 10px) 12px 12px 12px;
-}
-.mobile-menu__close {
-	appearance: none; border: none; background: transparent; color: #ffffff; font-size: 28px; line-height: 1; padding: 6px; border-radius: 8px;
-	position: absolute; right: 8px; top: calc(env(safe-area-inset-top) + 4px);
-}
-.mobile-menu__close:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }
-.mobile-menu__content { display: grid; gap: 6px; margin-top: 6px; }
-
-/* Items styled to match dropdown scale but full-width */
-.mobile-menu__item {
-	width: 100%;
-	padding: 14px 12px;
-	border: 1px solid rgba(255,255,255,0.09);
-	background: rgba(255,255,255,0.03);
-	color: #ffffff;
-	font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-	font-size: 17px;
-	border-radius: 10px;
-	cursor: pointer;
-	text-align: left;
-}
-.mobile-menu__item:hover { background: rgba(255,255,255,0.08); }
-.mobile-menu__item:active { background: rgba(255,255,255,0.12); }
-.mobile-menu__item.mobile-menu__item--logout:hover { background-color: rgba(255, 68, 68, 0.15); color: #ff6b6b; }
-.mobile-menu__item.mobile-menu__item--login { color: #4ade80; border-color: rgba(74, 222, 128, 0.35); }
-.mobile-menu__item.mobile-menu__item--login:hover { background: rgba(74, 222, 128, 0.15); color: #6ee7b7; }
-.mobile-menu__divider { height: 1px; background: rgba(255, 255, 255, 0.08); margin: 6px 0; }
+/* Mobile menu removed */
 
 /* ===== STATUS BAR ===== */
 .status-bar {
