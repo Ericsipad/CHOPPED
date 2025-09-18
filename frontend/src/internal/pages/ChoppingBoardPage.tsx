@@ -305,21 +305,49 @@ export default function ChoppingBoardPage() {
 		} catch { return 0 }
 	}
 
-	async function runBrowseFlow() {
-		triggerMatchSearchFlow(false)
-		setBrowseOpen(true)
-		try {
-			const count = await getPendingCount()
-			if (count < 200) {
-				fetch(getBackendApi('/api/user/matching/trigger'), {
-					method: 'POST',
-					credentials: 'include',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({})
-				}).catch(() => null)
-			}
-		} catch { /* ignore */ }
-	}
+    async function runBrowseFlow() {
+        if (searchInFlightRef.current) return
+        searchInFlightRef.current = true
+        // Show spinner immediately and start rotating messages
+        setSearchModalOpen(true)
+        setSearchMessageIndex(0)
+        const interval = window.setInterval(() => {
+            setSearchMessageIndex((i) => (i + 1) % funnyLines.length)
+        }, 3000)
+        searchIntervalRef.current = interval as unknown as number
+
+        try {
+            // Kick off match search immediately
+            await fetch(getBackendApi('/api/user/matching/trigger'), {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            }).catch(() => null)
+
+            // Poll pending until results available or timeout
+            const timeoutMs = 10000
+            const pollDelayMs = 400
+            const start = Date.now()
+            let available = 0
+            // Ensure at least one immediate check before entering loop
+            available = await getPendingCount()
+            while (available <= 0 && (Date.now() - start) < timeoutMs) {
+                await new Promise((r) => setTimeout(r, pollDelayMs))
+                available = await getPendingCount()
+            }
+
+            // Open browse once we have results (or after timeout regardless)
+            setBrowseOpen(true)
+        } finally {
+            if (searchIntervalRef.current !== null) {
+                window.clearInterval(searchIntervalRef.current)
+                searchIntervalRef.current = null
+            }
+            setSearchModalOpen(false)
+            searchInFlightRef.current = false
+        }
+    }
 
 	// Fetch display name for chat header when chat opens
 	useEffect(() => {
