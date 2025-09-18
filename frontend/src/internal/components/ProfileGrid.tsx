@@ -43,6 +43,16 @@ export default function ProfileGrid(props: ProfileGridProps) {
 			break
 	}
 
+	// Desktop: for 50 tiles, use 10 columns (5 rows). Keep 5 columns on mobile/PWA.
+	if (typeof window !== 'undefined') {
+		try {
+			const isMobile = window.matchMedia('(max-width: 1024px)').matches
+			if (!isMobile && viewCount === 50) {
+				columns = 10
+			}
+		} catch { /* noop */ }
+	}
+
     // Normalize wobble off for consistent sizing on desktop and PWA
 
     const effectiveCardPx = typeof cardPxOverride === 'number' ? cardPxOverride : cardPx
