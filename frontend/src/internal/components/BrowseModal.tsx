@@ -265,43 +265,40 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 											</div>
 										</div>
 
-									{/* Info trigger: haze overlay on mobile, simple button on desktop */}
-									{isMobile ? (
-										<button
-											className="no-swipe"
-											onClick={() => openBio(index)}
-											aria-label="More info"
-											style={{
+									{/* Info trigger: always render both; visibility controlled by CSS media queries */}
+									<button
+										className="no-swipe info-overlay--mobile"
+										onClick={() => openBio(index)}
+										aria-label="More info"
+										style={{
 											position: 'absolute',
 											bottom: 'calc(env(safe-area-inset-bottom) + 12px)',
-												left: 12,
+											left: 12,
 											zIndex: 100,
-												border: 'none',
-												cursor: 'pointer',
+											border: 'none',
+											cursor: 'pointer',
 											padding: '10px 18px',
-												borderRadius: 9999,
-												color: '#fff',
+											borderRadius: 9999,
+											color: '#fff',
 											fontWeight: 800,
 											textShadow: '0 1px 2px rgba(0,0,0,0.6)',
-												background: 'radial-gradient(circle closest-side, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.55) 58%, rgba(0,0,0,0.0) 100%)',
-												backdropFilter: 'blur(6px) saturate(120%)',
-												WebkitBackdropFilter: 'blur(6px) saturate(120%)',
+											background: 'radial-gradient(circle closest-side, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.55) 58%, rgba(0,0,0,0.0) 100%)',
+											backdropFilter: 'blur(6px) saturate(120%)',
+											WebkitBackdropFilter: 'blur(6px) saturate(120%)',
 											boxShadow: '0 4px 16px rgba(0,0,0,0.45)',
 											pointerEvents: 'auto',
-											}}
-										>
-											Info
-										</button>
-									) : (
-										<button
-											className="no-swipe"
-											onClick={() => openBio(index)}
-											aria-label="Open bio"
-											style={{ position: 'absolute', bottom: 12, left: 12, zIndex: 4, padding: '8px 14px', background: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}
-										>
-											View Info
-										</button>
-									)}
+										}}
+									>
+										Info
+									</button>
+									<button
+										className="no-swipe info-button--desktop"
+										onClick={() => openBio(index)}
+										aria-label="Open bio"
+										style={{ position: 'absolute', bottom: 12, left: 12, zIndex: 4, padding: '8px 14px', background: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}
+									>
+										View Info
+									</button>
 									</div>
 								</SwiperSlide>
 							)
@@ -309,7 +306,16 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 					</Swiper>
 				)}
 			</div>
-			<style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+			<style>{`
+				@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+				/* Show mobile haze overlay only on small screens; hide desktop button there */
+				.info-overlay--mobile { display: none; }
+				.info-button--desktop { display: inline-flex; }
+				@media (max-width: 1024px) {
+					.info-overlay--mobile { display: inline-flex; align-items: center; justify-content: center; }
+					.info-button--desktop { display: none; }
+				}
+			`}</style>
 		</div>
 		<ValidationModal isOpen={successOpen} title="Success" onClose={() => setSuccessOpen(false)}>
 			<div style={{ padding: '12px 0' }}>Successfully chopped.</div>
