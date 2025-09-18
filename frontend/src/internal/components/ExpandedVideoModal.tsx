@@ -256,7 +256,7 @@ const styles: Record<string, React.CSSProperties> = {
   bodyGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
   panel: { background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 12 },
   panelHeader: { fontWeight: 700, marginBottom: 8 },
-  previewWrap: { width: '100%', aspectRatio: '4 / 3', borderRadius: 10, overflow: 'hidden', background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  previewWrap: { position: 'relative', width: '100%', aspectRatio: '4 / 3', borderRadius: 10, overflow: 'hidden', background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   overlayActions: { position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10, pointerEvents: 'none' },
   previewImg: { width: '100%', height: '100%', objectFit: 'contain' },
   previewVideo: { width: '100%', height: '100%' },
