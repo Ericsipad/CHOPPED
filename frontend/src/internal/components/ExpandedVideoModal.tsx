@@ -85,11 +85,13 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
               ) : (
                 <div style={styles.empty}>No thumbnail yet</div>
               )}
-            </div>
-            <div style={styles.actions}>
-              <button type="button" onClick={triggerThumbUpload} disabled={uploadingThumb} style={styles.primaryBtn}>
-                {uploadingThumb ? 'Uploading…' : (videoThumbUrl ? 'Replace thumb' : 'Upload thumb')}
-              </button>
+              <div style={styles.overlayActions}>
+                <button type="button" onClick={triggerThumbUpload} aria-label="Upload thumbnail" disabled={uploadingThumb} style={styles.iconBtnGreen}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" style={styles.iconSvg}>
+                    <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                  </svg>
+                </button>
+              </div>
             </div>
             <input ref={thumbInputRef} type="file" accept="image/*" onChange={(e) => {
               const f = e.target.files?.[0]
@@ -168,14 +170,20 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
               ) : (
                 <div style={styles.empty}>No video yet</div>
               )}
-            </div>
-            <div style={styles.actions}>
-              <button type="button" onClick={triggerVideoUpload} disabled={uploadingVideo} style={styles.primaryBtn}>
-                {uploadingVideo ? 'Uploading…' : (videoUrl ? 'Replace video' : 'Upload video (≤30MB)')}
-              </button>
-            {videoId ? (
-              <button type="button" onClick={onDelete} style={styles.dangerBtn}>Delete</button>
-            ) : null}
+              <div style={styles.overlayActions}>
+                <button type="button" onClick={triggerVideoUpload} aria-label="Upload video" disabled={uploadingVideo} style={styles.iconBtnGreen}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" style={styles.iconSvg}>
+                    <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                  </svg>
+                </button>
+                {videoId ? (
+                  <button type="button" onClick={onDelete} aria-label="Delete video" style={styles.iconBtnRed}>
+                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" style={styles.iconSvg}>
+                      <path d="M3 6h18M8 6V4h8v2m-1 0v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6h10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                    </svg>
+                  </button>
+                ) : null}
+              </div>
             </div>
             <input ref={videoInputRef} type="file" accept="video/*" onChange={(e) => {
               const f = e.target.files?.[0]
@@ -249,6 +257,7 @@ const styles: Record<string, React.CSSProperties> = {
   panel: { background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 12 },
   panelHeader: { fontWeight: 700, marginBottom: 8 },
   previewWrap: { width: '100%', aspectRatio: '4 / 3', borderRadius: 10, overflow: 'hidden', background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  overlayActions: { position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10, pointerEvents: 'none' },
   previewImg: { width: '100%', height: '100%', objectFit: 'contain' },
   previewVideo: { width: '100%', height: '100%' },
   previewIframe: { width: '100%', height: '100%', border: 0, display: 'block' },
@@ -257,6 +266,9 @@ const styles: Record<string, React.CSSProperties> = {
   primaryBtn: { background: '#fff', color: '#111', border: 'none', borderRadius: 9999, padding: '8px 14px', cursor: 'pointer' },
   dangerBtn: { background: '#ef4444', color: '#fff', border: 'none', borderRadius: 9999, padding: '8px 14px', cursor: 'pointer' },
   cancelBtn: { background: '#333', color: '#fff', border: 'none', borderRadius: 9999, padding: '8px 14px', cursor: 'pointer' },
+  iconBtnGreen: { pointerEvents: 'auto', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 36, width: 36, borderRadius: 9999, border: '1px solid rgba(34,197,94,0.6)', background: 'rgba(34,197,94,0.2)', color: '#22c55e', cursor: 'pointer' },
+  iconBtnRed: { pointerEvents: 'auto', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 36, width: 36, borderRadius: 9999, border: '1px solid rgba(239,68,68,0.6)', background: 'rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer', marginLeft: 8 },
+  iconSvg: { display: 'block' },
 }
 
 
