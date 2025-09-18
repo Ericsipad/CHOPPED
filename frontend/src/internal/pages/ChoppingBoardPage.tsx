@@ -429,8 +429,8 @@ export default function ChoppingBoardPage() {
 										<ViewCountDesktop value={viewCount} onChange={setViewCount} />
 									</div>
 								)}
-								{/* Grid: align to top; provide extra space for desktop overlays */}
-								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: isMobile ? 22 : 76 }}>
+								{/* Grid: align to top; provide extra space for desktop overlays (+15px below status bar) */}
+								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: isMobile ? 22 : 91 }}>
 									<ProfileGrid
 										images={images}
 										viewCount={viewCount}
