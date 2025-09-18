@@ -37,7 +37,7 @@ export default function ProfileGrid(props: ProfileGridProps) {
 			break
 		case 50:
 			cardPx = 90
-			columns = 10
+			columns = 5
 			gap = '8px'
 			wobble = false
 			break

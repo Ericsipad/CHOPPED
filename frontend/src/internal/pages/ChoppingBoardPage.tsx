@@ -172,7 +172,7 @@ export default function ChoppingBoardPage() {
 			let gap = 8
 			if (viewCount === 10) { columns = 5; gap = 15 }
 			if (viewCount === 25) { columns = 5; gap = 8 }
-			if (viewCount === 50) { columns = 10; gap = 8 }
+			if (viewCount === 50) { columns = 5; gap = 8 }
 			const totalGap = (columns - 1) * gap
 			const cardPxByWidth = Math.floor((vw - totalGap) / columns)
 			const rows = Math.ceil((viewCount === 25 ? 20 : viewCount) / columns)
