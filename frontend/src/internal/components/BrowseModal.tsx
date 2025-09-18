@@ -219,8 +219,8 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 							const thumbs = byId?.thumbs ?? []
 							return (
 								<SwiperSlide key={it.userId} virtualIndex={index} style={{ position: 'relative', width: '100%', height: '100%' }}>
-									<div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: '1fr', overflow: 'hidden' }}>
-										<Swiper direction="vertical" nested keyboard={{ enabled: true }} style={{ width: '100%', height: '100%' }} onSwiper={(s) => { verticalSwipersRef.current[index] = s }}>
+										<div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: '1fr', overflow: 'hidden', pointerEvents: 'none' }}>
+											<Swiper direction="vertical" nested keyboard={{ enabled: true }} style={{ width: '100%', height: '100%', pointerEvents: 'auto' }} onSwiper={(s) => { verticalSwipersRef.current[index] = s }}>
 											{(() => {
 												const urls: string[] = []
 												if (byId?.main) urls.push(byId.main)
@@ -234,7 +234,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 											})()}
 										</Swiper>
 
-								<div className="no-swipe" style={{ position: 'absolute', top: 0, left: bioOpenIndex === index ? 0 : (isMobile ? '-100%' : '-25%'), width: isMobile ? '100%' : '25%', height: '100%', background: 'rgba(17,17,17,0.9)', color: '#fff', transition: 'left 0.3s ease', padding: 20, display: 'flex', flexDirection: 'column', zIndex: 20, pointerEvents: 'auto' }}>
+											<div className="no-swipe" style={{ position: 'absolute', top: 0, left: bioOpenIndex === index ? 0 : (isMobile ? '-100%' : '-25%'), width: isMobile ? '100%' : '25%', height: '100%', background: 'rgba(17,17,17,0.9)', color: '#fff', transition: 'left 0.3s ease', padding: 20, display: 'flex', flexDirection: 'column', zIndex: 1000, pointerEvents: 'auto' }}>
 											<button onClick={() => setBioOpenIndex(null)} aria-label="Close panel" style={{ alignSelf: 'flex-end', background: 'transparent', color: '#fff', border: 'none', fontSize: 28, lineHeight: 1, cursor: 'pointer' }}>×</button>
 											<div style={{ flex: 1, overflowY: 'auto' }}>
 												{(() => {
@@ -272,10 +272,10 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 											onClick={() => openBio(index)}
 											aria-label="More info"
 											style={{
-												position: 'absolute',
-												bottom: 12,
+											position: 'absolute',
+											bottom: 'calc(env(safe-area-inset-bottom) + 12px)',
 												left: 12,
-											zIndex: 19,
+											zIndex: 100,
 												border: 'none',
 												cursor: 'pointer',
 											padding: '10px 18px',
@@ -287,6 +287,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 												backdropFilter: 'blur(6px) saturate(120%)',
 												WebkitBackdropFilter: 'blur(6px) saturate(120%)',
 											boxShadow: '0 4px 16px rgba(0,0,0,0.45)',
+											pointerEvents: 'auto',
 											}}
 										>
 											Info
