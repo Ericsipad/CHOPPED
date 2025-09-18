@@ -4,18 +4,21 @@ import BottomNav from './BottomNav'
 import '../styles/internal.css'
 
 type PageFrameProps = {
-	children?: ReactNode
+    children?: ReactNode
+    headerContent?: ReactNode
 }
 
 export default function PageFrame(props: PageFrameProps) {
-	const { children } = props
-	return (
-		<div>
-			<TopHeader />
-			<div className="with-bottom-nav">
-				{children}
-			</div>
-			<BottomNav />
-		</div>
-	)
+    const { children, headerContent } = props
+    return (
+        <div>
+            <TopHeader>
+                {headerContent}
+            </TopHeader>
+            <div className="with-bottom-nav">
+                {children}
+            </div>
+            <BottomNav />
+        </div>
+    )
 }

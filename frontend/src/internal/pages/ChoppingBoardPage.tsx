@@ -12,6 +12,7 @@ import { getBackendApi } from '../../lib/config'
 import BrowseModal from '../components/BrowseModal'
 import ChatModal from '../components/ChatModal'
 import StatusBar from '../components/StatusBar'
+import ViewCountTabs from '../components/ViewCountTabs'
 import GiftModal from '../components/GiftModal'
 import GiftsInboxModal from '../components/GiftsInboxModal'
 import { fetchPendingMatchedMeCount } from '../lib/matchedMe'
@@ -171,6 +172,36 @@ export default function ChoppingBoardPage() {
 		}
 	})
 	const activeSlotsCount = Math.min(50, Math.max(0, subscription || 0))
+
+	// Compute viewport-fit sizing overrides for mobile
+	const [overrides, setOverrides] = useState<{ cardPx?: number; columns?: number; gap?: string }>({})
+	useEffect(() => {
+		function compute() {
+			const isMobile = window.matchMedia('(max-width: 1024px)').matches
+			if (!isMobile) { setOverrides({}); return }
+			const vw = window.innerWidth
+			const vh = window.innerHeight
+			const headerH = 48 + (Number((window as any).visualViewport?.offsetTop || 0))
+			const bottomNavH = 60 + (parseInt(getComputedStyle(document.documentElement).getPropertyValue('env(safe-area-inset-bottom)') || '0') || 0)
+			const tabsH = 60
+			const available = vh - headerH - bottomNavH - tabsH - 16
+			let columns = 5
+			let gap = 8
+			if (viewCount === 10) { columns = 5; gap = 15 }
+			if (viewCount === 25) { columns = 5; gap = 8 }
+			if (viewCount === 50) { columns = 10; gap = 8 }
+			const totalGap = (columns - 1) * gap
+			const cardPxByWidth = Math.floor((vw - totalGap) / columns)
+			const rows = Math.ceil((viewCount === 25 ? 20 : viewCount) / columns)
+			const totalRowGap = (rows - 1) * gap
+			const cardPxByHeight = Math.floor((available - totalRowGap) / rows)
+			const cardPx = Math.max(64, Math.min(cardPxByWidth, cardPxByHeight))
+			setOverrides({ cardPx, columns, gap: `${gap}px` })
+		}
+		compute()
+		window.addEventListener('resize', compute)
+		return () => window.removeEventListener('resize', compute)
+	}, [viewCount])
 
 	const funnyLines = useMemo(() => ([
 		'Searching for your perfect match…',
@@ -380,61 +411,39 @@ export default function ChoppingBoardPage() {
 		}
 	}
 	return (
-		<PageFrame>
+		<PageFrame
+			headerContent={
+				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+					<div ref={statusBarRef}>
+						<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
+					</div>
+				</div>
+			}
+		>
 			<div>
 				<Container>
 					<div style={{ position: 'relative' }}>
 						<HeroImage />
-						<div
-							style={{
-								position: 'absolute',
-								top: 48, // keep clear of the 48px header so nav remains clickable
-								left: 0,
-								right: 0,
-								bottom: 0,
-								zIndex: 9,
-							}}
-						>
+						<div style={{ position: 'absolute', top: 48, left: 0, right: 0, bottom: 0, zIndex: 9 }}>
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
-								{/* Centered status bar */}
-								<div ref={statusBarRef} style={{ position: 'absolute', top: 64, left: '50%', transform: 'translateX(-50%)', zIndex: 11 }}>
-									<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
-								</div>
-								{/* Glass toggle buttons - top-left */}
-								<div style={{ position: 'absolute', top: 8, left: 12, zIndex: 10 }}>
-									<div className="profile-tabs__nav">
-										<button
-											className={["profile-tabs__btn", viewCount === 10 ? 'is-active' : ''].filter(Boolean).join(' ')}
-											onClick={() => setViewCount(10)}
-											aria-pressed={viewCount === 10}
-										>
-											10
-										</button>
-										<button
-											className={["profile-tabs__btn", viewCount === 25 ? 'is-active' : ''].filter(Boolean).join(' ')}
-											onClick={() => setViewCount(25)}
-											aria-pressed={viewCount === 25}
-										>
-											20
-										</button>
-										<button
-											className={["profile-tabs__btn", viewCount === 50 ? 'is-active' : ''].filter(Boolean).join(' ')}
-											onClick={() => setViewCount(50)}
-											aria-pressed={viewCount === 50}
-										>
-											50
-										</button>
-									</div>
-								</div>
-
 								{/* Grid: only 25-view shifts down; others remain centered */}
-								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: (viewCount === 25 ? 'flex-start' : 'center'), paddingTop: (viewCount === 25 ? (64 + statusBarHeight + 12) : 0) }}>
-									<ProfileGrid images={images} viewCount={viewCount} activeSlotsCount={activeSlotsCount} onCardClick={handleCardClick} />
+								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: (viewCount === 25 ? 'flex-start' : 'center'), paddingTop: (viewCount === 25 ? (12) : 0) }}>
+									<ProfileGrid
+										images={images}
+										viewCount={viewCount}
+										activeSlotsCount={activeSlotsCount}
+										onCardClick={handleCardClick}
+										cardPxOverride={overrides.cardPx}
+										columnsOverride={overrides.columns}
+										gapOverride={overrides.gap}
+									/>
 								</div>
 							</div>
 						</div>
 					</div>
 				</Container>
+				{/* Fixed bottom view count tabs for mobile */}
+				<ViewCountTabs value={viewCount} onChange={setViewCount} />
 				<ValidationModal
 					isOpen={modalOpen}
 					title="Complete your profile"

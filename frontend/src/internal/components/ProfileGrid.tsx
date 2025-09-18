@@ -2,17 +2,25 @@ import { Box, Grid, GridItem } from '@chakra-ui/react'
 import WobblyCard3D from './WobblyCard3D'
 
 type ProfileImage = { url: string; alt?: string; status?: 'yes' | 'pending' | 'chopped' | null; hasProfile?: boolean }
-type ProfileGridProps = { images: ProfileImage[]; viewCount: 10 | 25 | 50; activeSlotsCount?: number; onCardClick?: (index: number) => void }
+type ProfileGridProps = {
+    images: ProfileImage[]
+    viewCount: 10 | 25 | 50
+    activeSlotsCount?: number
+    onCardClick?: (index: number) => void
+    cardPxOverride?: number
+    columnsOverride?: number
+    gapOverride?: string
+}
 
 export default function ProfileGrid(props: ProfileGridProps) {
-	const { images, viewCount, activeSlotsCount = 0, onCardClick } = props
+    const { images, viewCount, activeSlotsCount = 0, onCardClick, cardPxOverride, columnsOverride, gapOverride } = props
 
 	const sliceCount = viewCount === 25 ? 20 : viewCount
 	const items = images.slice(0, sliceCount)
 
-	let cardPx = 192
-	let columns = 5
-	let gap = '15px'
+    let cardPx = 192
+    let columns = 5
+    let gap = '15px'
 	let wobble = true
 	switch (viewCount) {
 		case 10:
@@ -35,8 +43,12 @@ export default function ProfileGrid(props: ProfileGridProps) {
 			break
 	}
 
-	const cardSize = `${cardPx}px`
-	const columnsTemplate = `repeat(${columns}, ${cardSize})`
+    const effectiveCardPx = typeof cardPxOverride === 'number' ? cardPxOverride : cardPx
+    const effectiveColumns = typeof columnsOverride === 'number' ? columnsOverride : columns
+    const effectiveGap = typeof gapOverride === 'string' ? gapOverride : gap
+
+    const cardSize = `${effectiveCardPx}px`
+    const columnsTemplate = `repeat(${effectiveColumns}, ${cardSize})`
 
 	return (
 		<Box w="100%" display="flex" justifyContent="center" position="relative" zIndex={5}>
@@ -47,7 +59,7 @@ export default function ProfileGrid(props: ProfileGridProps) {
 					lg: columnsTemplate,
 					xl: columnsTemplate,
 				}}
-				gap={gap}
+                gap={effectiveGap}
 				justifyContent="center"
 				alignContent="center"
 				width="fit-content"
