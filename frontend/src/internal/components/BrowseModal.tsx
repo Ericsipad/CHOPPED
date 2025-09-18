@@ -256,7 +256,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 											</div>
 											<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
 												<button onClick={() => handleAction('chat', index)} aria-label="Chat" disabled={loadingIndex === index} style={{ background: '#16a34a', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: loadingIndex === index ? 'not-allowed' : 'pointer', fontWeight: 700, opacity: loadingIndex === index ? 0.7 : 1 }}>Chat</button>
-												<button onClick={() => handleAction('chop', index)} aria-label="Chop" disabled={loadingIndex === index} style={{ background: '#dc2626', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: loadingIndex === index ? 'not-allowed' : 'pointer', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+											<button onClick={() => handleAction('chop', index)} aria-label="Chop" disabled={loadingIndex === index} style={{ background: '#dc2626', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: loadingIndex === index ? 'not-allowed' : 'pointer', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
 													{loadingIndex === index ? (
 														<div aria-hidden style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.5)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
 													) : null}
@@ -265,7 +265,41 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 											</div>
 										</div>
 
-										<button onClick={() => openBio(index)} aria-label="Open bio" style={{ position: 'absolute', bottom: 12, left: 12, zIndex: 4, padding: '8px 14px', background: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>View Info</button>
+									{/* Info trigger: haze overlay on mobile, simple button on desktop */}
+									{isMobile ? (
+										<button
+											className="no-swipe"
+											onClick={() => openBio(index)}
+											aria-label="More info"
+											style={{
+												position: 'absolute',
+												bottom: 12,
+												left: 12,
+												zIndex: 5,
+												border: 'none',
+												cursor: 'pointer',
+												padding: '10px 18px',
+												borderRadius: 9999,
+												color: '#fff',
+												fontWeight: 700,
+												background: 'radial-gradient(circle closest-side, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.55) 58%, rgba(0,0,0,0.0) 100%)',
+												backdropFilter: 'blur(6px) saturate(120%)',
+												WebkitBackdropFilter: 'blur(6px) saturate(120%)',
+												boxShadow: '0 4px 16px rgba(0,0,0,0.45)',
+											}}
+										>
+											Info
+										</button>
+									) : (
+										<button
+											className="no-swipe"
+											onClick={() => openBio(index)}
+											aria-label="Open bio"
+											style={{ position: 'absolute', bottom: 12, left: 12, zIndex: 4, padding: '8px 14px', background: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}
+										>
+											View Info
+										</button>
+									)}
 									</div>
 								</SwiperSlide>
 							)
