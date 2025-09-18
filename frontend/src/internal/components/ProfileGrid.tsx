@@ -4,7 +4,7 @@ import WobblyCard3D from './WobblyCard3D'
 type ProfileImage = { url: string; alt?: string; status?: 'yes' | 'pending' | 'chopped' | null; hasProfile?: boolean }
 type ProfileGridProps = {
     images: ProfileImage[]
-    viewCount: 10 | 25 | 50
+    viewCount: 10 | 20 | 50
     activeSlotsCount?: number
     onCardClick?: (index: number) => void
     cardPxOverride?: number
@@ -15,21 +15,21 @@ type ProfileGridProps = {
 export default function ProfileGrid(props: ProfileGridProps) {
     const { images, viewCount, activeSlotsCount = 0, onCardClick, cardPxOverride, columnsOverride, gapOverride } = props
 
-	const sliceCount = viewCount === 25 ? 20 : viewCount
+	const sliceCount = viewCount
 	const items = images.slice(0, sliceCount)
 
     let cardPx = 192
     let columns = 5
     let gap = '15px'
 	let wobble = true
-	switch (viewCount) {
+		switch (viewCount) {
 		case 10:
 			cardPx = 192
 			columns = 5
 			gap = '15px'
 			wobble = true
 			break
-		case 25:
+			case 20:
 			cardPx = 120
 			columns = 5
 			gap = '8px'

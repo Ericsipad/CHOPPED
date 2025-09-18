@@ -7,6 +7,10 @@ type TopHeaderProps = { children?: ReactNode }
 
 export default function TopHeader(props: TopHeaderProps) {
     const { children } = props
+    const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
+    const isAccount = pathname.endsWith('/account.html') || pathname === '/account.html'
+    const isChoppingBoard = pathname.endsWith('/chopping-board.html') || pathname === '/chopping-board.html'
+    const isProfile = pathname.endsWith('/profile.html') || pathname === '/profile.html'
     return (
         <header className="internal-top-header">
             <Container>
@@ -14,11 +18,36 @@ export default function TopHeader(props: TopHeaderProps) {
                     <div className="internal-user-indicator">
                         <UserIndicator />
                     </div>
+                    <nav className="internal-nav" aria-label="Primary">
+                        <a
+                            href="/profile.html"
+                            className={["internal-nav-link", isProfile ? 'is-active' : ''].filter(Boolean).join(' ')}
+                            aria-current={isProfile ? 'page' : undefined}
+                        >
+                            Profile
+                        </a>
+                        <a
+                            href="/account.html"
+                            className={["internal-nav-link", isAccount ? 'is-active' : ''].filter(Boolean).join(' ')}
+                            aria-current={isAccount ? 'page' : undefined}
+                        >
+                            Account
+                        </a>
+                        <a
+                            href="/chopping-board.html"
+                            className={["internal-nav-link", isChoppingBoard ? 'is-active' : ''].filter(Boolean).join(' ')}
+                            aria-current={isChoppingBoard ? 'page' : undefined}
+                        >
+                            Chopping board
+                        </a>
+                    </nav>
                     {children ? (
                         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
                             {children}
                         </div>
-                    ) : null}
+                    ) : (
+                        <div style={{ flex: 1 }} />
+                    )}
                 </div>
             </Container>
         </header>

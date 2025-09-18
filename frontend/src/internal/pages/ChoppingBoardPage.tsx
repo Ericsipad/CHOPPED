@@ -12,6 +12,7 @@ import { getBackendApi } from '../../lib/config'
 import BrowseModal from '../components/BrowseModal'
 import ChatModal from '../components/ChatModal'
 import StatusBar from '../components/StatusBar'
+import ViewCountDesktop from '../components/ViewCountDesktop'
 import ViewCountTabs from '../components/ViewCountTabs'
 import GiftModal from '../components/GiftModal'
 import GiftsInboxModal from '../components/GiftsInboxModal'
@@ -21,7 +22,7 @@ import { fetchUnwithdrawnGiftsCount } from '../lib/gifts'
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
     const [missingFields, setMissingFields] = useState<string[]>([])
-    const [viewCount, setViewCount] = useState<10 | 25 | 50>(10)
+    const [viewCount, setViewCount] = useState<10 | 20 | 50>(10)
     const [slots, setSlots] = useState<Array<MatchSlot | null>>([])
     const [subscription, setSubscription] = useState<number>(0)
     const [searchModalOpen, setSearchModalOpen] = useState(false)
@@ -176,7 +177,7 @@ export default function ChoppingBoardPage() {
 			const totalGap = (columns - 1) * gapPx
 			// assume zero horizontal container padding on mobile (we strip it via CSS)
 			const cardPxByWidth = Math.floor((vw - totalGap) / columns)
-			const rows = Math.ceil((viewCount === 25 ? 20 : viewCount) / columns)
+			const rows = Math.ceil(viewCount / columns)
 			const headerOffset = 52
 			const safeBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('env(safe-area-inset-bottom)') || '0') || 0
 			const bottomNavH = 60 + safeBottom
@@ -400,22 +401,34 @@ export default function ChoppingBoardPage() {
 			}
 		}
 	}
+	// Determine mobile vs desktop at render time (non-SSR app)
+	const isMobile = typeof window !== 'undefined' ? window.matchMedia('(max-width: 1024px)').matches : false
 	return (
 		<PageFrame
-			headerContent={
+			headerContent={isMobile ? (
 				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 					<div ref={statusBarRef}>
 						<StatusBar variant="header" giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
 					</div>
 				</div>
-			}
+			) : null}
 		>
 			<div>
 				<Container className="chopping-page-root with-bottom-nav">
+					{!isMobile && (
+						<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 8, marginBottom: 10 }}>
+							<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
+						</div>
+					)}
 					<div style={{ position: 'relative' }}>
 						<HeroImage />
 						<div style={{ position: 'absolute', top: 52, left: 0, right: 0, bottom: 0, zIndex: 9 }}>
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
+								{!isMobile && (
+									<div style={{ position: 'absolute', top: 0, left: 0, padding: '8px 12px', zIndex: 10 }}>
+										<ViewCountDesktop value={viewCount} onChange={setViewCount} />
+									</div>
+								)}
 								{/* Grid: align to top for consistent behavior across 10/20/50 on mobile */}
 								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: 22 }}>
 									<ProfileGrid

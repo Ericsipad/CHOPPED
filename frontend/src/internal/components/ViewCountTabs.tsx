@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import '../styles/internal.css'
 
 type Props = {
-    value: 10 | 25 | 50
-    onChange: (v: 10 | 25 | 50) => void
+    value: 10 | 20 | 50
+    onChange: (v: 10 | 20 | 50) => void
 }
 
 export default function ViewCountTabs(props: Props) {
@@ -46,9 +46,9 @@ export default function ViewCountTabs(props: Props) {
                     10
                 </button>
                 <button
-                    className={["profile-tabs__btn", value === 25 ? 'is-active' : ''].filter(Boolean).join(' ')}
-                    onClick={() => onChange(25)}
-                    aria-pressed={value === 25}
+                    className={["profile-tabs__btn", value === 20 ? 'is-active' : ''].filter(Boolean).join(' ')}
+                    onClick={() => onChange(20)}
+                    aria-pressed={value === 20}
                 >
                     20
                 </button>
