@@ -82,11 +82,12 @@ export default function ProfileGrid(props: ProfileGridProps) {
 						<GridItem key={idx} w={cardSize} h={cardSize}>
 							<Box position="relative" w="100%" h="100%" role={isActive ? 'button' : undefined} tabIndex={isActive ? 0 : -1} aria-disabled={!isActive} onClick={isActive ? () => onCardClick?.(idx) : undefined} onKeyDown={onKeyDown} style={{ cursor: clickableCursor }}>
 								{wobble ? (
-									<WobblyCard3D
+                                    <WobblyCard3D
 										p={0}
 										borderRadius="xl"
 										boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'}
 										bg="gray.800"
+                                        scale={1}
 										maxRotate={12}
 										perspective={900}
 									>
