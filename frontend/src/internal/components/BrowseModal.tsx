@@ -182,6 +182,11 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 		<>
 		<div onKeyDownCapture={(e) => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); e.stopPropagation() } }} style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)' }}>
 			<div style={{ width: isMobile ? '100%' : 'min(1100px, 92vw)', height: isMobile ? '100%' : '60vh', position: 'relative', borderRadius: isMobile ? 0 : 12, overflow: 'hidden', background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)' }}>
+				{/* Header actions */}
+				<button onClick={() => openBio(activeIdx)} aria-label="More info" style={{ position: 'absolute', top: 8, left: 10, zIndex: 6, background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 10px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+					<span aria-hidden style={{ fontWeight: 700 }}>←</span>
+					<span style={{ fontWeight: 800 }}>Info</span>
+				</button>
 				<button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: 8, right: 10, zIndex: 5, background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 10px', cursor: 'pointer' }}>Close</button>
 				{limitOpen && (
 					<div role="dialog" aria-modal onClick={() => setLimitOpen(false)} style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.45)', zIndex: 6 }}>
@@ -265,41 +270,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 											</div>
 										</div>
 
-									{/* Info trigger: always render both; visibility controlled by CSS media queries */}
-									<button
-										className="no-swipe info-overlay--mobile"
-										onClick={() => openBio(index)}
-										aria-label="More info"
-										style={{
-											position: 'absolute',
-											bottom: 'calc(env(safe-area-inset-bottom) + 12px)',
-											left: 12,
-											zIndex: 10000,
-											border: 'none',
-											cursor: 'pointer',
-											padding: '10px 18px',
-											borderRadius: 9999,
-											color: '#fff',
-											fontWeight: 800,
-											textShadow: '0 1px 2px rgba(0,0,0,0.6)',
-											background: 'radial-gradient(circle closest-side, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.55) 58%, rgba(0,0,0,0.0) 100%)',
-											backdropFilter: 'blur(6px) saturate(120%)',
-											WebkitBackdropFilter: 'blur(6px) saturate(120%)',
-											boxShadow: '0 4px 16px rgba(0,0,0,0.45)',
-											outline: '1px solid rgba(255,255,255,0.35)',
-											pointerEvents: 'auto',
-										}}
-									>
-										Info
-									</button>
-									<button
-										className="no-swipe info-button--desktop"
-										onClick={() => openBio(index)}
-										aria-label="Open bio"
-										style={{ position: 'absolute', bottom: 12, left: 12, zIndex: 4, padding: '8px 14px', background: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}
-									>
-										View Info
-									</button>
+									{/* Info trigger moved to header */}
 									</div>
 								</SwiperSlide>
 							)
