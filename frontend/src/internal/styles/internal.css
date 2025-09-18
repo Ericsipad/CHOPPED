@@ -908,11 +908,11 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	}
 
 	/* Add top spacer so content doesn't hide under fixed tabs */
-	.profile-page-root .profile-page__content { width: 100vw !important; max-width: none !important; padding-top: calc(44px + env(safe-area-inset-top)); }
+	.profile-page-root .profile-page__content { width: 100% !important; max-width: none !important; padding-top: calc(44px + env(safe-area-inset-top)); }
 
 	/* Make the primary card span width, normalize to wide image */
 	.profile-page-root .profile-image-card {
-		width: 100vw;
+		width: 100%;
 		max-width: none;
 		min-height: auto;
 		max-height: none;
@@ -920,10 +920,10 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	}
 
 	/* Inside the image card, stack main image then thumbs/videos tightly */
-	.profile-page-root .profile-image-card__content { grid-template-rows: auto auto auto; }
+	.profile-page-root .profile-image-card__content { grid-template-rows: auto auto auto; height: auto; }
 	.profile-page-root .profile-image-card__main { height: auto; min-height: 0; aspect-ratio: 16 / 9; }
 	.profile-page-root .profile-image-card__thumbs,
-	.profile-page-root .profile-image-card__videos { height: auto; }
+	.profile-page-root .profile-image-card__videos { height: auto; margin-top: 8px; }
 
 	/* Panels flush to edges */
 	.profile-page-root .profile-public-panel { border-radius: 0; padding-left: 0; padding-right: 0; }
