@@ -867,6 +867,8 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 /* ===== PROFILE PAGE: MOBILE EDGE-TO-EDGE (≤768px) ===== */
 @media (max-width: 768px) {
 	html, body { overflow-x: clip; overscroll-behavior-x: none; }
+	/* Allow modals to scroll under fixed tabs */
+	body { overscroll-behavior-y: contain; }
 
 	/* Guard against any residual horizontal scroll on profile route */
 	.profile-page-root { overflow-x: hidden; }
@@ -899,7 +901,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 		top: 0;
 		left: 0;
 		right: 0;
-		z-index: 1001;
+		z-index: 1000;
 		display: flex;
 		gap: 8px;
 		margin: 0;
@@ -929,7 +931,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	.profile-page-root .profile-image-card__content { grid-template-rows: auto auto auto; height: auto; }
 	.profile-page-root .profile-image-card__main { height: auto; min-height: 0; aspect-ratio: 16 / 9; }
 	.profile-page-root .profile-image-card__thumbs,
-	.profile-page-root .profile-image-card__videos { height: auto; margin-top: 8px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+	.profile-page-root .profile-image-card__videos { height: auto; margin-top: 8px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 	/* Ensure uniform square tiles so rows don't collapse */
 	.profile-page-root .profile-image-card__thumb,
 	.profile-page-root .profile-image-card__video { aspect-ratio: 1 / 1; height: auto; }
@@ -938,6 +940,9 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	.profile-page-root .profile-page__content,
 	.profile-page-root .profile-image-card,
 	.profile-page-root .profile-image-card__content { overflow-x: hidden; }
+
+	/* Ensure content clears the bottom nav */
+	.profile-page-root .profile-image-card { margin-bottom: calc(60px + env(safe-area-inset-bottom)); }
 
 	/* Ensure inner grids cannot exceed container width */
 	.profile-page-root .profile-image-card__thumbs,

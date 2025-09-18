@@ -238,8 +238,8 @@ export default function ExpandedVideoModal(props: ExpandedVideoModalProps) {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000 },
-  card: { position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 'clamp(320px, 70vw, 1000px)', background: 'rgba(18,18,18,0.75)', color: '#fff', borderRadius: 16, border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', padding: 16 },
+  overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1100 },
+  card: { position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 'clamp(320px, 90vw, 1000px)', maxHeight: 'calc(100vh - (env(safe-area-inset-top) + env(safe-area-inset-bottom) + 24px))', overflowY: 'auto', background: 'rgba(18,18,18,0.9)', color: '#fff', borderRadius: 16, border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 20px 50px rgba(0,0,0,0.6)', padding: 16 },
   header: { fontSize: 18, marginBottom: 12 },
   bodyGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
   panel: { background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 12 },
