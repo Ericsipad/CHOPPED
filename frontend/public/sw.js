@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chopped-pwa-v3';
+const CACHE_NAME = 'chopped-pwa-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -52,7 +52,29 @@ self.addEventListener('fetch', (event) => {
   if (!event.request.url.startsWith('http')) return;
 
   const request = event.request;
+  const url = new URL(request.url);
+  const isSameOriginApi = (url.origin === self.location.origin && url.pathname.startsWith('/api/'));
+  const isCoreApi = url.hostname === 'core.chopped.dating';
+  const isApi = isSameOriginApi || isCoreApi;
   const isNavigation = request.mode === 'navigate' || (request.destination === 'document');
+
+  // Network-first for API GET requests; update cache on success, fallback to cache when offline
+  if (isApi) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          const respClone = networkResponse.clone();
+          // Cache API responses for offline fallback
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, respClone)).catch(() => {});
+          return networkResponse;
+        })
+        .catch(async () => {
+          const cached = await caches.match(request);
+          return cached || new Response('Network error', { status: 503 });
+        })
+    );
+    return;
+  }
 
   if (isNavigation) {
     // Network-first for HTML navigations so new deployments are picked up
