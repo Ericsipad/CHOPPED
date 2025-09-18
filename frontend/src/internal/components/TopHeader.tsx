@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import Container from './Container'
 import UserIndicator from './UserIndicator'
-import UserMenuList from './UserMenuList'
 import { useAuth } from '../hooks/useAuth'
+import { logout, redirectToLogin } from '../../lib/auth'
+import { fetchAvailableGiftsAmountCents } from '../lib/gifts'
 import '../styles/internal.css'
 
 export default function TopHeader() {
@@ -11,6 +12,7 @@ export default function TopHeader() {
     const isChoppingBoard = pathname.endsWith('/chopping-board.html') || pathname === '/chopping-board.html'
     const isProfile = pathname.endsWith('/profile.html') || pathname === '/profile.html'
     const { isAuthenticated } = useAuth()
+    const [availableCents, setAvailableCents] = useState<number | null>(null)
 
     const [menuOpen, setMenuOpen] = useState(false)
     const firstFocusableRef = useRef<HTMLButtonElement | null>(null)
@@ -35,10 +37,30 @@ export default function TopHeader() {
         }
     }, [menuOpen])
 
+    useEffect(() => {
+        let cancelled = false
+        if (!isAuthenticated) {
+            setAvailableCents(null)
+            return
+        }
+        ;(async () => {
+            try {
+                const cents = await fetchAvailableGiftsAmountCents()
+                if (!cancelled) setAvailableCents(cents)
+            } catch {
+                if (!cancelled) setAvailableCents(0)
+            }
+        })()
+        return () => { cancelled = true }
+    }, [isAuthenticated])
+
     return (
         <header className="internal-top-header">
             <Container>
                 <div className="internal-top-header-inner">
+                    <div className="internal-user-indicator">
+                        <UserIndicator />
+                    </div>
                     <button
                         ref={hamburgerRef}
                         className="internal-hamburger-btn"
@@ -49,32 +71,6 @@ export default function TopHeader() {
                     >
                         <span className="internal-hamburger-icon" aria-hidden="true"></span>
                     </button>
-                    <nav className="internal-nav" aria-label="Primary">
-                        <a
-                            href="/account.html"
-                            className={`internal-nav-link${isAccount ? ' is-active' : ''}`}
-                            aria-current={isAccount ? 'page' : undefined}
-                        >
-                            Account
-                        </a>
-                        <a
-                            href="/chopping-board.html"
-                            className={`internal-nav-link${isChoppingBoard ? ' is-active' : ''}`}
-                            aria-current={isChoppingBoard ? 'page' : undefined}
-                        >
-                            Chopping Board
-                        </a>
-                        <a
-                            href="/profile.html"
-                            className={`internal-nav-link${isProfile ? ' is-active' : ''}`}
-                            aria-current={isProfile ? 'page' : undefined}
-                        >
-                            Profile
-                        </a>
-                    </nav>
-                    <div className="internal-user-indicator">
-                        <UserIndicator />
-                    </div>
                 </div>
             </Container>
 
@@ -103,6 +99,14 @@ export default function TopHeader() {
                 </div>
                 <nav className="mobile-menu__nav" aria-label="Primary">
                     <a
+                        href="/profile.html"
+                        className={`mobile-menu__link${isProfile ? ' is-active' : ''}`}
+                        aria-current={isProfile ? 'page' : undefined}
+                        onClick={() => setMenuOpen(false)}
+                    >
+                        Profile
+                    </a>
+                    <a
                         href="/account.html"
                         className={`mobile-menu__link${isAccount ? ' is-active' : ''}`}
                         aria-current={isAccount ? 'page' : undefined}
@@ -118,18 +122,33 @@ export default function TopHeader() {
                     >
                         Chopping Board
                     </a>
-                    <a
-                        href="/profile.html"
-                        className={`mobile-menu__link${isProfile ? ' is-active' : ''}`}
-                        aria-current={isProfile ? 'page' : undefined}
-                        onClick={() => setMenuOpen(false)}
-                    >
-                        Profile
-                    </a>
                 </nav>
                 <div className="mobile-menu__divider"></div>
                 <div className="mobile-menu__user">
-                    <UserMenuList isAuthenticated={isAuthenticated} onClose={() => setMenuOpen(false)} variant="mobile" />
+                    <button
+                        className="mobile-menu__item"
+                        tabIndex={-1}
+                        role="note"
+                        aria-live="polite"
+                    >
+                        <span className="user-dropdown__item-text">{`Available $${(((availableCents ?? 0) / 100).toFixed(2))}`}</span>
+                    </button>
+                    <div className="mobile-menu__divider"></div>
+                    {isAuthenticated ? (
+                        <button
+                            className="mobile-menu__item mobile-menu__item--logout"
+                            onClick={() => { setMenuOpen(false); logout() }}
+                        >
+                            <span className="user-dropdown__item-text">Logout</span>
+                        </button>
+                    ) : (
+                        <button
+                            className="mobile-menu__item mobile-menu__item--login"
+                            onClick={() => { setMenuOpen(false); redirectToLogin() }}
+                        >
+                            <span className="user-dropdown__item-text">Login</span>
+                        </button>
+                    )}
                 </div>
             </div>
         </header>

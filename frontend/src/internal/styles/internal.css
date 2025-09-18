@@ -30,7 +30,7 @@ html, body, #root {
 }
 
 /* Hamburger (hidden by default, shown on mobile) */
-.internal-hamburger-btn {
+	.internal-hamburger-btn {
 	appearance: none;
 	border: 1px solid rgba(255,255,255,0.12);
 	background: rgba(255,255,255,0.06);
@@ -542,7 +542,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 }
 
 /* Responsive adjustments */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
 	/* Hide desktop nav and right user button; show hamburger */
 	.internal-nav { display: none; }
 	.internal-user-indicator { display: none; }
