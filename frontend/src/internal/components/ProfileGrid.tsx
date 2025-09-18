@@ -43,6 +43,19 @@ export default function ProfileGrid(props: ProfileGridProps) {
 			break
 	}
 
+    // PWA-only normalization: disable wobble so 10/20 match 50 presentation
+    if (typeof window !== 'undefined') {
+        try {
+            const isStandalone = (
+                (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+                ((window as any).navigator?.standalone === true)
+            )
+            if (isStandalone) {
+                wobble = false
+            }
+        } catch { /* noop */ }
+    }
+
     const effectiveCardPx = typeof cardPxOverride === 'number' ? cardPxOverride : cardPx
     const effectiveColumns = typeof columnsOverride === 'number' ? columnsOverride : columns
     const effectiveGap = typeof gapOverride === 'string' ? gapOverride : gap
@@ -50,12 +63,13 @@ export default function ProfileGrid(props: ProfileGridProps) {
     const cardSize = `${effectiveCardPx}px`
     const columnsTemplate = `repeat(${effectiveColumns}, ${cardSize})`
 
-    // Restore desktop hover scale; disable on mobile/PWA
+    // Restore desktop hover scale; disable on mobile or PWA standalone
     let hoverScale = 1.05
     if (typeof window !== 'undefined') {
         try {
             const isMobile = window.matchMedia('(max-width: 1024px)').matches
-            if (isMobile) hoverScale = 1
+            const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || ((window as any).navigator?.standalone === true)
+            if (isMobile || isStandalone) hoverScale = 1
         } catch { /* noop */ }
     }
 

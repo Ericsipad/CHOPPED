@@ -957,7 +957,8 @@ select.profile-public-panel__input.profile-public-panel__input--error {
     .profile-page-root .internal-top-header { display: none; }
 
 	/* Remove container gutters and any max-width clamping for the profile page */
-	.profile-page-root.internal-container {
+    .profile-page-root.internal-container,
+    .chopping-page-root.internal-container {
 		max-width: none;
 		margin-left: 0;
 		margin-right: 0;

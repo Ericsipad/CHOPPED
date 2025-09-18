@@ -160,15 +160,32 @@ export default function ChoppingBoardPage() {
 	const [overrides, setOverrides] = useState<{ cardPx?: number; columns?: number; gap?: string }>({})
 	useEffect(() => {
 		function compute() {
-			const isMobile = window.matchMedia('(max-width: 1024px)').matches
-			if (!isMobile) { setOverrides({}); return }
-			// Fixed sizes for PWA/mobile
-			let columns = 5
-			let gapPx = 8
-			let cardPx = 90
-			if (viewCount === 10) { cardPx = 192; gapPx = 15 }
-			else if (viewCount === 25) { cardPx = 120; gapPx = 8 }
-			else { cardPx = 90; gapPx = 8 }
+			// PWA-only: apply responsive sizing when running in standalone display-mode
+			let isStandalone = false
+			try {
+				isStandalone = (
+					(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+					((window as any).navigator?.standalone === true)
+				)
+			} catch { /* noop */ }
+			if (!isStandalone) { setOverrides({}); return }
+			const vw = window.innerWidth
+			const vh = window.innerHeight
+			const columns = 5
+			const gapPx = (viewCount === 10) ? 15 : 8
+			const totalGap = (columns - 1) * gapPx
+			// assume zero horizontal container padding on mobile (we strip it via CSS)
+			const cardPxByWidth = Math.floor((vw - totalGap) / columns)
+			const rows = Math.ceil((viewCount === 25 ? 20 : viewCount) / columns)
+			const headerOffset = 52
+			const safeBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('env(safe-area-inset-bottom)') || '0') || 0
+			const bottomNavH = 60 + safeBottom
+			const tabsH = 60
+			const extraTopPad = 22
+			const available = vh - headerOffset - bottomNavH - tabsH - extraTopPad - 8
+			const totalRowGap = (rows - 1) * gapPx
+			const cardPxByHeight = Math.floor((available - totalRowGap) / rows)
+			const cardPx = Math.max(60, Math.min(cardPxByWidth, cardPxByHeight))
 			setOverrides({ cardPx, columns, gap: `${gapPx}px` })
 		}
 		compute()
