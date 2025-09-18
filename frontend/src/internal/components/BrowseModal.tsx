@@ -175,11 +175,13 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 
 	const total = items.length
 	const reachedEnd = total === 0
+	// Treat <=1024px as mobile to align with PWA behavior elsewhere
+	const isMobile = typeof window !== 'undefined' ? window.matchMedia('(max-width: 1024px)').matches : false
 
 	return (
 		<>
 		<div onKeyDownCapture={(e) => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); e.stopPropagation() } }} style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)' }}>
-			<div style={{ width: 'min(1100px, 92vw)', height: '60vh', position: 'relative', borderRadius: 12, overflow: 'hidden', background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)' }}>
+			<div style={{ width: isMobile ? '100%' : 'min(1100px, 92vw)', height: isMobile ? '100%' : '60vh', position: 'relative', borderRadius: isMobile ? 0 : 12, overflow: 'hidden', background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)' }}>
 				<button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: 8, right: 10, zIndex: 5, background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 10px', cursor: 'pointer' }}>Close</button>
 				{limitOpen && (
 					<div role="dialog" aria-modal onClick={() => setLimitOpen(false)} style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.45)', zIndex: 6 }}>
@@ -232,7 +234,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 											})()}
 										</Swiper>
 
-										<div className="no-swipe" style={{ position: 'absolute', top: 0, left: bioOpenIndex === index ? 0 : '-25%', width: '25%', height: '100%', background: 'rgba(17,17,17,0.9)', color: '#fff', transition: 'left 0.3s ease', padding: 20, display: 'flex', flexDirection: 'column', zIndex: 20, pointerEvents: 'auto' }}>
+								<div className="no-swipe" style={{ position: 'absolute', top: 0, left: bioOpenIndex === index ? 0 : (isMobile ? '-100%' : '-25%'), width: isMobile ? '100%' : '25%', height: '100%', background: 'rgba(17,17,17,0.9)', color: '#fff', transition: 'left 0.3s ease', padding: 20, display: 'flex', flexDirection: 'column', zIndex: 20, pointerEvents: 'auto' }}>
 											<button onClick={() => setBioOpenIndex(null)} aria-label="Close panel" style={{ alignSelf: 'flex-end', background: 'transparent', color: '#fff', border: 'none', fontSize: 28, lineHeight: 1, cursor: 'pointer' }}>×</button>
 											<div style={{ flex: 1, overflowY: 'auto' }}>
 												{(() => {
