@@ -930,6 +930,9 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	.profile-page-root .profile-image-card__main { height: auto; min-height: 0; aspect-ratio: 16 / 9; }
 	.profile-page-root .profile-image-card__thumbs,
 	.profile-page-root .profile-image-card__videos { height: auto; margin-top: 8px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+	/* Ensure uniform square tiles so rows don't collapse */
+	.profile-page-root .profile-image-card__thumb,
+	.profile-page-root .profile-image-card__video { aspect-ratio: 1 / 1; height: auto; }
 
 	/* Guard against subpixel overflow on image container */
 	.profile-page-root .profile-page__content,
