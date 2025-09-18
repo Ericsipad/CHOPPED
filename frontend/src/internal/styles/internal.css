@@ -561,7 +561,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 .pwa-bottom-nav__btn:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }
 .pwa-bottom-nav__icon-stack { position: relative; display: inline-flex; }
 .pwa-bottom-nav__icon-plus { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -56%); }
-.pwa-bottom-nav__value { min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+.pwa-bottom-nav__value { min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; color: #ffffff; }
 
 /* content padding to avoid overlap with bottom nav on mobile */
 .with-bottom-nav { padding-bottom: 0; }
