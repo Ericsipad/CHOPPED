@@ -921,6 +921,28 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	}
 }
 
+/* Compact single-row header variant */
+.status-bar--header {
+	width: auto;
+	border-radius: 10px;
+	border-width: 1px;
+}
+.status-bar--header .status-bar__inner {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 12px;
+	padding: 6px 10px;
+}
+.status-bar--header .status-bar__legend { gap: 10px; }
+.status-bar--header .status-bar__legend-text { font-size: 10px; }
+.status-bar--header .status-bar__counters { gap: 12px; }
+.status-bar--header .status-bar__value { font-size: 13px; }
+
+@media (max-width: 1024px) {
+	.status-bar--header .status-bar__inner { grid-template-columns: 1fr auto; }
+}
+
 /* ===== PROFILE PAGE: MOBILE EDGE-TO-EDGE (≤768px) ===== */
 @media (max-width: 768px) {
 	html, body { overflow-x: clip; overscroll-behavior-x: none; }

@@ -398,7 +398,7 @@ export default function ChoppingBoardPage() {
 			headerContent={
 				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 					<div ref={statusBarRef}>
-						<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
+						<StatusBar variant="header" giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
 					</div>
 				</div>
 			}

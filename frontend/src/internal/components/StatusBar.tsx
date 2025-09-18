@@ -4,13 +4,14 @@ type StatusBarProps = {
 	giftsCount?: number
 	matchedMeCount?: number
 	onGiftsClick?: () => void
+    variant?: 'default' | 'header'
 }
 
 export default function StatusBar(props: StatusBarProps) {
-	const { giftsCount = 0, matchedMeCount = 0, onGiftsClick } = props
+    const { giftsCount = 0, matchedMeCount = 0, onGiftsClick, variant = 'default' } = props
 
 	return (
-		<div className="status-bar" role="region" aria-label="Status bar">
+		<div className={["status-bar", variant === 'header' ? 'status-bar--header' : ''].filter(Boolean).join(' ')} role="region" aria-label="Status bar">
 			<div className="status-bar__inner">
 				{/* Legend - left */}
 				<div className="status-bar__legend" aria-label="Legend">
