@@ -90,20 +90,20 @@ export default function ProfileGrid(props: ProfileGridProps) {
 										maxRotate={12}
 										perspective={900}
 									>
-										<img
-											src={img.url}
-											alt={img.alt ?? 'profile picture'}
-											style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-										/>
+                                    <img
+                                        src={img.url}
+                                        alt={img.alt ?? 'profile picture'}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+                                    />
 									</WobblyCard3D>
 								) : (
-									<Box p={0} borderRadius="xl" boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'} bg="gray.800" w="100%" h="100%">
-										<img
-											src={img.url}
-											alt={img.alt ?? 'profile picture'}
-											style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-										/>
-									</Box>
+                                    <Box p={0} borderRadius="xl" boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'} bg="gray.800" w="100%" h="100%">
+                                        <img
+                                            src={img.url}
+                                            alt={img.alt ?? 'profile picture'}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+                                        />
+                                    </Box>
 								)}
 								{isActive && !img.hasProfile && (
 									<Box position="absolute" top="6px" right="6px" w="20px" h="20px" bg="green.500" color="white" borderRadius="full" display="flex" alignItems="center" justifyContent="center" fontWeight="bold" fontSize="14px" lineHeight="1">+
