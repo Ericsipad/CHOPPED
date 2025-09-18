@@ -868,6 +868,9 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 @media (max-width: 768px) {
 	html, body { overflow-x: clip; overscroll-behavior-x: none; }
 
+	/* Guard against any residual horizontal scroll on profile route */
+	.profile-page-root { overflow-x: hidden; }
+
 	/* Remove the default header on mobile and use tabs instead */
 	.internal-top-header { display: none; }
 
@@ -908,22 +911,38 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	}
 
 	/* Add top spacer so content doesn't hide under fixed tabs */
-	.profile-page-root .profile-page__content { width: 100% !important; max-width: none !important; padding-top: calc(44px + env(safe-area-inset-top)); }
+	.profile-page-root .profile-page__content { width: 99% !important; max-width: none !important; margin-left: auto; margin-right: auto; box-sizing: border-box; padding-top: calc(44px + env(safe-area-inset-top)); }
 
 	/* Make the primary card span width, normalize to wide image */
 	.profile-page-root .profile-image-card {
-		width: 100%;
+		width: 99%;
 		max-width: none;
 		min-height: auto;
 		max-height: none;
 		border-radius: 0;
+		margin-left: auto;
+		margin-right: auto;
+		box-sizing: border-box;
 	}
 
 	/* Inside the image card, stack main image then thumbs/videos tightly */
 	.profile-page-root .profile-image-card__content { grid-template-rows: auto auto auto; height: auto; }
 	.profile-page-root .profile-image-card__main { height: auto; min-height: 0; aspect-ratio: 16 / 9; }
 	.profile-page-root .profile-image-card__thumbs,
-	.profile-page-root .profile-image-card__videos { height: auto; margin-top: 8px; }
+	.profile-page-root .profile-image-card__videos { height: auto; margin-top: 8px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+	/* Guard against subpixel overflow on image container */
+	.profile-page-root .profile-page__content,
+	.profile-page-root .profile-image-card,
+	.profile-page-root .profile-image-card__content { overflow-x: hidden; }
+
+	/* Ensure inner grids cannot exceed container width */
+	.profile-page-root .profile-image-card__thumbs,
+	.profile-page-root .profile-image-card__videos { width: 100%; box-sizing: border-box; }
+
+	/* Prevent grid items from imposing min-content width */
+	.profile-page-root .profile-image-card__thumb,
+	.profile-page-root .profile-image-card__video { min-width: 0; }
 
 	/* Panels flush to edges */
 	.profile-page-root .profile-public-panel { border-radius: 0; padding-left: 0; padding-right: 0; }
