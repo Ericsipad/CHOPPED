@@ -15,9 +15,6 @@ export default function TopHeader(props: TopHeaderProps) {
         <header className="internal-top-header">
             <Container>
                 <div className="internal-top-header-inner">
-                    <div className="internal-user-indicator">
-                        <UserIndicator />
-                    </div>
                     <nav className="internal-nav" aria-label="Primary">
                         <a
                             href="/profile.html"
@@ -48,6 +45,9 @@ export default function TopHeader(props: TopHeaderProps) {
                     ) : (
                         <div style={{ flex: 1 }} />
                     )}
+                    <div className="internal-user-indicator">
+                        <UserIndicator />
+                    </div>
                 </div>
             </Container>
         </header>
