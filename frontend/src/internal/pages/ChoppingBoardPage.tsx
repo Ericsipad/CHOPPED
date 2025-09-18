@@ -162,24 +162,14 @@ export default function ChoppingBoardPage() {
 		function compute() {
 			const isMobile = window.matchMedia('(max-width: 1024px)').matches
 			if (!isMobile) { setOverrides({}); return }
-			const vw = window.innerWidth
-			const vh = window.innerHeight
-			const headerH = 48 + (Number((window as any).visualViewport?.offsetTop || 0))
-			const bottomNavH = 60 + (parseInt(getComputedStyle(document.documentElement).getPropertyValue('env(safe-area-inset-bottom)') || '0') || 0)
-			const tabsH = 60
-			const available = vh - headerH - bottomNavH - tabsH - 16
+			// Fixed sizes for PWA/mobile
 			let columns = 5
-			let gap = 8
-			if (viewCount === 10) { columns = 5; gap = 15 }
-			if (viewCount === 25) { columns = 5; gap = 8 }
-			if (viewCount === 50) { columns = 5; gap = 8 }
-			const totalGap = (columns - 1) * gap
-			const cardPxByWidth = Math.floor((vw - totalGap) / columns)
-			const rows = Math.ceil((viewCount === 25 ? 20 : viewCount) / columns)
-			const totalRowGap = (rows - 1) * gap
-			const cardPxByHeight = Math.floor((available - totalRowGap) / rows)
-			const cardPx = Math.max(64, Math.min(cardPxByWidth, cardPxByHeight))
-			setOverrides({ cardPx, columns, gap: `${gap}px` })
+			let gapPx = 8
+			let cardPx = 90
+			if (viewCount === 10) { cardPx = 192; gapPx = 15 }
+			else if (viewCount === 25) { cardPx = 120; gapPx = 8 }
+			else { cardPx = 90; gapPx = 8 }
+			setOverrides({ cardPx, columns, gap: `${gapPx}px` })
 		}
 		compute()
 		window.addEventListener('resize', compute)
