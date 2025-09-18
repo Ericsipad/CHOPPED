@@ -930,8 +930,8 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	/* Guard against any residual horizontal scroll on profile route */
 	.profile-page-root { overflow-x: hidden; }
 
-	/* Remove the default header on mobile and use tabs instead */
-	.internal-top-header { display: none; }
+    /* Remove the default header on mobile and use tabs instead (profile page only) */
+    .profile-page-root .internal-top-header { display: none; }
 
 	/* Remove container gutters and any max-width clamping for the profile page */
 	.profile-page-root.internal-container {
@@ -943,8 +943,9 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 		touch-action: pan-y;
 	}
 
-	/* Hide chopping board hero on mobile */
-	.profile-page-root .internal-hero { display: none; }
+    /* Hide chopping board hero on mobile */
+    .profile-page-root .internal-hero { display: none; }
+    .chopping-page-root .internal-hero { display: none; }
 
 	/* Make overlay participate in normal flow to eliminate top gap */
 	.profile-page-root .profile-page__overlay {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chopped-pwa-v1';
+const CACHE_NAME = 'chopped-pwa-v3';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -47,24 +47,40 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return;
-  
+
   // Skip chrome-extension and other non-http requests
   if (!event.request.url.startsWith('http')) return;
 
+  const request = event.request;
+  const isNavigation = request.mode === 'navigate' || (request.destination === 'document');
+
+  if (isNavigation) {
+    // Network-first for HTML navigations so new deployments are picked up
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          const respClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, respClone)).catch(() => {});
+          return networkResponse;
+        })
+        .catch(async () => {
+          const cached = await caches.match(request);
+          return cached || caches.match('/index.html');
+        })
+    );
+    return;
+  }
+
+  // Cache-first for other GET requests
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).catch(() => {
-          // If both cache and network fail, return a fallback
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
-          }
-        });
-      })
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).then((networkResponse) => {
+        const respClone = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, respClone)).catch(() => {});
+        return networkResponse;
+      }).catch(() => undefined);
+    })
   );
 });
 

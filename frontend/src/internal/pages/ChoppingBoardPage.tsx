@@ -404,13 +404,13 @@ export default function ChoppingBoardPage() {
 			}
 		>
 			<div>
-				<Container>
+				<Container className="chopping-page-root with-bottom-nav">
 					<div style={{ position: 'relative' }}>
 						<HeroImage />
 						<div style={{ position: 'absolute', top: 48, left: 0, right: 0, bottom: 0, zIndex: 9 }}>
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
-								{/* Grid: only 25-view shifts down; others remain centered */}
-								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: (viewCount === 25 ? 'flex-start' : 'center'), paddingTop: (viewCount === 25 ? (12) : 0) }}>
+								{/* Grid: align to top for consistent behavior across 10/20/50 on mobile */}
+								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: 12 }}>
 									<ProfileGrid
 										images={images}
 										viewCount={viewCount}
