@@ -868,6 +868,9 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 @media (max-width: 768px) {
 	html, body { overflow-x: clip; overscroll-behavior-x: none; }
 
+	/* Remove the default header on mobile and use tabs instead */
+	.internal-top-header { display: none; }
+
 	/* Remove container gutters and any max-width clamping for the profile page */
 	.profile-page-root.internal-container {
 		max-width: none;
@@ -887,30 +890,40 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 		display: block;
 	}
 
-	/* Tabs bar as sticky full-width header under the 48px app header */
+	/* Tabs bar fixed at the very top on mobile */
 	.profile-page-root .profile-tabs__nav {
-		position: sticky;
-		top: 48px;
-		z-index: 11;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 1001;
 		display: flex;
 		gap: 8px;
 		margin: 0;
-		padding: 8px 12px;
-		background: rgba(0,0,0,0.85);
+		padding: calc(env(safe-area-inset-top) + 6px) 12px 6px 12px;
+		background: rgba(0,0,0,0.9);
 		backdrop-filter: blur(6px) saturate(120%);
 		-webkit-backdrop-filter: blur(6px) saturate(120%);
 		border-bottom: 1px solid rgba(255,255,255,0.08);
 	}
 
-	/* Make content and primary card fully span the viewport width */
-	.profile-page-root .profile-page__content { width: 100vw !important; max-width: none !important; }
+	/* Add top spacer so content doesn't hide under fixed tabs */
+	.profile-page-root .profile-page__content { width: 100vw !important; max-width: none !important; padding-top: calc(44px + env(safe-area-inset-top)); }
+
+	/* Make the primary card span width, normalize to wide image */
 	.profile-page-root .profile-image-card {
 		width: 100vw;
 		max-width: none;
-		aspect-ratio: auto;
 		min-height: auto;
+		max-height: none;
 		border-radius: 0;
 	}
+
+	/* Inside the image card, stack main image then thumbs/videos tightly */
+	.profile-page-root .profile-image-card__content { grid-template-rows: auto auto auto; }
+	.profile-page-root .profile-image-card__main { height: auto; min-height: 0; aspect-ratio: 16 / 9; }
+	.profile-page-root .profile-image-card__thumbs,
+	.profile-page-root .profile-image-card__videos { height: auto; }
 
 	/* Panels flush to edges */
 	.profile-page-root .profile-public-panel { border-radius: 0; padding-left: 0; padding-right: 0; }
