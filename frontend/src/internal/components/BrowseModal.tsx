@@ -219,7 +219,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 							const thumbs = byId?.thumbs ?? []
 							return (
 								<SwiperSlide key={it.userId} virtualIndex={index} style={{ position: 'relative', width: '100%', height: '100%' }}>
-										<div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: '1fr', overflow: 'hidden', pointerEvents: 'none' }}>
+										<div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: '1fr', overflow: 'hidden' }}>
 											<Swiper direction="vertical" nested keyboard={{ enabled: true }} style={{ width: '100%', height: '100%', pointerEvents: 'auto' }} onSwiper={(s) => { verticalSwipersRef.current[index] = s }}>
 											{(() => {
 												const urls: string[] = []
@@ -274,7 +274,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 											position: 'absolute',
 											bottom: 'calc(env(safe-area-inset-bottom) + 12px)',
 											left: 12,
-											zIndex: 100,
+											zIndex: 10000,
 											border: 'none',
 											cursor: 'pointer',
 											padding: '10px 18px',
@@ -286,6 +286,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 											backdropFilter: 'blur(6px) saturate(120%)',
 											WebkitBackdropFilter: 'blur(6px) saturate(120%)',
 											boxShadow: '0 4px 16px rgba(0,0,0,0.45)',
+											outline: '1px solid rgba(255,255,255,0.35)',
 											pointerEvents: 'auto',
 										}}
 									>
