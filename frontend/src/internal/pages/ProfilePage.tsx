@@ -14,7 +14,7 @@ export default function ProfilePage() {
 	return (
 		<PageFrame>
 			<div>
-				<Container>
+				<Container className="profile-page-root with-bottom-nav">
 					<div style={{ position: 'relative' }}>
 						<HeroImage />
 						<div
@@ -30,7 +30,7 @@ export default function ProfilePage() {
 								zIndex: 9,
 							}}
 						>
-							<div style={{ width: 'clamp(30vw, calc(-118vw + 2127px), 90vw)', maxWidth: 1100 }}>
+							<div className="profile-page__content" style={{ width: 'clamp(30vw, calc(-118vw + 2127px), 90vw)', maxWidth: 1100 }}>
 								<div className="profile-tabs__nav">
 									<button
 										className={["profile-tabs__btn", activeTab === 'pics' ? 'is-active' : ''].filter(Boolean).join(' ')}

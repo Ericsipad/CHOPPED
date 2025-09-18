@@ -863,3 +863,43 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 		justify-items: center;
 	}
 }
+
+/* ===== PROFILE PAGE: MOBILE EDGE-TO-EDGE (≤768px) ===== */
+@media (max-width: 768px) {
+	html, body { overflow-x: clip; overscroll-behavior-x: none; }
+
+	/* Remove container gutters and any max-width clamping for the profile page */
+	.profile-page-root.internal-container {
+		max-width: none;
+		margin-left: 0;
+		margin-right: 0;
+		padding-left: 0;
+		padding-right: 0;
+		touch-action: pan-y;
+	}
+
+	/* Hide chopping board hero on mobile */
+	.profile-page-root .internal-hero { display: none; }
+
+	/* Make content and primary card fully span the viewport width */
+	.profile-page-root .profile-page__content { width: 100vw !important; max-width: none !important; }
+	.profile-page-root .profile-image-card {
+		width: 100vw;
+		max-width: none;
+		aspect-ratio: auto;
+		min-height: auto;
+		border-radius: 0;
+	}
+
+	/* Panels flush to edges */
+	.profile-page-root .profile-public-panel { border-radius: 0; padding-left: 0; padding-right: 0; }
+
+	/* Media should never overflow */
+	.profile-page-root img,
+	.profile-page-root video,
+	.profile-page-root canvas { max-width: 100%; height: auto; }
+
+	/* Collapse complex grids to avoid overflow */
+	.profile-page-root .profile-public-panel__inputs { grid-template-columns: 1fr; }
+	.profile-page-root .profile-iam__grid { grid-template-columns: repeat(2, 1fr); }
+}
