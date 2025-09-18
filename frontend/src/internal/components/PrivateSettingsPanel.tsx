@@ -256,6 +256,10 @@ export default function PrivateSettingsPanel() {
         </div>
       </fieldset>
 
+      <div className="profile-note--glow-blue" role="note">
+        The health settings are not publicly viewable and are only used to prioritize matches internally. You will still receive non-aligned health matches in your feed as well as aligned.
+      </div>
+
       <fieldset className="profile-iam" aria-label="Health status">
         <legend className="profile-iam__legend">Health status: We prioritize matching for these selections</legend>
         <div className="profile-iam__grid" role="radiogroup" aria-label="Health status">

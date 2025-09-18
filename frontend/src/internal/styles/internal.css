@@ -420,6 +420,16 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 .profile-iam__option--male .profile-iam__icon, .profile-iam__option--male .profile-iam__label { color: #5AA6FF; }
 .profile-iam__option--female .profile-iam__icon, .profile-iam__option--female .profile-iam__label { color: #FF5ACD; }
 
+/* Inline blue glow note for privacy/health info */
+.profile-note--glow-blue {
+    margin-top: 10px;
+    margin-bottom: 6px;
+    color: #9ecbff;
+    font-size: 13px;
+    line-height: 1.4;
+    text-shadow: 0 0 6px rgba(80, 150, 255, 0.55), 0 0 12px rgba(80, 150, 255, 0.35);
+}
+
 /* Subscription Containers */
 .subscription-grid {
 	display: grid;
