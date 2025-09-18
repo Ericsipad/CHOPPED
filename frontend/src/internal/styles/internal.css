@@ -929,6 +929,8 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 		box-sizing: border-box;
 		overflow: visible;
 		aspect-ratio: auto !important;
+		/* Height = 16:9 of viewport width + gaps (8+8) + two 80px rows + card padding (12+12) */
+		height: calc((100vw * 9 / 16) + 176px + 24px);
 	}
 
 	/* Inside the image card, ensure two rows of 6 are fully visible (no scroll) */
