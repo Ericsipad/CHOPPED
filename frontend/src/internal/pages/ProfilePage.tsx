@@ -5,7 +5,7 @@ import ProfileImageCard from '../components/ProfileImageCard'
 import PublicProfilePanel from '../components/PublicProfilePanel'
 import PrivateSettingsPanel from '../components/PrivateSettingsPanel'
 import '../styles/internal.css'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
  
  
 export default function ProfilePage() {
@@ -41,6 +41,8 @@ export default function ProfilePage() {
 		clickSound.play()
 		setActiveTab(next)
 	}
+
+	// Global viewport meta is set in HTML; no runtime override here
 
 	return (
 		<PageFrame>

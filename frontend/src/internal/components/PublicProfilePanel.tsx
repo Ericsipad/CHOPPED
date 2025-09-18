@@ -175,7 +175,7 @@ export default function PublicProfilePanel() {
       </div>
 
       <div className="profile-public-panel__inputs">
-        <div className="profile-public-panel__field">
+        <div className="profile-public-panel__field profile-public-panel__field--span-2">
           <label className={["profile-public-panel__label", errors.displayName ? 'profile-public-panel__label--error' : ''].filter(Boolean).join(' ')} htmlFor="displayName">Display Name</label>
           <input id="displayName" className={["profile-public-panel__input", "profile-public-panel__input--wide", errors.displayName ? 'profile-public-panel__input--error' : ''].filter(Boolean).join(' ')} type="text" value={displayName} onChange={(e) => { setDisplayName(e.target.value); if (errors.displayName) setErrors((p) => ({ ...p, displayName: false })) }} placeholder="Your display name" maxLength={60} />
         </div>
