@@ -881,6 +881,27 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	/* Hide chopping board hero on mobile */
 	.profile-page-root .internal-hero { display: none; }
 
+	/* Make overlay participate in normal flow to eliminate top gap */
+	.profile-page-root .profile-page__overlay {
+		position: static !important;
+		display: block;
+	}
+
+	/* Tabs bar as sticky full-width header under the 48px app header */
+	.profile-page-root .profile-tabs__nav {
+		position: sticky;
+		top: 48px;
+		z-index: 11;
+		display: flex;
+		gap: 8px;
+		margin: 0;
+		padding: 8px 12px;
+		background: rgba(0,0,0,0.85);
+		backdrop-filter: blur(6px) saturate(120%);
+		-webkit-backdrop-filter: blur(6px) saturate(120%);
+		border-bottom: 1px solid rgba(255,255,255,0.08);
+	}
+
 	/* Make content and primary card fully span the viewport width */
 	.profile-page-root .profile-page__content { width: 100vw !important; max-width: none !important; }
 	.profile-page-root .profile-image-card {

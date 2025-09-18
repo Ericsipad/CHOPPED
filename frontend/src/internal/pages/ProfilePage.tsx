@@ -17,7 +17,7 @@ export default function ProfilePage() {
 				<Container className="profile-page-root with-bottom-nav">
 					<div style={{ position: 'relative' }}>
 						<HeroImage />
-						<div
+					<div className="profile-page__overlay"
 							style={{
 								position: 'absolute',
 								top: '15%',
