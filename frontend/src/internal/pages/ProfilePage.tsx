@@ -5,7 +5,7 @@ import ProfileImageCard from '../components/ProfileImageCard'
 import PublicProfilePanel from '../components/PublicProfilePanel'
 import PrivateSettingsPanel from '../components/PrivateSettingsPanel'
 import '../styles/internal.css'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
  
  
 export default function ProfilePage() {
