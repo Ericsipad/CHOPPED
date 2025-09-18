@@ -42,7 +42,6 @@ export default function ChoppingBoardPage() {
     const [matchedMePendingCount, setMatchedMePendingCount] = useState<number>(0)
     const [giftsCount, setGiftsCount] = useState<number>(0)
 	const statusBarRef = useRef<HTMLDivElement | null>(null)
-	const [statusBarHeight, setStatusBarHeight] = useState(0)
 
     useEffect(() => {
         let cancelled = false
@@ -83,23 +82,7 @@ export default function ChoppingBoardPage() {
         return () => { cancelled = true }
     }, [])
 
-	// Measure StatusBar height and update on resize for accurate push-down in 25-view
-	useEffect(() => {
-		const el = statusBarRef.current
-		if (!el) return
-		const measure = () => setStatusBarHeight(el.offsetHeight || 0)
-		measure()
-		let ro: ResizeObserver | null = null
-		if (typeof ResizeObserver !== 'undefined') {
-			ro = new ResizeObserver(() => measure())
-			ro.observe(el)
-		}
-		window.addEventListener('resize', measure)
-		return () => {
-			window.removeEventListener('resize', measure)
-			if (ro) ro.disconnect()
-		}
-	}, [])
+	// (Removed) StatusBar height measurement; no longer needed when bar is in header
 
     // One-time fetch and cache of pending matched-me count after login
     useEffect(() => {
