@@ -201,39 +201,6 @@ export default function ChoppingBoardPage() {
 		'Calibrating cupid algorithms…',
 	]), [])
 
-	async function triggerMatchSearchFlow(doTrigger: boolean = true) {
-		if (searchInFlightRef.current) return
-		searchInFlightRef.current = true
-		setSearchModalOpen(true)
-		setSearchMessageIndex(0)
-		// Rotate messages every ~3s, play a short cycle regardless of API timing
-		const interval = window.setInterval(() => {
-			setSearchMessageIndex((i) => (i + 1) % funnyLines.length)
-		}, 3000)
-		searchIntervalRef.current = interval as unknown as number
-		try {
-			// Optionally fire and forget the trigger; we don't block the modal on it
-			if (doTrigger) {
-				await fetch(getBackendApi('/api/user/matching/trigger'), {
-					method: 'POST',
-					credentials: 'include',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({})
-				}).catch(() => null)
-			}
-		} finally {
-			// Ensure modal stays visible for at least ~10-12s
-			setTimeout(() => {
-				if (searchIntervalRef.current !== null) {
-					window.clearInterval(searchIntervalRef.current)
-					searchIntervalRef.current = null
-				}
-				setSearchModalOpen(false)
-				searchInFlightRef.current = false
-			}, 10000)
-		}
-	}
-
     async function handleChop(targetUserId: string) {
         if (chopInFlightRef.current) return
         chopInFlightRef.current = true
