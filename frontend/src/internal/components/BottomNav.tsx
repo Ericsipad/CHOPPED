@@ -55,7 +55,7 @@ export default function BottomNav() {
         }
     }), [])
 
-    function handleClickSound(e: React.MouseEvent<HTMLElement>) {
+    function handleClickSound() {
         // Play immediately on pointer interaction for responsiveness
         clickSound.play()
     }
