@@ -46,6 +46,13 @@ html, body, #root {
 	align-items: center;
 }
 
+/* PWA/mobile: when on the chopping board page, hide black header backgrounds */
+@media (max-width: 1024px) {
+	/* If the page contains the chopping board root, make the header transparent */
+	body:has(.chopping-page-root) .internal-top-header { background-color: transparent; }
+	body:has(.chopping-page-root) .internal-top-header-inner { background: transparent; border-bottom: none; }
+}
+
 /* Left-side hamburger trigger: removed */
 
 /* (removed) Hamburger styles */
