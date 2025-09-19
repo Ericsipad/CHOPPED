@@ -5,7 +5,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a0a0a",
-  "theme_color": "#1e90ff",
+  "theme_color": "#F2995A",
   "description": "Real dating for real people - inclusive dating app with no fake profiles",
   "scope": "/",
   "categories": ["social", "dating", "lifestyle"],
