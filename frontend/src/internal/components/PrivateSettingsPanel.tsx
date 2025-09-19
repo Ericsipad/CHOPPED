@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Sun, Moon } from 'lucide-react'
 import ValidationModal from './ValidationModal'
 import { fetchReadiness } from './readiness'
 import { getBackendApi } from '../../lib/config'
@@ -176,9 +177,22 @@ export default function PrivateSettingsPanel() {
           <span>Private information used for matching</span>
         </div>
         <div className="profile-public-panel__right">
-          <button className="profile-public-panel__save" onClick={onSave} disabled={!isValid || saving || loading}>
-            {saving ? 'Saving…' : 'Save'}
-          </button>
+          <div className="profile-public-panel__actions">
+            <button className="profile-public-panel__save" onClick={onSave} disabled={!isValid || saving || loading}>
+              {saving ? 'Saving…' : 'Save'}
+            </button>
+            {typeof window !== 'undefined' && ((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || ((window as any).navigator?.standalone === true)) ? (
+              <button type="button" className="profile-public-panel__save" aria-label="Theme">
+                <Sun size={16} />
+              </button>
+            ) : (
+              <div className="theme-toggle" aria-label="Theme">
+                <div className="theme-toggle__switch" aria-hidden="true">
+                  <div className="theme-toggle__thumb"></div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
