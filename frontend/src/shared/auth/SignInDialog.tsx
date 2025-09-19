@@ -56,48 +56,50 @@ export default function SignInDialog(props: SignInDialogProps) {
 	if (!open) return null
 
 	return (
-		<div role="dialog" aria-modal="true" aria-label="Sign in dialog" style={styles.overlay}>
-			<div style={styles.card}>
-				<div style={styles.header}>Sign in</div>
-				{info ? <div style={styles.info}>{info}</div> : null}
-				<form onSubmit={handleSubmit} style={styles.form}>
-					<label style={styles.label}>
-						<span style={styles.labelText}>Email</span>
-						<input
-							type="email"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							placeholder="you@example.com"
-							required
-							style={styles.input}
-						/>
-					</label>
-					<label style={styles.label}>
-						<span style={styles.labelText}>Password</span>
-						<input
-							type="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							placeholder="At least 8 characters"
-							required
-							minLength={8}
-							style={styles.input}
-						/>
-					</label>
-					{error ? <div style={styles.error}>{error}</div> : null}
-					<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-						<button type="button" onClick={() => setOpenForgot(true)} style={styles.linkBtn} disabled={submitting}>Forgot password?</button>
-						<div style={styles.actions}>
-						<button type="button" onClick={onClose} style={styles.cancelBtn} disabled={submitting}>Cancel</button>
-						<button type="submit" style={styles.submitBtn} disabled={!isValid || submitting}>
-							{submitting ? 'Signing in...' : 'Sign in'}
-						</button>
+		<>
+			<div role="dialog" aria-modal="true" aria-label="Sign in dialog" style={styles.overlay}>
+				<div style={styles.card}>
+					<div style={styles.header}>Sign in</div>
+					{info ? <div style={styles.info}>{info}</div> : null}
+					<form onSubmit={handleSubmit} style={styles.form}>
+						<label style={styles.label}>
+							<span style={styles.labelText}>Email</span>
+							<input
+								type="email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								placeholder="you@example.com"
+								required
+								style={styles.input}
+							/>
+						</label>
+						<label style={styles.label}>
+							<span style={styles.labelText}>Password</span>
+							<input
+								type="password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								placeholder="At least 8 characters"
+								required
+								minLength={8}
+								style={styles.input}
+							/>
+						</label>
+						{error ? <div style={styles.error}>{error}</div> : null}
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+							<button type="button" onClick={() => setOpenForgot(true)} style={styles.linkBtn} disabled={submitting}>Forgot password?</button>
+							<div style={styles.actions}>
+								<button type="button" onClick={onClose} style={styles.cancelBtn} disabled={submitting}>Cancel</button>
+								<button type="submit" style={styles.submitBtn} disabled={!isValid || submitting}>
+									{submitting ? 'Signing in...' : 'Sign in'}
+								</button>
+							</div>
 						</div>
-					</div>
-				</form>
+					</form>
+				</div>
 			</div>
-		</div>
-		<ForgotPasswordDialog open={openForgot} onClose={() => setOpenForgot(false)} />
+			<ForgotPasswordDialog open={openForgot} onClose={() => setOpenForgot(false)} />
+		</>
 	)
 }
 

@@ -75,68 +75,70 @@ export default function SignUpDialog(props: SignUpDialogProps) {
 	if (!open) return null
 
 	return (
-		<div role="dialog" aria-modal="true" aria-label="Sign up dialog" style={styles.overlay}>
-			<div style={styles.card}>
-				<div style={styles.header}>Create your account</div>
-				<form onSubmit={handleSubmit} style={styles.form}>
-					<label style={styles.label}>
-						<span style={styles.labelText}>Email</span>
-						<input
-							type="email"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							placeholder="you@example.com"
-							required
-							style={styles.input}
-						/>
-					</label>
-					<label style={styles.label}>
-						<span style={styles.labelText}>Password</span>
-						<input
-							type="password"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							placeholder="At least 8 characters"
-							required
-							minLength={8}
-							style={styles.input}
-						/>
-						<div style={styles.checklist}>
-							<div style={{ color: checks.length ? '#6ee7b7' : '#ff7676' }}>8+ characters</div>
-							<div style={{ color: checks.upper ? '#6ee7b7' : '#ff7676' }}>uppercase letter</div>
-							<div style={{ color: checks.lower ? '#6ee7b7' : '#ff7676' }}>lowercase letter</div>
-							<div style={{ color: checks.number ? '#6ee7b7' : '#ff7676' }}>number</div>
-							<div style={{ color: checks.special ? '#6ee7b7' : '#ff7676' }}>special character</div>
+		<>
+			<div role="dialog" aria-modal="true" aria-label="Sign up dialog" style={styles.overlay}>
+				<div style={styles.card}>
+					<div style={styles.header}>Create your account</div>
+					<form onSubmit={handleSubmit} style={styles.form}>
+						<label style={styles.label}>
+							<span style={styles.labelText}>Email</span>
+							<input
+								type="email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								placeholder="you@example.com"
+								required
+								style={styles.input}
+							/>
+						</label>
+						<label style={styles.label}>
+							<span style={styles.labelText}>Password</span>
+							<input
+								type="password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								placeholder="At least 8 characters"
+								required
+								minLength={8}
+								style={styles.input}
+							/>
+							<div style={styles.checklist}>
+								<div style={{ color: checks.length ? '#6ee7b7' : '#ff7676' }}>8+ characters</div>
+								<div style={{ color: checks.upper ? '#6ee7b7' : '#ff7676' }}>uppercase letter</div>
+								<div style={{ color: checks.lower ? '#6ee7b7' : '#ff7676' }}>lowercase letter</div>
+								<div style={{ color: checks.number ? '#6ee7b7' : '#ff7676' }}>number</div>
+								<div style={{ color: checks.special ? '#6ee7b7' : '#ff7676' }}>special character</div>
+							</div>
+						</label>
+						<label style={styles.label}>
+							<span style={styles.labelText}>Repeat password</span>
+							<input
+								type="password"
+								value={repeatPassword}
+								onChange={(e) => setRepeatPassword(e.target.value)}
+								required
+								style={styles.input}
+							/>
+							<div style={{ fontSize: 14, marginTop: 6, color: checks.match ? '#6ee7b7' : '#ff7676' }}>
+								{checks.match ? 'Passwords match' : 'Passwords must match'}
+							</div>
+						</label>
+						{error ? <div style={styles.error}>{error}</div> : null}
+						{message ? <div style={styles.success}>{message}</div> : null}
+						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+							<button type="button" onClick={() => setOpenForgot(true)} style={styles.linkBtn} disabled={submitting}>Forgot password?</button>
+							<div style={styles.actions}>
+								<button type="button" onClick={onClose} style={styles.cancelBtn} disabled={submitting}>Cancel</button>
+								<button type="submit" style={styles.submitBtn} disabled={!allValid || submitting}>
+									{submitting ? 'Signing up...' : 'Sign up'}
+								</button>
+							</div>
 						</div>
-					</label>
-					<label style={styles.label}>
-						<span style={styles.labelText}>Repeat password</span>
-						<input
-							type="password"
-							value={repeatPassword}
-							onChange={(e) => setRepeatPassword(e.target.value)}
-							required
-							style={styles.input}
-						/>
-						<div style={{ fontSize: 14, marginTop: 6, color: checks.match ? '#6ee7b7' : '#ff7676' }}>
-							{checks.match ? 'Passwords match' : 'Passwords must match'}
-						</div>
-					</label>
-					{error ? <div style={styles.error}>{error}</div> : null}
-					{message ? <div style={styles.success}>{message}</div> : null}
-					<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-						<button type="button" onClick={() => setOpenForgot(true)} style={styles.linkBtn} disabled={submitting}>Forgot password?</button>
-						<div style={styles.actions}>
-						<button type="button" onClick={onClose} style={styles.cancelBtn} disabled={submitting}>Cancel</button>
-						<button type="submit" style={styles.submitBtn} disabled={!allValid || submitting}>
-							{submitting ? 'Signing up...' : 'Sign up'}
-						</button>
-						</div>
-					</div>
-				</form>
+					</form>
+				</div>
 			</div>
-		</div>
-		<ForgotPasswordDialog open={openForgot} onClose={() => setOpenForgot(false)} />
+			<ForgotPasswordDialog open={openForgot} onClose={() => setOpenForgot(false)} />
+		</>
 	)
 }
 
