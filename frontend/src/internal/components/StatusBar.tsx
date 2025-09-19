@@ -1,6 +1,5 @@
 import '../styles/internal.css'
 import { useEffect, useState } from 'react'
-import { Brain } from 'lucide-react'
 import ValidationModal from './ValidationModal'
 
 type StatusBarProps = {
@@ -60,12 +59,8 @@ export default function StatusBar(props: StatusBarProps) {
 					</div>
 				</div>
 
-				{/* Center - AI profile indicator */}
+				{/* Center - simple clickable text */}
 				<button type="button" className="status-bar__center" onClick={() => setAiModalOpen(true)} aria-label="AI personality profile">
-					<span className="status-bar__center-top">
-						<Brain size={20} aria-hidden="true" />
-						<span className="status-bar__center-percent">0%</span>
-					</span>
 					<span className="status-bar__center-label">
 						<span className="status-bar__center-label--mobile" aria-hidden={!isMobile}>AI profile</span>
 						<span className="status-bar__center-label--desktop" aria-hidden={isMobile}>AI personality profile</span>

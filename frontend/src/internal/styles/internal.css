@@ -955,8 +955,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
     color: #ffffff;
     cursor: pointer;
 }
-.status-bar__center-top { display: inline-grid; grid-auto-flow: column; align-items: center; gap: 8px; }
-.status-bar__center-percent { font-weight: 800; font-size: 14px; letter-spacing: 0.4px; }
+.status-bar__center-top { display: none; }
 .status-bar__center-label { font-size: 11px; opacity: 0.8; }
 .status-bar__center-label--mobile { display: none; }
 .status-bar__center-label--desktop { display: inline; }
