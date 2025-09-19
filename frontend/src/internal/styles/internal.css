@@ -900,8 +900,8 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 }
 
 .status-bar__inner {
-	display: grid;
-	grid-template-columns: 1fr auto;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
 	align-items: center;
 	gap: 16px;
 	padding: 10px 14px;
@@ -943,6 +943,29 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 .status-bar__label { display: none; }
 .status-bar__icon { line-height: 1; opacity: 0.95; }
 .status-bar__value { font-size: 14px; font-weight: 800; letter-spacing: 0.4px; }
+
+/* Center AI indicator */
+.status-bar__center {
+    appearance: none;
+    background: transparent;
+    border: none;
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    color: #ffffff;
+    cursor: pointer;
+}
+.status-bar__center-top { display: inline-grid; grid-auto-flow: column; align-items: center; gap: 8px; }
+.status-bar__center-percent { font-weight: 800; font-size: 14px; letter-spacing: 0.4px; }
+.status-bar__center-label { font-size: 11px; opacity: 0.8; }
+.status-bar__center-label--mobile { display: none; }
+.status-bar__center-label--desktop { display: inline; }
+
+@media (max-width: 1024px) {
+    .status-bar__inner { grid-template-columns: 1fr; row-gap: 10px; }
+    .status-bar__center-label--mobile { display: inline; }
+    .status-bar__center-label--desktop { display: none; }
+}
 
 .status-bar__tooltip {
 	position: absolute;
@@ -1071,11 +1094,11 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	border-width: 1px;
 }
 .status-bar--header .status-bar__inner {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	align-items: center;
-	gap: 12px;
-	padding: 6px 10px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 10px;
 }
 .status-bar--header .status-bar__legend { gap: 10px; }
 .status-bar--header .status-bar__legend-text { font-size: 10px; }
