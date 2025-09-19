@@ -43,7 +43,7 @@ export default function AccountPage() {
 				<div style={{ position: 'relative' }}>
 					<Container className="account-page-root">
 					<HeroImage />
-					<div
+						<div className="account-page__overlay"
 						style={{
 							position: 'absolute',
 							top: '20%',

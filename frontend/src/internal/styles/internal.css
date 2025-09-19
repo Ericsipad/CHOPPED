@@ -26,6 +26,12 @@ html, body, #root {
     #root.internal-bg--light .account-page-root .internal-hero { display: none !important; }
 }
 
+/* Desktop light-mode: push overlays down below header */
+@media (min-width: 1024px) {
+    #root.internal-bg--light .profile-page-root .profile-page__overlay { top: 75px !important; }
+    #root.internal-bg--light .account-page-root .account-page__overlay { top: 75px !important; }
+}
+
 @media (max-width: 1024px) {
 	#root.internal-bg--light {
 		background-size: calc(100vw / 2) calc(100vh / 3);
