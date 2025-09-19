@@ -1,9 +1,9 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { getBackendApi } from './config'
 
-// Static configuration for deployed frontend
-const SUPABASE_URL = 'https://pnvbhxmemotrrmjyacen.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBudmJoeG1lbW90cnJtanlhY2VuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxNTAwNDAsImV4cCI6MjA3MTcyNjA0MH0.Xquu_IYlFMvTZ1wdaJHPLaIsyqjRJn5myQ2z1FsAF5s'
+// Load from Vite/Next-public env variables defined in vite.config define
+const SUPABASE_URL = (import.meta as any).env.NEXT_PUBLIC_SUPABASE_URL || ''
+const SUPABASE_ANON_KEY = (import.meta as any).env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 let client: SupabaseClient | null = null
 let currentAccessToken: string | null = null
@@ -11,7 +11,10 @@ let currentAccessToken: string | null = null
 export function getSupabaseClient(): SupabaseClient {
   if (client) return client
   
-  console.log('[Supabase] Initializing static client with URL:', SUPABASE_URL)
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    throw new Error('Supabase env missing: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  }
+  console.log('[Supabase] Initializing client with URL:', SUPABASE_URL)
   
   client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {

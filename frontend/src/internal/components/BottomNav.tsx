@@ -40,17 +40,24 @@ export default function BottomNav() {
                 }
                 const ctx = audioCtxRef.current
                 if (!ctx) return
-                const now = ctx.currentTime
-                const osc = ctx.createOscillator()
-                const gain = ctx.createGain()
-                osc.type = 'square'
-                osc.frequency.setValueAtTime(800, now)
-                gain.gain.setValueAtTime(0.4, now)
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08)
-                osc.connect(gain)
-                gain.connect(ctx.destination)
-                osc.start(now)
-                osc.stop(now + 0.09)
+                const start = () => {
+                    const now = ctx.currentTime
+                    const osc = ctx.createOscillator()
+                    const gain = ctx.createGain()
+                    osc.type = 'square'
+                    osc.frequency.setValueAtTime(800, now)
+                    gain.gain.setValueAtTime(0.4, now)
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08)
+                    osc.connect(gain)
+                    gain.connect(ctx.destination)
+                    osc.start(now)
+                    osc.stop(now + 0.09)
+                }
+                if (ctx.state === 'suspended') {
+                    ctx.resume().then(start).catch(start)
+                } else {
+                    start()
+                }
             } catch { /* noop */ }
         }
     }), [])

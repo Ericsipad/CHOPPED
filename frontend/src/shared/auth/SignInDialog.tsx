@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { getBackendApi } from '../../lib/config'
+import ForgotPasswordDialog from './ForgotPasswordDialog'
 
 export type SignInDialogProps = {
 	open: boolean
@@ -17,6 +18,7 @@ export default function SignInDialog(props: SignInDialogProps) {
 	const [submitting, setSubmitting] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 	const [info] = useState<string | null>(initialMessage ?? null)
+  const [openForgot, setOpenForgot] = useState(false)
 
 	const isValid = useMemo(() => {
 		const emailOk = /.+@.+\..+/.test(email)
@@ -83,15 +85,19 @@ export default function SignInDialog(props: SignInDialogProps) {
 						/>
 					</label>
 					{error ? <div style={styles.error}>{error}</div> : null}
-					<div style={styles.actions}>
+					<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+						<button type="button" onClick={() => setOpenForgot(true)} style={styles.linkBtn} disabled={submitting}>Forgot password?</button>
+						<div style={styles.actions}>
 						<button type="button" onClick={onClose} style={styles.cancelBtn} disabled={submitting}>Cancel</button>
 						<button type="submit" style={styles.submitBtn} disabled={!isValid || submitting}>
 							{submitting ? 'Signing in...' : 'Sign in'}
 						</button>
+						</div>
 					</div>
 				</form>
 			</div>
 		</div>
+		<ForgotPasswordDialog open={openForgot} onClose={() => setOpenForgot(false)} />
 	)
 }
 
@@ -160,6 +166,15 @@ const styles: Record<string, React.CSSProperties> = {
 		fontSize: 14,
 		marginBottom: 8,
 	},
+  linkBtn: {
+    background: 'transparent',
+    color: '#9ca3af',
+    border: 'none',
+    padding: 0,
+    cursor: 'pointer',
+    textDecoration: 'underline',
+    fontSize: 14,
+  },
 }
 
 

@@ -67,7 +67,11 @@ export async function GET(req: Request) {
     }
   }
   const frontendUrl = (process.env.NEXT_PUBLIC_FRONTEND_URL || process.env.FRONTEND_URL || '').replace(/\/+$/g, '')
-  const successRedirect = frontendUrl ? `${frontendUrl}/?signedUp=1` : new URL('/', req.url)
+  // If recovery flow, redirect to update-password UI; else default to landing with flag
+  const next = url.searchParams.get('next')
+  const successRedirect = next && frontendUrl
+    ? `${frontendUrl}${next}`
+    : (frontendUrl ? `${frontendUrl}/?signedUp=1` : new URL('/', req.url))
   return NextResponse.redirect(successRedirect)
 }
 

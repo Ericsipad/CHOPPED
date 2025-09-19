@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { z } from 'zod'
 import { getBackendApi } from '../../lib/config'
+import ForgotPasswordDialog from './ForgotPasswordDialog'
 
 export type SignUpDialogProps = {
 	open: boolean
@@ -16,6 +17,7 @@ export default function SignUpDialog(props: SignUpDialogProps) {
 	const [submitting, setSubmitting] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 	const [message, setMessage] = useState<string | null>(null)
+  const [openForgot, setOpenForgot] = useState(false)
 
 	const checks = useMemo(() => ({
 		email: /.+@.+\..+/.test(email),
@@ -122,15 +124,19 @@ export default function SignUpDialog(props: SignUpDialogProps) {
 					</label>
 					{error ? <div style={styles.error}>{error}</div> : null}
 					{message ? <div style={styles.success}>{message}</div> : null}
-					<div style={styles.actions}>
+					<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+						<button type="button" onClick={() => setOpenForgot(true)} style={styles.linkBtn} disabled={submitting}>Forgot password?</button>
+						<div style={styles.actions}>
 						<button type="button" onClick={onClose} style={styles.cancelBtn} disabled={submitting}>Cancel</button>
 						<button type="submit" style={styles.submitBtn} disabled={!allValid || submitting}>
 							{submitting ? 'Signing up...' : 'Sign up'}
 						</button>
+						</div>
 					</div>
 				</form>
 			</div>
 		</div>
+		<ForgotPasswordDialog open={openForgot} onClose={() => setOpenForgot(false)} />
 	)
 }
 
@@ -193,6 +199,15 @@ const styles: Record<string, React.CSSProperties> = {
 	},
 	error: { color: '#ff7676', fontSize: 14 },
 	success: { color: '#6ee7b7', fontSize: 14 },
+  linkBtn: {
+    background: 'transparent',
+    color: '#9ca3af',
+    border: 'none',
+    padding: 0,
+    cursor: 'pointer',
+    textDecoration: 'underline',
+    fontSize: 14,
+  },
 }
 
 
