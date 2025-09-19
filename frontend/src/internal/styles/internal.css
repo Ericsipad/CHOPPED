@@ -15,6 +15,8 @@ html, body, #root {
 	background-repeat: repeat;
 	background-position: center center;
 	background-size: calc(100vw / 3) calc(100vh / 3);
+	/* Internal primary hue for light mode (peach) */
+	--primary: 25 85% 70%;
 }
 
 @media (max-width: 1024px) {
@@ -1057,6 +1059,23 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 		backdrop-filter: blur(6px) saturate(120%);
 		-webkit-backdrop-filter: blur(6px) saturate(120%);
 		border-bottom: 1px solid rgba(255,255,255,0.08);
+	}
+
+	/* Light mode (PWA) overrides for profile header and tabs */
+	#root.internal-bg--light .profile-page-root .profile-tabs__nav {
+		background: #ffffff;
+		border-bottom: 1px solid rgba(0,0,0,0.08);
+	}
+
+	#root.internal-bg--light .profile-page-root .profile-tabs__btn {
+		background: hsl(var(--primary));
+		color: #ffffff;
+		border-color: transparent;
+	}
+
+	#root.internal-bg--light .profile-page-root .profile-tabs__btn.is-active {
+		background: hsl(var(--primary));
+		border-color: transparent;
 	}
 
 	/* Add top spacer so content doesn't hide under fixed tabs */
