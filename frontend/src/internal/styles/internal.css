@@ -30,24 +30,28 @@ html, body, #root {
 
 /* Header overlays hero */
 .internal-top-header {
-	position: absolute;
-	top: 4px;
-	left: 0;
-	right: 0;
-	height: 48px;
-	background-color: #000000; /* black bars on the sides */
-	z-index: 10;
+    position: absolute;
+    top: 0; /* stick to top */
+    left: 0;
+    right: 0;
+    height: 52px; /* slightly taller to reach top cleanly */
+    background-color: #000000; /* dark mode default */
+    z-index: 10;
 }
 
 /* Gradient bar constrained to the container width */
 .internal-top-header-inner {
-	height: 100%;
-	background: #000000;
-	border-bottom: none;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+    height: 100%;
+    background: #000000; /* dark mode */
+    border-bottom: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
+/* Light mode header color */
+#root.internal-bg--light .internal-top-header { background-color: #F2995A; }
+#root.internal-bg--light .internal-top-header-inner { background: #F2995A; }
 
 /* PWA/mobile: when on the chopping board page, hide black header backgrounds */
 @media (max-width: 1024px) {
