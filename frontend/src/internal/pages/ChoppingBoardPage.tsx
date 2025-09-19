@@ -42,6 +42,8 @@ export default function ChoppingBoardPage() {
     const [chopSuccessOpen, setChopSuccessOpen] = useState(false)
     const [matchedMePendingCount, setMatchedMePendingCount] = useState<number>(0)
     const [giftsCount, setGiftsCount] = useState<number>(0)
+    const [aiModalOpen, setAiModalOpen] = useState(false)
+    const [aiEnabled, setAiEnabled] = useState<boolean>(true)
 	const statusBarRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
@@ -82,6 +84,23 @@ export default function ChoppingBoardPage() {
         })()
         return () => { cancelled = true }
     }, [])
+
+    // Load AI toggle preference
+    useEffect(() => {
+        try {
+            const v = localStorage.getItem('ai_personality_enabled')
+            if (v === '0') setAiEnabled(false)
+            if (v === '1') setAiEnabled(true)
+        } catch { /* noop */ }
+    }, [])
+
+    function handleAiToggle() {
+        setAiEnabled(prev => {
+            const next = !prev
+            try { localStorage.setItem('ai_personality_enabled', next ? '1' : '0') } catch { /* noop */ }
+            return next
+        })
+    }
 
 	// (Removed) StatusBar height measurement; no longer needed when bar is in header
 
@@ -405,7 +424,7 @@ export default function ChoppingBoardPage() {
 			headerContent={isMobile ? (
 				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 					<div ref={statusBarRef}>
-						<StatusBar variant="header" giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
+						<StatusBar variant="header" giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} onCenterClick={() => setAiModalOpen(true)} />
 					</div>
 				</div>
 			) : null}
@@ -417,8 +436,8 @@ export default function ChoppingBoardPage() {
 						<div style={{ position: 'absolute', top: 52, left: 0, right: 0, bottom: 0, zIndex: 9 }}>
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
 								{!isMobile && (
-									<div style={{ position: 'absolute', top: 0, left: 0, right: 0, display: 'flex', justifyContent: 'center', padding: '8px 0', zIndex: 10 }}>
-										<StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} />
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, display: 'flex', justifyContent: 'center', padding: '8px 0', zIndex: 10 }}>
+                                        <StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} onCenterClick={() => setAiModalOpen(true)} />
 									</div>
 								)}
 								{!isMobile && (
@@ -494,6 +513,23 @@ export default function ChoppingBoardPage() {
 					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
+                <ValidationModal
+                    isOpen={aiModalOpen}
+                    title="AI Personality Matching"
+                    onClose={() => setAiModalOpen(false)}
+                >
+                    <div style={{ padding: 12, lineHeight: 1.6 }}>
+                        Your matches improve over time as you have real conversations with other users. We privately analyze your conversations to produce a comprehensive profile across 500 character points to help find your perfect match. The more you chat openly and honestly the more intelligent the matching algorithm becomes. But don’t worry, your conversations are only read internally by a self-contained AI and no human viewers and never shared outside of the platform. Chat with anyone you can about a range of topics even if they may only be a friend, as it all helps us understand the real you. Have Fun!
+                        <div style={{ height: 12 }} />
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                            <div style={{ fontWeight: 700 }}>AI analysis</div>
+                            <button type="button" onClick={() => handleAiToggle()} aria-pressed={aiEnabled}
+                                style={{ appearance: 'none', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 9999, width: 54, height: 28, background: aiEnabled ? 'linear-gradient(90deg, rgba(34,197,94,0.9), rgba(34,197,94,0.7))' : 'rgba(255,255,255,0.12)', position: 'relative', cursor: 'pointer' }}>
+                                <span style={{ display: 'block', position: 'absolute', top: 2, left: aiEnabled ? 28 : 2, width: 24, height: 24, borderRadius: '50%', background: '#ffffff', boxShadow: '0 2px 6px rgba(0,0,0,0.3)', transition: 'left 160ms ease' }} />
+                            </button>
+                        </div>
+                    </div>
+                </ValidationModal>
 				<ValidationModal
 					isOpen={chopSuccessOpen}
 					title="Success"

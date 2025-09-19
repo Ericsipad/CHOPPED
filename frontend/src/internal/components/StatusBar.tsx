@@ -1,6 +1,5 @@
 import '../styles/internal.css'
 import { useEffect, useState } from 'react'
-import ValidationModal from './ValidationModal'
 import { Brain } from 'lucide-react'
 
 type StatusBarProps = {
@@ -8,13 +7,12 @@ type StatusBarProps = {
 	matchedMeCount?: number
 	onGiftsClick?: () => void
     variant?: 'default' | 'header'
+    onCenterClick?: () => void
 }
 
 export default function StatusBar(props: StatusBarProps) {
-    const { giftsCount = 0, matchedMeCount = 0, onGiftsClick, variant = 'default' } = props
+    const { giftsCount = 0, matchedMeCount = 0, onGiftsClick, variant = 'default', onCenterClick } = props
 
-    const [aiModalOpen, setAiModalOpen] = useState(false)
-    const [aiEnabled, setAiEnabled] = useState<boolean>(true)
     const [isMobile, setIsMobile] = useState(false)
 
     useEffect(() => {
@@ -24,22 +22,6 @@ export default function StatusBar(props: StatusBarProps) {
         mq.addEventListener?.('change', apply)
         return () => mq.removeEventListener?.('change', apply)
     }, [])
-
-    // Load/save toggle preference (local only)
-    useEffect(() => {
-        try {
-            const v = localStorage.getItem('ai_personality_enabled')
-            if (v === '0') setAiEnabled(false)
-            if (v === '1') setAiEnabled(true)
-        } catch { /* noop */ }
-    }, [])
-    const handleToggle = () => {
-        setAiEnabled(prev => {
-            const next = !prev
-            try { localStorage.setItem('ai_personality_enabled', next ? '1' : '0') } catch { /* noop */ }
-            return next
-        })
-    }
 
 	return (
 		<div className={["status-bar", variant === 'header' ? 'status-bar--header' : ''].filter(Boolean).join(' ')} role="region" aria-label="Status bar">
@@ -61,7 +43,7 @@ export default function StatusBar(props: StatusBarProps) {
 				</div>
 
 				{/* Center - icon + percent + label */}
-				<button type="button" className="status-bar__center" onClick={() => setAiModalOpen(true)} aria-label="AI personality profile">
+				<button type="button" className="status-bar__center" onClick={onCenterClick} aria-label="AI personality profile">
 					<span className="status-bar__center-top">
 						<Brain size={20} aria-hidden="true" />
 						<span className="status-bar__center-percent">0%</span>
@@ -97,41 +79,6 @@ export default function StatusBar(props: StatusBarProps) {
 						<div className="status-bar__tooltip" role="tooltip">Matched me</div>
 					</div>
 				</div>
-		</div>
-
-		<ValidationModal isOpen={aiModalOpen} title="AI Personality Matching" onClose={() => setAiModalOpen(false)}>
-			<div style={{ padding: 12, lineHeight: 1.6 }}>
-				Your matches improve over time as you have real conversations with other users. We privately analyze your conversations to produce a comprehensive profile across 500 character points to help find your perfect match. The more you chat openly and honestly the more intelligent the matching algorithm becomes. But don’t worry, your conversations are only read internally by a self-contained AI and no human viewers and never shared outside of the platform. Chat with anyone you can about a range of topics even if they may only be a friend, as it all helps us understand the real you. Have Fun!
-				<div style={{ height: 12 }} />
-				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-					<div style={{ fontWeight: 700 }}>AI analysis</div>
-					<button type="button" onClick={handleToggle} aria-pressed={aiEnabled} aria-label={aiEnabled ? 'Turn AI analysis off' : 'Turn AI analysis on'}
-						style={{
-							appearance: 'none',
-							border: '1px solid rgba(255,255,255,0.2)',
-							borderRadius: 9999,
-							width: 54,
-							height: 28,
-							background: aiEnabled ? 'linear-gradient(90deg, rgba(34,197,94,0.9), rgba(34,197,94,0.7))' : 'rgba(255,255,255,0.12)',
-							position: 'relative',
-							cursor: 'pointer'
-						}}>
-						<span style={{
-							display: 'block',
-							position: 'absolute',
-							top: 2,
-							left: aiEnabled ? 28 : 2,
-							width: 24,
-							height: 24,
-							borderRadius: '50%',
-							background: '#ffffff',
-							boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-							transition: 'left 160ms ease'
-						}} />
-					</button>
-				</div>
-			</div>
-		</ValidationModal>
 		</div>
 	)
 }
