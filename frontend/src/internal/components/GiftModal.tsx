@@ -74,7 +74,41 @@ export default function GiftModal(props: GiftModalProps) {
           <button type="button" onClick={onClose} aria-label="Close" style={styles.closeBtn}>×</button>
         </div>
         <div style={styles.body}>
-          {/* Intentionally left blank for future development */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ fontSize: 18, fontWeight: 700 }}>
+              Send your mutual match an instant gift up to 10,000 points!
+            </div>
+
+            <div style={{ lineHeight: 1.5 }}>
+              Recipients may trade points for subscription credit to open more active chats, or exchange for E‑vouchers loadable on their mobile device to spend in these stores. What would you like to send?
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <label htmlFor="gift-points" style={{ whiteSpace: 'nowrap' }}>Points</label>
+              <input
+                id="gift-points"
+                type="number"
+                defaultValue={1}
+                min={1}
+                max={10000}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                style={{
+                  width: 160,
+                  padding: '8px 10px',
+                  borderRadius: 8,
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  background: 'rgba(0,0,0,0.35)',
+                  color: '#fff'
+                }}
+                aria-label="Gift points amount"
+              />
+            </div>
+
+            <div style={{ lineHeight: 1.5 }}>
+              If you send a pending match a gift, your profile will show up in their Gifts indicator and they will be able to Chat or Chop your request. If they Chop your request, you will see the points returned to your account.
+            </div>
+          </div>
         </div>
       </div>
     </div>
