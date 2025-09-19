@@ -224,8 +224,26 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 	}
 
 	return (
-		<div role="dialog" aria-modal="true" aria-label="Match profile" aria-describedby="match-profile-desc" onClick={handleOverlayClick} style={styles.overlay}>
-			<div ref={dialogRef} style={styles.card}>
+		<div role="dialog" aria-modal="true" aria-label="Match profile" aria-describedby="match-profile-desc" onClick={handleOverlayClick} style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
+			...styles.overlay,
+			inset: undefined,
+			top: 'env(safe-area-inset-top)',
+			bottom: 'calc(60px + env(safe-area-inset-bottom))',
+			left: 0,
+			right: 0,
+			alignItems: 'stretch',
+			justifyContent: 'stretch',
+		} : styles.overlay}>
+			<div ref={dialogRef} style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
+				...styles.card,
+				width: '100%',
+				height: '100%',
+				maxWidth: 'none',
+				borderRadius: 0,
+				display: 'flex',
+				flexDirection: 'column',
+				overflow: 'hidden',
+			} : styles.card}>
 				<div style={styles.headerBar}>
 					<button type="button" onClick={handleChat} style={styles.chatBtn} aria-label="Chat">
 						<span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
@@ -244,7 +262,11 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 						</span>
 					</button>
 				</div>
-				<div style={styles.body}>
+				<div style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
+					...styles.body,
+					flex: 1,
+					overflowY: 'auto',
+				} : styles.body}>
 					<div style={styles.mainImageWrap}>
 						{loading ? (
 							<div style={styles.loading}>Loading…</div>
@@ -319,7 +341,10 @@ export default function MatchProfileModal(props: MatchProfileModalProps) {
 						</div>
 					)}
 				</div>
-				<div style={styles.footer}>
+				<div style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
+					...styles.footer,
+					paddingBottom: '12px',
+				} : styles.footer}>
 					<button type="button" onClick={handleGift} style={styles.giftBtn} aria-label="Send a gift">
 						<span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

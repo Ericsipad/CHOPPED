@@ -343,7 +343,7 @@ export default function ChatModal(props: ChatModalProps) {
         ...styles.overlay,
         // Constrain between top header and bottom nav on mobile PWA
         inset: undefined,
-        top: 'calc(4px + 48px + env(safe-area-inset-top))',
+        top: 'env(safe-area-inset-top)',
         bottom: 'calc(60px + env(safe-area-inset-bottom))',
         left: 0,
         right: 0,
