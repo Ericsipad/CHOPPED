@@ -317,10 +317,10 @@ html, body, #root {
 .profile-public-panel__save[disabled] { opacity: 0.6; cursor: default; }
 
 /* Desktop slider theme toggle (visual only) */
-.theme-toggle { display: inline-flex; align-items: center; }
+.theme-toggle { appearance: none; background: transparent; border: none; padding: 0; display: inline-flex; align-items: center; cursor: pointer; }
 .theme-toggle__switch {
 	position: relative;
-	width: 44px;
+	width: 52px;
 	height: 28px;
 	border-radius: 16px;
 	background: rgba(255,255,255,0.06);
@@ -337,7 +337,12 @@ html, body, #root {
 	border-radius: 50%;
 	background: rgba(255,255,255,0.85);
 	box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+	transition: left 160ms ease;
 }
+.theme-toggle__switch.is-on .theme-toggle__thumb { left: 30px; }
+.theme-toggle__icon { position: absolute; top: 50%; transform: translateY(-50%); opacity: 0.7; }
+.theme-toggle__icon--sun { left: 8px; }
+.theme-toggle__icon--moon { right: 8px; }
 
 .profile-public-panel__inputs {
     display: grid;

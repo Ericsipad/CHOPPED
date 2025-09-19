@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Sun } from 'lucide-react'
+import { Sun, Moon } from 'lucide-react'
 import ValidationModal from './ValidationModal'
 import { fetchReadiness } from './readiness'
 import { getBackendApi } from '../../lib/config'
@@ -33,6 +33,7 @@ export default function PrivateSettingsPanel() {
   const [modalOpen, setModalOpen] = useState(false)
   const [missingFields, setMissingFields] = useState<string[]>([])
   const [errors, setErrors] = useState<{ country?: boolean }>({})
+  const [isDarkPreview, setIsDarkPreview] = useState(false)
 
   const [countryCode, setCountryCode] = useState('')
   const [stateCode, setStateCode] = useState('')
@@ -178,20 +179,25 @@ export default function PrivateSettingsPanel() {
         </div>
         <div className="profile-public-panel__right">
           <div className="profile-public-panel__actions">
+            {(() => {
+              const isStandalone = (typeof window !== 'undefined') && (((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || ((window as any).navigator?.standalone === true)))
+              return isStandalone ? (
+                <button type="button" className="profile-public-panel__save" aria-label="Theme" aria-pressed={isDarkPreview} onClick={() => setIsDarkPreview((v) => !v)}>
+                  {isDarkPreview ? <Moon size={16} /> : <Sun size={16} />}
+                </button>
+              ) : (
+                <button type="button" className="theme-toggle" aria-label="Theme" aria-pressed={isDarkPreview} onClick={() => setIsDarkPreview((v) => !v)}>
+                  <div className={["theme-toggle__switch", isDarkPreview ? 'is-on' : ''].filter(Boolean).join(' ')} aria-hidden="true">
+                    <span className="theme-toggle__icon theme-toggle__icon--sun"><Sun size={12} /></span>
+                    <span className="theme-toggle__icon theme-toggle__icon--moon"><Moon size={12} /></span>
+                    <div className="theme-toggle__thumb"></div>
+                  </div>
+                </button>
+              )
+            })()}
             <button className="profile-public-panel__save" onClick={onSave} disabled={!isValid || saving || loading}>
               {saving ? 'Saving…' : 'Save'}
             </button>
-            {typeof window !== 'undefined' && ((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || ((window as any).navigator?.standalone === true)) ? (
-              <button type="button" className="profile-public-panel__save" aria-label="Theme">
-                <Sun size={16} />
-              </button>
-            ) : (
-              <div className="theme-toggle" aria-label="Theme">
-                <div className="theme-toggle__switch" aria-hidden="true">
-                  <div className="theme-toggle__thumb"></div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
