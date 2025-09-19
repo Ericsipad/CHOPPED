@@ -1086,6 +1086,9 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 }
 #root.internal-bg--light .status-bar--header .status-bar__icon { color: #111111; }
 
+/* Ensure AI center text/icon is dark in light mode */
+#root.internal-bg--light .status-bar__center { color: #111111; }
+
 /* Compact single-row header variant */
 
 .status-bar--header {
