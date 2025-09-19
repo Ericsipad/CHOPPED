@@ -339,12 +339,34 @@ export default function ChatModal(props: ChatModalProps) {
   return (
     <div role="dialog" aria-modal="true" aria-label={otherUserLabel ? `Chat with ${otherUserLabel}` : 'Chat'}
       onClick={handleOverlayClick}
-      style={styles.overlay}
+      style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
+        ...styles.overlay,
+        // Constrain between top header and bottom nav on mobile PWA
+        inset: undefined,
+        top: 'calc(4px + 48px + env(safe-area-inset-top))',
+        bottom: 'calc(60px + env(safe-area-inset-bottom))',
+        left: 0,
+        right: 0,
+        alignItems: 'stretch',
+        justifyContent: 'stretch',
+      } : styles.overlay}
     >
-      <div ref={dialogRef} style={styles.card} onClick={(e) => e.stopPropagation()}>
+      <div ref={dialogRef} style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
+        ...styles.card,
+        width: '100%',
+        height: '100%',
+        maxWidth: 'none',
+        borderRadius: 0,
+      } : styles.card} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
           <div style={styles.headerTitle}>{otherUserLabel || 'Chat'}</div>
-          <button type="button" onClick={onClose} aria-label="Close" style={styles.closeBtn}>×</button>
+          <button type="button" onClick={onClose} aria-label="Close" style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
+            ...styles.closeBtn,
+            width: 36,
+            height: 36,
+            top: 4,
+            right: 8,
+          } : styles.closeBtn}>×</button>
         </div>
         {invalidTarget ? (
           <div style={styles.body}>
