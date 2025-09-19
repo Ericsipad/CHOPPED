@@ -19,8 +19,12 @@ html, body, #root {
 	--primary: 25 85% 70%;
 }
 
-/* Desktop: hide chopping board hero image in light mode */
-#root.internal-bg--light .chopping-page-root .internal-hero { display: none !important; }
+/* Desktop: hide hero image in light mode on internal pages that use it */
+@media (min-width: 1024px) {
+    #root.internal-bg--light .chopping-page-root .internal-hero,
+    #root.internal-bg--light .profile-page-root .internal-hero,
+    #root.internal-bg--light .account-page-root .internal-hero { display: none !important; }
+}
 
 @media (max-width: 1024px) {
 	#root.internal-bg--light {

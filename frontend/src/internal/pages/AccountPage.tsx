@@ -40,8 +40,8 @@ export default function AccountPage() {
 
 	return (
 		<PageFrame>
-			<div style={{ position: 'relative' }}>
-				<Container>
+				<div style={{ position: 'relative' }}>
+					<Container className="account-page-root">
 					<HeroImage />
 					<div
 						style={{
@@ -87,8 +87,8 @@ export default function AccountPage() {
 							)}
 						</div>
 					</div>
-				</Container>
-			</div>
+					</Container>
+				</div>
 		</PageFrame>
 	)
 }
