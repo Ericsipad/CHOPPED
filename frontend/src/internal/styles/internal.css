@@ -19,6 +19,9 @@ html, body, #root {
 	--primary: 25 85% 70%;
 }
 
+/* Desktop: hide chopping board hero image in light mode */
+#root.internal-bg--light .chopping-page-root .internal-hero { display: none !important; }
+
 @media (max-width: 1024px) {
 	#root.internal-bg--light {
 		background-size: calc(100vw / 2) calc(100vh / 3);
