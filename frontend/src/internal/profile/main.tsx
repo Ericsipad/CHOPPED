@@ -15,6 +15,28 @@ function PWAAwareGate() {
 	const { isInstalled, canInstall, showInstallPrompt: triggerInstall, dismissPrompt } = usePWAInstallation()
 	const { isAuthenticated, loading } = useAuth()
 
+	// Apply and react to internal background mode (default: light)
+	useEffect(() => {
+		const root = document.getElementById('root')
+		if (!root) return
+		const stored = localStorage.getItem('internal_background_mode')
+		if (!stored) {
+			localStorage.setItem('internal_background_mode', 'light')
+		}
+		const apply = (mode: string | null) => {
+			root.classList.toggle('internal-bg--light', mode === 'light')
+		}
+		apply(localStorage.getItem('internal_background_mode'))
+		const onChange = (e: any) => {
+			const mode = e?.detail?.mode as string | undefined
+			if (mode === 'light' || mode === 'dark') {
+				apply(mode)
+			}
+		}
+		window.addEventListener('internal-background-change', onChange)
+		return () => window.removeEventListener('internal-background-change', onChange)
+	}, [])
+
 	const shouldOpenSigninFromQuery = useMemo(() => {
 		try {
 			const url = new URL(window.location.href)

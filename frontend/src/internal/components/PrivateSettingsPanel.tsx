@@ -54,6 +54,26 @@ export default function PrivateSettingsPanel() {
   const states: Option[] = useMemo(() => getStates(countryCode), [countryCode])
   const cities: Option[] = useMemo(() => getCities(countryCode, stateCode), [countryCode, stateCode])
 
+  // Initialize theme preview from persisted mode (default: light)
+  useEffect(() => {
+    try {
+      const mode = localStorage.getItem('internal_background_mode') || 'light'
+      setIsDarkPreview(mode === 'dark')
+    } catch {}
+  }, [])
+
+  function handleThemeToggle() {
+    setIsDarkPreview((prev) => {
+      const nextIsDark = !prev
+      const mode = nextIsDark ? 'dark' : 'light'
+      try {
+        localStorage.setItem('internal_background_mode', mode)
+        window.dispatchEvent(new CustomEvent('internal-background-change', { detail: { mode } }))
+      } catch {}
+      return nextIsDark
+    })
+  }
+
   useEffect(() => {
     let cancelled = false
     ;(async () => {
@@ -182,11 +202,11 @@ export default function PrivateSettingsPanel() {
             {(() => {
               const isStandalone = (typeof window !== 'undefined') && (((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || ((window as any).navigator?.standalone === true)))
               return isStandalone ? (
-                <button type="button" className="profile-public-panel__save" aria-label="Theme" aria-pressed={isDarkPreview} onClick={() => setIsDarkPreview((v) => !v)}>
+                <button type="button" className="profile-public-panel__save" aria-label="Theme" aria-pressed={isDarkPreview} onClick={handleThemeToggle}>
                   {isDarkPreview ? <Moon size={16} /> : <Sun size={16} />}
                 </button>
               ) : (
-                <button type="button" className="theme-toggle" aria-label="Theme" aria-pressed={isDarkPreview} onClick={() => setIsDarkPreview((v) => !v)}>
+                <button type="button" className="theme-toggle" aria-label="Theme" aria-pressed={isDarkPreview} onClick={handleThemeToggle}>
                   <div className={["theme-toggle__switch", isDarkPreview ? 'is-on' : ''].filter(Boolean).join(' ')} aria-hidden="true">
                     <span className="theme-toggle__icon theme-toggle__icon--sun"><Sun size={12} /></span>
                     <span className="theme-toggle__icon theme-toggle__icon--moon"><Moon size={12} /></span>

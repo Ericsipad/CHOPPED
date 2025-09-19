@@ -8,6 +8,21 @@ html, body, #root {
 	background-color: #000000;
 }
 
+/* Light background for internal pages when enabled */
+#root.internal-bg--light {
+	background-color: #ffffff;
+	background-image: url('/paper-tile.png');
+	background-repeat: repeat;
+	background-position: center center;
+	background-size: calc(100vw / 3) calc(100vh / 3);
+}
+
+@media (max-width: 1024px) {
+	#root.internal-bg--light {
+		background-size: calc(100vw / 2) calc(100vh / 3);
+	}
+}
+
 /* Header overlays hero */
 .internal-top-header {
 	position: absolute;
