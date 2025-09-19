@@ -1,4 +1,5 @@
 import { Box, Grid, GridItem } from '@chakra-ui/react'
+import { useEffect, useRef, useState } from 'react'
 import WobblyCard3D from './WobblyCard3D'
 
 type ProfileImage = { url: string; alt?: string; status?: 'yes' | 'pending' | 'chopped' | null; hasProfile?: boolean }
@@ -17,6 +18,19 @@ export default function ProfileGrid(props: ProfileGridProps) {
 
 	const sliceCount = viewCount
 	const items = images.slice(0, sliceCount)
+
+	// Track which inactive tile's tooltip is shown
+	const [tooltipIndex, setTooltipIndex] = useState<number | null>(null)
+	const tooltipTimerRef = useRef<number | null>(null)
+
+	useEffect(() => {
+		return () => {
+			if (tooltipTimerRef.current) {
+				window.clearTimeout(tooltipTimerRef.current)
+				tooltipTimerRef.current = null
+			}
+		}
+	}, [])
 
     let cardPx = 192
     let columns = 5
@@ -115,9 +129,30 @@ export default function ProfileGrid(props: ProfileGridProps) {
                         backgroundColor: '#F4F4F5',
                         border: '1px solid rgba(0,0,0,0.06)'
                     } as const : undefined
-                    return (
+					return (
                         <GridItem key={idx} w={cardSize} h={cardSize} minW={cardSize} minH={cardSize}>
-							<Box position="relative" w="100%" h="100%" role={isActive ? 'button' : undefined} tabIndex={isActive ? 0 : -1} aria-disabled={!isActive} onClick={isActive ? () => onCardClick?.(idx) : undefined} onKeyDown={onKeyDown} style={{ cursor: clickableCursor }}>
+							<Box
+								position="relative"
+								w="100%"
+								h="100%"
+								role={isActive ? 'button' : undefined}
+								tabIndex={isActive ? 0 : -1}
+								aria-disabled={!isActive}
+								onClick={() => {
+									if (isActive) {
+										onCardClick?.(idx)
+										return
+									}
+									setTooltipIndex(idx)
+									if (tooltipTimerRef.current) window.clearTimeout(tooltipTimerRef.current)
+									tooltipTimerRef.current = window.setTimeout(() => {
+										setTooltipIndex(null)
+										tooltipTimerRef.current = null
+									}, 2000)
+								}}
+								onKeyDown={onKeyDown}
+								style={{ cursor: clickableCursor }}
+							>
                                 {wobble ? (
 									<WobblyCard3D
 										p={0}
@@ -146,6 +181,26 @@ export default function ProfileGrid(props: ProfileGridProps) {
 								)}
 								{isActive && !img.hasProfile && (
 									<Box position="absolute" top="6px" right="6px" w="20px" h="20px" bg="green.500" color="white" borderRadius="full" display="flex" alignItems="center" justifyContent="center" fontWeight="bold" fontSize="14px" lineHeight="1">+
+									</Box>
+								)}
+								{/* Inactive tile click tooltip */}
+								{!isActive && tooltipIndex === idx && (
+									<Box
+										position="absolute"
+										bottom="6px"
+										left="50%"
+										transform="translateX(-50%)"
+										px="8px"
+										py="6px"
+										borderRadius="8px"
+										bg="blackAlpha.800"
+										color="white"
+										fontSize="12px"
+										textAlign="center"
+										pointerEvents="none"
+										zIndex={10}
+									>
+										Please upgrade to add more active matches.
 									</Box>
 								)}
 							</Box>
