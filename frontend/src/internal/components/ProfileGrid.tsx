@@ -100,7 +100,12 @@ export default function ProfileGrid(props: ProfileGridProps) {
 							onCardClick?.(idx)
 						}
 					}
-					return (
+                    const isLight = (typeof window !== 'undefined' && document.getElementById('root')?.classList.contains('internal-bg--light'))
+                    const emptyLightStyles = (!img.hasProfile && isLight) ? {
+                        backgroundColor: '#F4F4F5',
+                        border: '1px solid rgba(0,0,0,0.06)'
+                    } as const : undefined
+                    return (
                         <GridItem key={idx} w={cardSize} h={cardSize} minW={cardSize} minH={cardSize}>
 							<Box position="relative" w="100%" h="100%" role={isActive ? 'button' : undefined} tabIndex={isActive ? 0 : -1} aria-disabled={!isActive} onClick={isActive ? () => onCardClick?.(idx) : undefined} onKeyDown={onKeyDown} style={{ cursor: clickableCursor }}>
                                 {wobble ? (
@@ -108,7 +113,7 @@ export default function ProfileGrid(props: ProfileGridProps) {
 										p={0}
 										borderRadius="xl"
 										boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'}
-										bg="gray.800"
+                                        bg={(!img.hasProfile && isLight) ? undefined : 'gray.800'}
                                         scale={hoverScale}
 										maxRotate={12}
 										perspective={900}
@@ -116,15 +121,15 @@ export default function ProfileGrid(props: ProfileGridProps) {
                                     <img
                                         src={img.url}
                                         alt={img.alt ?? 'profile picture'}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', ...emptyLightStyles }}
                                     />
 									</WobblyCard3D>
 								) : (
-                                    <Box p={0} borderRadius="xl" boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'} bg="gray.800" w="100%" h="100%">
+                                    <Box p={0} borderRadius="xl" boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'} bg={(!img.hasProfile && isLight) ? undefined : 'gray.800'} w="100%" h="100%">
                                         <img
                                             src={img.url}
                                             alt={img.alt ?? 'profile picture'}
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', ...emptyLightStyles }}
                                         />
                                     </Box>
 								)}

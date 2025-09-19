@@ -995,6 +995,18 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	}
 }
 
+/* PWA light mode: peach StatusBar background on chopping board */
+@media (max-width: 1024px) {
+	#root.internal-bg--light .chopping-page-root .status-bar {
+		background: #F4A871;
+		color: #1f2937; /* dark text for contrast inside tooltip if any */
+	}
+	#root.internal-bg--light .chopping-page-root .status-bar__legend-text,
+	#root.internal-bg--light .chopping-page-root .status-bar__value {
+		color: #1f2937;
+	}
+}
+
 /* Compact single-row header variant */
 
 .status-bar--header {

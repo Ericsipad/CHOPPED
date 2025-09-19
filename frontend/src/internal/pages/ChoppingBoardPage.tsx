@@ -145,7 +145,9 @@ export default function ChoppingBoardPage() {
         return () => { cancelled = true }
     }, [])
 	// Build images array from slots with status for glow; fallback to placeholder when empty
-	const placeholderUrl = '/profile-placeholder.svg'
+    const placeholderUrl = (typeof window !== 'undefined' && document.getElementById('root')?.classList.contains('internal-bg--light'))
+        ? '/profile-placeholder-light.svg'
+        : '/profile-placeholder.svg'
 	const images = new Array(50).fill(null).map((_, i) => {
 		const slot = slots[i]
 		return {
