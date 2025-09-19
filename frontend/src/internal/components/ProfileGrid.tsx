@@ -119,9 +119,9 @@ export default function ProfileGrid(props: ProfileGridProps) {
                         <GridItem key={idx} w={cardSize} h={cardSize} minW={cardSize} minH={cardSize}>
 							<Box position="relative" w="100%" h="100%" role={isActive ? 'button' : undefined} tabIndex={isActive ? 0 : -1} aria-disabled={!isActive} onClick={isActive ? () => onCardClick?.(idx) : undefined} onKeyDown={onKeyDown} style={{ cursor: clickableCursor }}>
                                 {wobble ? (
-                                    <WobblyCard3D
+									<WobblyCard3D
 										p={0}
-										borderRadius="xl"
+										borderRadius="12px"
 										boxShadow={computedBoxShadow}
 										border={outlineColor ? `2px solid ${outlineColor}` : undefined}
                                         bg={(!img.hasProfile && isLight) ? undefined : 'gray.800'}
@@ -132,15 +132,15 @@ export default function ProfileGrid(props: ProfileGridProps) {
                                     <img
                                         src={img.url}
                                         alt={img.alt ?? 'profile picture'}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', ...emptyLightStyles }}
+										style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', borderRadius: 'inherit', ...emptyLightStyles }}
                                     />
 									</WobblyCard3D>
 								) : (
-									<Box p={0} borderRadius="xl" boxShadow={computedBoxShadow} border={outlineColor ? `2px solid ${outlineColor}` : undefined} bg={(!img.hasProfile && isLight) ? undefined : 'gray.800'} w="100%" h="100%">
+									<Box p={0} borderRadius="12px" overflow="hidden" boxShadow={computedBoxShadow} border={outlineColor ? `2px solid ${outlineColor}` : undefined} bg={(!img.hasProfile && isLight) ? undefined : 'gray.800'} w="100%" h="100%">
                                         <img
                                             src={img.url}
                                             alt={img.alt ?? 'profile picture'}
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', ...emptyLightStyles }}
+											style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', borderRadius: 'inherit', ...emptyLightStyles }}
                                         />
                                     </Box>
 								)}
