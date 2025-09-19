@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Sun, Moon } from 'lucide-react'
+import { Sun } from 'lucide-react'
 import ValidationModal from './ValidationModal'
 import { fetchReadiness } from './readiness'
 import { getBackendApi } from '../../lib/config'
