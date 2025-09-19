@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 
 type ValidationModalProps = {
   isOpen: boolean
@@ -10,7 +11,7 @@ type ValidationModalProps = {
 export default function ValidationModal(props: ValidationModalProps) {
   const { isOpen, title, children, onClose } = props
   if (!isOpen) return null
-  return (
+  return createPortal(
     <div role="dialog" aria-modal="true" className="profile-public-panel" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, overflowY: 'auto' }}>
       <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 12px' }}>
         <div className="profile-public-panel profile-public-panel--modal" style={{ maxWidth: 520, width: '100%', backdropFilter: 'blur(10px)', background: 'rgba(10, 10, 10, 0.5)', border: '1px solid rgba(0, 200, 120, 0.6)', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
@@ -27,7 +28,8 @@ export default function ValidationModal(props: ValidationModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 

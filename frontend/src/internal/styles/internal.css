@@ -962,7 +962,11 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 .status-bar__center-label--desktop { display: inline; }
 
 @media (max-width: 1024px) {
-    .status-bar__inner { grid-template-columns: 1fr; row-gap: 10px; }
+    .status-bar__inner { grid-template-columns: auto 1fr auto; gap: 8px; padding: 6px 8px; align-items: center; }
+    .status-bar__legend { gap: 8px; }
+    .status-bar__counters { gap: 8px; }
+    .status-bar__counter { min-width: 44px; }
+    .status-bar__icon svg { width: 18px; height: 18px; }
     .status-bar__center-label--mobile { display: inline; }
     .status-bar__center-label--desktop { display: none; }
 }
@@ -1109,7 +1113,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 .status-bar--header .status-bar__value { font-size: 13px; }
 
 @media (max-width: 1024px) {
-	.status-bar--header .status-bar__inner { grid-template-columns: 1fr auto; }
+    .status-bar--header .status-bar__inner { grid-template-columns: auto 1fr auto; gap: 8px; }
 }
 
 /* ===== PROFILE PAGE: MOBILE EDGE-TO-EDGE (≤768px) ===== */

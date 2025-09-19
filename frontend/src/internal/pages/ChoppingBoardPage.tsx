@@ -519,13 +519,13 @@ export default function ChoppingBoardPage() {
                     onClose={() => setAiModalOpen(false)}
                 >
                     <div style={{ padding: 12, lineHeight: 1.6 }}>
-                        <div style={{ marginBottom: 10 }}>💬 <strong>Better Matches Through Real Conversations</strong><br />
+                        <div style={{ marginBottom: 10 }}>💬 <strong style={{ color: '#3b82f6' }}>Better Matches Through Real Conversations</strong><br />
                         The more you chat authentically with others, the smarter your matches become. Our AI privately analyzes your conversations to build a nuanced profile across 500+ character dimensions—helping you connect with people who truly resonate.</div>
-                        <div style={{ marginBottom: 10 }}>🤖 <strong>Private, AI-Only Analysis</strong><br />
+                        <div style={{ marginBottom: 10 }}>🤖 <strong style={{ color: '#3b82f6' }}>Private, AI-Only Analysis</strong><br />
                         Your chats are never seen by humans and are never shared outside the platform. Everything is processed internally by a secure, self-contained AI system designed to understand you better without compromising your privacy.</div>
-                        <div style={{ marginBottom: 10 }}>🌐 <strong>Every Conversation Counts</strong><br />
+                        <div style={{ marginBottom: 10 }}>🌐 <strong style={{ color: '#3b82f6' }}>Every Conversation Counts</strong><br />
                         Whether you're chatting with a potential match or just making a new friend, every interaction helps refine your profile. So explore freely, speak honestly, and let the algorithm do the rest.</div>
-                        <div style={{ marginBottom: 12 }}>🎉 <strong>Enjoy the Journey</strong><br />
+                        <div style={{ marginBottom: 12 }}>🎉 <strong style={{ color: '#3b82f6' }}>Enjoy the Journey</strong><br />
                         Have fun, be yourself, and discover connections that feel real.</div>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                             <div style={{ fontWeight: 700 }}>AI analysis</div>
