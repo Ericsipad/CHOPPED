@@ -92,6 +92,17 @@ export default function ProfileGrid(props: ProfileGridProps) {
 						: img.status === 'pending' ? '0 0 16px rgba(234,179,8,0.8)'
 						: img.status === 'chopped' ? '0 0 16px rgba(239,68,68,0.8)'
 						: 'none'
+					// Light mode: replace glow with colored outline matching status
+					const isLight = (typeof window !== 'undefined' && document.getElementById('root')?.classList.contains('internal-bg--light'))
+					const outlineColor = isLight
+						? (img.status === 'yes' ? '#22c55e'
+							: img.status === 'pending' ? '#eab308'
+							: img.status === 'chopped' ? '#ef4444'
+							: undefined)
+						: undefined
+					const computedBoxShadow = isLight
+						? ('xl' as any)
+						: (glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl')
 					const clickableCursor = isActive ? 'pointer' : (activeSlotsCount > 0 ? 'not-allowed' : 'default')
 					const onKeyDown = (e: any) => {
 						if (!isActive) return
@@ -100,7 +111,6 @@ export default function ProfileGrid(props: ProfileGridProps) {
 							onCardClick?.(idx)
 						}
 					}
-                    const isLight = (typeof window !== 'undefined' && document.getElementById('root')?.classList.contains('internal-bg--light'))
                     const emptyLightStyles = (!img.hasProfile && isLight) ? {
                         backgroundColor: '#F4F4F5',
                         border: '1px solid rgba(0,0,0,0.06)'
@@ -112,7 +122,8 @@ export default function ProfileGrid(props: ProfileGridProps) {
                                     <WobblyCard3D
 										p={0}
 										borderRadius="xl"
-										boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'}
+										boxShadow={computedBoxShadow}
+										border={outlineColor ? `2px solid ${outlineColor}` : undefined}
                                         bg={(!img.hasProfile && isLight) ? undefined : 'gray.800'}
                                         scale={hoverScale}
 										maxRotate={12}
@@ -125,7 +136,7 @@ export default function ProfileGrid(props: ProfileGridProps) {
                                     />
 									</WobblyCard3D>
 								) : (
-                                    <Box p={0} borderRadius="xl" boxShadow={glow !== 'none' ? (`${glow}, var(--chakra-shadows-xl)` as any) : 'xl'} bg={(!img.hasProfile && isLight) ? undefined : 'gray.800'} w="100%" h="100%">
+									<Box p={0} borderRadius="xl" boxShadow={computedBoxShadow} border={outlineColor ? `2px solid ${outlineColor}` : undefined} bg={(!img.hasProfile && isLight) ? undefined : 'gray.800'} w="100%" h="100%">
                                         <img
                                             src={img.url}
                                             alt={img.alt ?? 'profile picture'}

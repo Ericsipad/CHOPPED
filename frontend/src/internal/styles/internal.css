@@ -995,16 +995,25 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	}
 }
 
-/* PWA light mode: peach StatusBar background on chopping board */
-@media (max-width: 1024px) {
-	#root.internal-bg--light .chopping-page-root .status-bar {
-		background: #F4A871;
-		color: #1f2937; /* dark text for contrast inside tooltip if any */
-	}
-	#root.internal-bg--light .chopping-page-root .status-bar__legend-text,
-	#root.internal-bg--light .chopping-page-root .status-bar__value {
-		color: #1f2937;
-	}
+/* Light mode: frosted white StatusBar across desktop and PWA on chopping board */
+#root.internal-bg--light .chopping-page-root .status-bar {
+	background: rgba(255,255,255,0.72);
+	color: #111111;
+	border: 1px solid rgba(0,0,0,0.1);
+	box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+#root.internal-bg--light .chopping-page-root .status-bar__legend-text,
+#root.internal-bg--light .chopping-page-root .status-bar__value {
+	color: #111111;
+}
+#root.internal-bg--light .chopping-page-root .status-bar .status-bar__tooltip {
+	background: rgba(255,255,255,0.98);
+	color: #111111;
+	border: 1px solid rgba(0,0,0,0.08);
+	box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+#root.internal-bg--light .chopping-page-root .status-bar .status-bar__icon {
+	color: #111111;
 }
 
 /* Compact single-row header variant */

@@ -36,7 +36,7 @@ export default function StatusBar(props: StatusBarProps) {
 							<svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 								<path d="M20 12H4v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8Z" fill="#3b82f6"/>
 								<path d="M2 8h20v4H2z" fill="#60a5fa"/>
-								<path d="M12 4v18" stroke="#ffffff" strokeWidth="1.5"/>
+								<path d="M12 4v18" stroke="currentColor" strokeWidth="1.5"/>
 								<path d="M7.5 6c0-1.657 1.57-3 3.5-3 1.2 0 2.286.48 3 .98.714-.5 1.8-.98 3-.98 1.93 0 3.5 1.343 3.5 3 0 1.105-.895 2-2 2h-9c-1.105 0-2-.895-2-2Z" fill="#ef4444"/>
 							</svg>
 						</div>
