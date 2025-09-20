@@ -216,18 +216,29 @@ export default function DraggableDidAgent() {
             className="did-agent-draggable"
             style={{ position: 'fixed', top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 1100 }}
         >
-            {/* Outside tab control that also acts as drag handle */}
+            {/* Left: size toggle button */}
             <button
                 type="button"
-                className="did-agent-drag-handle"
                 onClick={(e) => { e.stopPropagation(); setScale(prev => (prev < 1 ? 1 : 1/6)); }}
-                style={{ position: 'absolute', top: -18, left: -6, zIndex: 3, background: '#ffffff', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 8, padding: '4px 10px', boxShadow: '0 4px 10px rgba(0,0,0,0.12)', cursor: 'move', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                style={{ position: 'absolute', top: -18, left: -6, zIndex: 3, background: '#ffffff', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 8, padding: '4px 10px', boxShadow: '0 4px 10px rgba(0,0,0,0.12)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                 aria-pressed={scale < 1}
                 aria-label={scale < 1 ? 'Expand avatar' : 'Minimize avatar'}
                 title={scale < 1 ? 'Expand' : 'Minimize'}
             >
                 <span style={{ fontSize: 12, fontWeight: 700 }}>{scale < 1 ? 'Expand' : 'Minimize'}</span>
                 <span aria-hidden="true" style={{ fontSize: 12 }}>↕↔</span>
+            </button>
+
+            {/* Right: drag handle button (only this starts dragging) */}
+            <button
+                type="button"
+                className="did-agent-drag-handle"
+                style={{ position: 'absolute', top: -18, right: -6, zIndex: 3, background: '#ffffff', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 8, padding: '4px 10px', boxShadow: '0 4px 10px rgba(0,0,0,0.12)', cursor: 'move', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                aria-label="Drag to move"
+                title="Drag"
+            >
+                <span style={{ fontSize: 12, fontWeight: 700 }}>Drag</span>
+                <span aria-hidden="true" style={{ fontSize: 12 }}>⠿</span>
             </button>
             <div
                 id="did-agent-container"
