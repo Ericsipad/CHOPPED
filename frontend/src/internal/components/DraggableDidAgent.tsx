@@ -182,7 +182,16 @@ export default function DraggableDidAgent() {
         >
             {/* Transparent drag handle overlay at the top */}
             <div className="did-agent-drag-handle" style={{ position: 'absolute', top: -10, left: 0, right: 0, height: 20, cursor: 'move' }} />
-            <div id="did-agent-container" ref={containerRef} />
+            <div
+                id="did-agent-container"
+                ref={containerRef}
+                style={{
+                    minWidth: 380,
+                    minHeight: 520,
+                    // Provide a small invisible hitbox while loading
+                    background: 'transparent'
+                }}
+            />
         </div>
     )
 }
