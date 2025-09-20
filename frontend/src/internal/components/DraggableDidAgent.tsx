@@ -71,7 +71,7 @@ export default function DraggableDidAgent() {
 
         // Avoid duplicate injection
         const existing = document.querySelector('script[data-name="did-agent"]') as HTMLScriptElement | null
-        if (existing) { setMounted(true); return }
+        if (existing) { return }
 
         // Use provided D-ID configuration (domain-restricted client key and agent id)
         const clientKey = 'Z29vZ2xlLW9hdXRoMnwxMDc5NTgwNzg3NjI5Nzc2NjE3Mjc6RXBaWnNzeWwxVVVLUldFRHZFbVRX'
