@@ -18,6 +18,7 @@ import GiftModal from '../components/GiftModal'
 import GiftsInboxModal from '../components/GiftsInboxModal'
 import { fetchPendingMatchedMeCount } from '../lib/matchedMe'
 import { fetchUnwithdrawnGiftsCount } from '../lib/gifts'
+import DraggableDidAgent from '../components/DraggableDidAgent'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -513,6 +514,8 @@ export default function ChoppingBoardPage() {
 					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
+                {/* Desktop-only floating D-ID agent (hidden on PWA/mobile by component guard) */}
+                {!isMobile && <DraggableDidAgent />}
                 <ValidationModal
                     isOpen={aiModalOpen}
                     title="AI Personality Matching"

@@ -717,6 +717,14 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	.with-bottom-nav { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
 }
 
+/* ===== D-ID DRAGGABLE WRAPPER (DESKTOP ONLY) ===== */
+@media (min-width: 1024px) {
+    .did-agent-draggable { position: fixed; z-index: 1100; cursor: move; }
+}
+@media (max-width: 1024px) {
+    .did-agent-draggable { display: none; }
+}
+
 /* ===== USER INDICATOR STYLES ===== */
 
 /* User indicator container - handles positioning */
