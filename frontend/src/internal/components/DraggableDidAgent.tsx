@@ -214,12 +214,12 @@ export default function DraggableDidAgent() {
         <div
             ref={wrapperRef}
             className="did-agent-draggable"
-            style={{ position: 'fixed', top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 1100 }}
+            style={{ position: 'fixed', top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 1100, width: BASE_W * scale, height: BASE_H * scale }}
         >
             {/* Left: size toggle button */}
             <button
                 type="button"
-                onClick={(e) => { e.stopPropagation(); setScale(prev => (prev < 1 ? 1 : 1/6)); }}
+                onClick={(e) => { e.stopPropagation(); setScale(prev => (prev < 1 ? 1 : 1/4)); }}
                 style={{ position: 'absolute', top: -18, left: -6, zIndex: 3, background: '#ffffff', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 8, padding: '4px 10px', boxShadow: '0 4px 10px rgba(0,0,0,0.12)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                 aria-pressed={scale < 1}
                 aria-label={scale < 1 ? 'Expand avatar' : 'Minimize avatar'}
