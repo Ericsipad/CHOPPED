@@ -20,6 +20,7 @@ export default function DraggableDidAgent() {
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     // no-op state removed; script load state not needed
     const [position, setPosition] = useState<Point | null>(null)
+    const [hasEmbeddedContent, setHasEmbeddedContent] = useState(false)
     const draggingRef = useRef<{ startX: number; startY: number; startTop: number; startLeft: number } | null>(null)
 
     // Guard: only render on desktop and not in standalone PWA
@@ -98,6 +99,20 @@ export default function DraggableDidAgent() {
             // Clear container content in case library left elements inside
             try { container.innerHTML = '' } catch { /* noop */ }
         }
+    }, [shouldRender])
+
+    // Detect when the DID widget populates the container so we can drop the placeholder styling
+    useEffect(() => {
+        if (!shouldRender) return
+        const el = containerRef.current
+        if (!el) return
+        const observer = new MutationObserver(() => {
+            try {
+                if (el.childNodes.length > 0) setHasEmbeddedContent(true)
+            } catch { /* noop */ }
+        })
+        observer.observe(el, { childList: true, subtree: false })
+        return () => observer.disconnect()
     }, [shouldRender])
 
     // Drag handlers (mouse + touch via pointer events)
@@ -186,10 +201,12 @@ export default function DraggableDidAgent() {
                 id="did-agent-container"
                 ref={containerRef}
                 style={{
-                    minWidth: 380,
-                    minHeight: 520,
-                    // Provide a small invisible hitbox while loading
-                    background: 'transparent'
+                    width: 420,
+                    height: 580,
+                    background: hasEmbeddedContent ? 'transparent' : 'rgba(0,0,0,0.2)',
+                    border: hasEmbeddedContent ? 'none' : '1px solid rgba(255,255,255,0.35)',
+                    borderRadius: hasEmbeddedContent ? 0 : 12,
+                    boxShadow: hasEmbeddedContent ? 'none' : '0 8px 24px rgba(0,0,0,0.35)'
                 }}
             />
         </div>
