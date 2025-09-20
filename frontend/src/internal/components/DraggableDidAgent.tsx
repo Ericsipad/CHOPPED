@@ -21,6 +21,16 @@ export default function DraggableDidAgent() {
     // no-op state removed; script load state not needed
     const [position, setPosition] = useState<Point | null>(null)
     const [hasEmbeddedContent, setHasEmbeddedContent] = useState(false)
+    const [scale, setScale] = useState<number>(() => {
+        try {
+            const raw = localStorage.getItem('did_agent_scale')
+            if (raw) {
+                const v = parseFloat(raw)
+                if (!Number.isNaN(v) && v > 0) return v
+            }
+        } catch { /* noop */ }
+        return 1
+    })
     const draggingRef = useRef<{ startX: number; startY: number; startTop: number; startLeft: number } | null>(null)
 
     // Guard: only render on desktop and not in standalone PWA
@@ -191,16 +201,34 @@ export default function DraggableDidAgent() {
         return () => window.removeEventListener('resize', clamp)
     }, [shouldRender, position])
 
+    // Persist scale when it changes
+    useEffect(() => {
+        try { localStorage.setItem('did_agent_scale', String(scale)) } catch { /* noop */ }
+    }, [scale])
+
     if (!shouldRender) return null
 
     return (
         <div
             ref={wrapperRef}
             className="did-agent-draggable"
-            style={{ position: 'fixed', top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 1100 }}
+            style={{ position: 'fixed', top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 1100, transform: `scale(${scale})`, transformOrigin: 'top left' }}
         >
-            {/* Transparent drag handle overlay at the top */}
-            <div className="did-agent-drag-handle" style={{ position: 'absolute', top: -10, left: 0, right: 0, height: 20, cursor: 'move' }} />
+            {/* Drag handle and controls */}
+            <div
+                className="did-agent-drag-handle"
+                style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 36, cursor: 'move', zIndex: 2, background: 'linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.05))', borderTopLeftRadius: 12, borderTopRightRadius: 12, display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px' }}
+            >
+                <button
+                    type="button"
+                    aria-label={scale < 1 ? 'Expand' : 'Minimize'}
+                    aria-pressed={scale < 1}
+                    onClick={(e) => { e.stopPropagation(); setScale(prev => (prev < 1 ? 1 : 1/6)); }}
+                    style={{ appearance: 'none', border: '1px solid rgba(255,255,255,0.35)', borderRadius: 8, background: 'rgba(0,0,0,0.35)', color: '#fff', fontSize: 12, padding: '4px 8px', cursor: 'pointer' }}
+                >
+                    {scale < 1 ? 'Expand' : 'Minimize'}
+                </button>
+            </div>
             <div
                 id="did-agent-container"
                 ref={containerRef}
@@ -209,7 +237,7 @@ export default function DraggableDidAgent() {
                     height: 580,
                     background: hasEmbeddedContent ? 'transparent' : 'rgba(0,0,0,0.2)',
                     border: hasEmbeddedContent ? 'none' : '1px solid rgba(255,255,255,0.35)',
-                    borderRadius: hasEmbeddedContent ? 0 : 12,
+                    borderRadius: 12,
                     boxShadow: hasEmbeddedContent ? 'none' : '0 8px 24px rgba(0,0,0,0.35)'
                 }}
             />
