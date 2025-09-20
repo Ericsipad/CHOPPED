@@ -21,6 +21,8 @@ export default function DraggableDidAgent() {
     // no-op state removed; script load state not needed
     const [position, setPosition] = useState<Point | null>(null)
     const [hasEmbeddedContent, setHasEmbeddedContent] = useState(false)
+    const BASE_W = 420
+    const BASE_H = 580
     const [scale, setScale] = useState<number>(() => {
         try {
             const raw = localStorage.getItem('did_agent_scale')
@@ -151,8 +153,8 @@ export default function DraggableDidAgent() {
             const vw = window.innerWidth
             const vh = window.innerHeight
             const rect = wrapper!.getBoundingClientRect()
-            const effW = Math.max(rect.width, 360)
-            const effH = Math.max(rect.height, 360)
+            const effW = Math.max(rect.width, BASE_W * scale, 360)
+            const effH = Math.max(rect.height, BASE_H * scale, 360)
             const newLeft = Math.min(Math.max(0, startLeft + deltaX), Math.max(0, vw - effW))
             const newTop = Math.min(Math.max(0, startTop + deltaY), Math.max(0, vh - effH))
             setPosition({ top: Math.round(newTop), left: Math.round(newLeft) })
@@ -189,8 +191,8 @@ export default function DraggableDidAgent() {
         function clamp() {
             if (!position) return
             const rect = wrapper!.getBoundingClientRect()
-            const effW = Math.max(rect.width, 360)
-            const effH = Math.max(rect.height, 360)
+            const effW = Math.max(rect.width, BASE_W * scale, 360)
+            const effH = Math.max(rect.height, BASE_H * scale, 360)
             const vw = window.innerWidth
             const vh = window.innerHeight
             const left = Math.min(Math.max(0, position.left), Math.max(0, vw - effW))
@@ -199,7 +201,7 @@ export default function DraggableDidAgent() {
         }
         window.addEventListener('resize', clamp)
         return () => window.removeEventListener('resize', clamp)
-    }, [shouldRender, position])
+    }, [shouldRender, position, scale])
 
     // Persist scale when it changes
     useEffect(() => {
@@ -212,29 +214,29 @@ export default function DraggableDidAgent() {
         <div
             ref={wrapperRef}
             className="did-agent-draggable"
-            style={{ position: 'fixed', top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 1100, transform: `scale(${scale})`, transformOrigin: 'top left' }}
+            style={{ position: 'fixed', top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 1100 }}
         >
-            {/* Drag handle and controls */}
-            <div
+            {/* Outside tab control that also acts as drag handle */}
+            <button
+                type="button"
                 className="did-agent-drag-handle"
-                style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 36, cursor: 'move', zIndex: 2, background: 'linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.05))', borderTopLeftRadius: 12, borderTopRightRadius: 12, display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px' }}
+                onClick={(e) => { e.stopPropagation(); setScale(prev => (prev < 1 ? 1 : 1/6)); }}
+                style={{ position: 'absolute', top: -18, left: -6, zIndex: 3, background: '#ffffff', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 8, padding: '4px 10px', boxShadow: '0 4px 10px rgba(0,0,0,0.12)', cursor: 'move', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                aria-pressed={scale < 1}
+                aria-label={scale < 1 ? 'Expand avatar' : 'Minimize avatar'}
+                title={scale < 1 ? 'Expand' : 'Minimize'}
             >
-                <button
-                    type="button"
-                    aria-label={scale < 1 ? 'Expand' : 'Minimize'}
-                    aria-pressed={scale < 1}
-                    onClick={(e) => { e.stopPropagation(); setScale(prev => (prev < 1 ? 1 : 1/6)); }}
-                    style={{ appearance: 'none', border: '1px solid rgba(255,255,255,0.35)', borderRadius: 8, background: 'rgba(0,0,0,0.35)', color: '#fff', fontSize: 12, padding: '4px 8px', cursor: 'pointer' }}
-                >
-                    {scale < 1 ? 'Expand' : 'Minimize'}
-                </button>
-            </div>
+                <span style={{ fontSize: 12, fontWeight: 700 }}>{scale < 1 ? 'Expand' : 'Minimize'}</span>
+                <span aria-hidden="true" style={{ fontSize: 12 }}>↕↔</span>
+            </button>
             <div
                 id="did-agent-container"
                 ref={containerRef}
                 style={{
-                    width: 420,
-                    height: 580,
+                    width: BASE_W,
+                    height: BASE_H,
+                    transform: `scale(${scale})`,
+                    transformOrigin: 'top left',
                     background: hasEmbeddedContent ? 'transparent' : 'rgba(0,0,0,0.2)',
                     border: hasEmbeddedContent ? 'none' : '1px solid rgba(255,255,255,0.35)',
                     borderRadius: 12,
