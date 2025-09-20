@@ -911,7 +911,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	border: 1px solid rgba(76, 255, 137, 0.9);
 	box-shadow: 0 0 0 2px rgba(76, 255, 137, 0.5), 0 0 18px rgba(76, 255, 137, 0.35);
 	border-radius: 12px;
-	width: clamp(200px, 28vw, 560px);
+	width: clamp(360px, 42vw, 560px);
 	color: #ffffff;
 	backdrop-filter: blur(6px) saturate(120%);
 	-webkit-backdrop-filter: blur(6px) saturate(120%);
@@ -987,6 +987,17 @@ select.profile-public-panel__input.profile-public-panel__input--error {
     .status-bar__icon svg { width: 18px; height: 18px; }
     .status-bar__center-label--mobile { display: inline; }
     .status-bar__center-label--desktop { display: none; }
+    /* Allow natural wrapping on mobile */
+    .status-bar__legend,
+    .status-bar__center,
+    .status-bar__counters { white-space: normal; }
+}
+
+/* Desktop: keep single-line items to avoid wrapping before mobile gate */
+@media (min-width: 1025px) {
+	.status-bar__legend,
+	.status-bar__center,
+	.status-bar__counters { white-space: nowrap; }
 }
 
 .status-bar__tooltip {
@@ -1011,27 +1022,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 .status-bar__counter:hover .status-bar__tooltip,
 .status-bar__counter:focus-within .status-bar__tooltip { opacity: 1; }
 
-/* Small desktop tightening and centering */
-@media (max-width: 1280px) {
-	.status-bar {
-		width: clamp(260px, 40vw, 560px);
-	}
-	.status-bar__inner {
-		grid-template-columns: auto auto;
-		justify-content: center;
-		gap: 12px;
-		padding: 8px 10px;
-	}
-	.status-bar__legend {
-		gap: 12px;
-	}
-	.status-bar__counters {
-		gap: 10px;
-	}
-	.status-bar__counter {
-		min-width: 48px;
-	}
-}
+ 
 
 /* Tablet/very small desktop: stack and center */
 @media (max-width: 1024px) {
