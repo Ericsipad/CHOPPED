@@ -18,7 +18,7 @@ function isStandalonePWA(): boolean {
 export default function DraggableDidAgent() {
     const containerRef = useRef<HTMLDivElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
-    const [mounted, setMounted] = useState(false)
+    // no-op state removed; script load state not needed
     const [position, setPosition] = useState<Point | null>(null)
     const draggingRef = useRef<{ startX: number; startY: number; startTop: number; startLeft: number } | null>(null)
 
@@ -87,7 +87,7 @@ export default function DraggableDidAgent() {
         script.setAttribute('data-monitor', 'true')
         script.setAttribute('data-target-id', 'did-agent-container')
 
-        script.addEventListener('load', () => setMounted(true))
+        // load event not required for our flow
         document.body.appendChild(script)
 
         return () => {
@@ -97,7 +97,6 @@ export default function DraggableDidAgent() {
             } catch { /* noop */ }
             // Clear container content in case library left elements inside
             try { container.innerHTML = '' } catch { /* noop */ }
-            setMounted(false)
         }
     }, [shouldRender])
 
@@ -112,9 +111,9 @@ export default function DraggableDidAgent() {
             const target = e.target as HTMLElement
             if (!target || !target.closest('.did-agent-drag-handle')) return
             e.preventDefault()
-            wrapper.setPointerCapture(e.pointerId)
-            const startTop = position?.top ?? wrapper.offsetTop
-            const startLeft = position?.left ?? wrapper.offsetLeft
+            wrapper!.setPointerCapture(e.pointerId)
+            const startTop = position?.top ?? wrapper!.offsetTop
+            const startLeft = position?.left ?? wrapper!.offsetLeft
             draggingRef.current = { startX: e.clientX, startY: e.clientY, startTop, startLeft }
         }
 
@@ -126,7 +125,7 @@ export default function DraggableDidAgent() {
             const deltaY = e.clientY - startY
             const vw = window.innerWidth
             const vh = window.innerHeight
-            const rect = wrapper.getBoundingClientRect()
+            const rect = wrapper!.getBoundingClientRect()
             const newLeft = Math.min(Math.max(0, startLeft + deltaX), Math.max(0, vw - rect.width))
             const newTop = Math.min(Math.max(0, startTop + deltaY), Math.max(0, vh - rect.height))
             setPosition({ top: Math.round(newTop), left: Math.round(newLeft) })
@@ -134,7 +133,7 @@ export default function DraggableDidAgent() {
 
         function endDrag(e: PointerEvent) {
             if (!draggingRef.current) return
-            try { wrapper.releasePointerCapture(e.pointerId) } catch { /* noop */ }
+            try { wrapper!.releasePointerCapture(e.pointerId) } catch { /* noop */ }
             draggingRef.current = null
             // Persist position
             try {
@@ -162,7 +161,7 @@ export default function DraggableDidAgent() {
         if (!wrapper) return
         function clamp() {
             if (!position) return
-            const rect = wrapper.getBoundingClientRect()
+            const rect = wrapper!.getBoundingClientRect()
             const vw = window.innerWidth
             const vh = window.innerHeight
             const left = Math.min(Math.max(0, position.left), Math.max(0, vw - rect.width))
