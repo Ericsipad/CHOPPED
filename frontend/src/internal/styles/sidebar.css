@@ -1,0 +1,97 @@
+.internal-sidebar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 240px;
+	background: rgba(18, 18, 18, 0.92);
+	backdrop-filter: blur(12px) saturate(120%);
+	-webkit-backdrop-filter: blur(12px) saturate(120%);
+	border-right: 1px solid rgba(255,255,255,0.08);
+	box-shadow: 0 0 40px rgba(0,0,0,0.6);
+	z-index: 1000;
+	transition: width 180ms ease;
+	display: none;
+}
+
+.internal-sidebar__inner {
+	height: 100%;
+	display: grid;
+	grid-template-rows: auto 1fr;
+	row-gap: 8px;
+	padding: calc(env(safe-area-inset-top) + 10px) 10px 10px 10px;
+}
+
+.internal-sidebar__toggle {
+	appearance: none;
+	border: 1px solid rgba(255,255,255,0.18);
+	background: rgba(255,255,255,0.06);
+	color: #ffffff;
+	border-radius: 10px;
+	width: 44px;
+	height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+.internal-sidebar__toggle .is-collapsed { transform: rotate(180deg); transition: transform 160ms ease; }
+
+.internal-sidebar__nav {
+	display: grid;
+	align-content: start;
+	gap: 8px;
+}
+
+.internal-sidebar__link {
+	display: grid;
+	grid-template-columns: 24px 1fr;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	color: #ffffff;
+	text-decoration: none;
+	border-radius: 12px;
+	background: rgba(255,255,255,0.06);
+	border: 1px solid rgba(255,255,255,0.14);
+	box-shadow: 0 10px 24px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05) inset;
+	transition: background-color 160ms ease, transform 120ms ease, border-color 160ms ease;
+}
+.internal-sidebar__link:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+.internal-sidebar__link:active { transform: translateY(0); }
+.internal-sidebar__link.is-active { border-color: rgba(76, 255, 137, 0.9); box-shadow: 0 0 0 2px rgba(76, 255, 137, 0.45), 0 10px 24px rgba(0,0,0,0.4); }
+
+.internal-sidebar__icon { display: inline-flex; align-items: center; justify-content: center; opacity: 0.95; }
+.internal-sidebar__label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Collapsed state */
+.internal-sidebar.internal-sidebar--collapsed { width: 72px; }
+.internal-sidebar.internal-sidebar--collapsed .internal-sidebar__link { grid-template-columns: 24px; justify-items: center; }
+.internal-sidebar.internal-sidebar--collapsed .internal-sidebar__label { display: none; }
+
+/* Content offset helper when sidebar is visible on desktop */
+.internal-app-shell { display: block; }
+.internal-app-content { margin-left: 0; transition: margin-left 180ms ease; }
+
+@media (min-width: 1025px) {
+	.internal-sidebar { display: block; }
+	.internal-app-shell { display: flex; }
+	/* When the sidebar is present, offset content by expanded width by default */
+	.internal-app-content { margin-left: 240px; width: calc(100% - 240px); }
+	/* If the sidebar is collapsed, we cannot target sibling, so provide an optional body class hook if needed later. */
+}
+
+/* Light mode adjustments */
+#root.internal-bg--light .internal-sidebar {
+	background: rgba(255,255,255,0.85);
+	border-right: 1px solid rgba(0,0,0,0.08);
+	box-shadow: 0 0 40px rgba(0,0,0,0.12);
+}
+#root.internal-bg--light .internal-sidebar__link {
+	background: rgba(0,0,0,0.04);
+	border: 1px solid rgba(0,0,0,0.12);
+	color: #111111;
+}
+#root.internal-bg--light .internal-sidebar__link.is-active { border-color: rgba(76, 255, 137, 0.9); }
+
+
