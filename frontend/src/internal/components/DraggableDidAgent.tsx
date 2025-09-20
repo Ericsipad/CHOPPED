@@ -141,8 +141,10 @@ export default function DraggableDidAgent() {
             const vw = window.innerWidth
             const vh = window.innerHeight
             const rect = wrapper!.getBoundingClientRect()
-            const newLeft = Math.min(Math.max(0, startLeft + deltaX), Math.max(0, vw - rect.width))
-            const newTop = Math.min(Math.max(0, startTop + deltaY), Math.max(0, vh - rect.height))
+            const effW = Math.max(rect.width, 360)
+            const effH = Math.max(rect.height, 360)
+            const newLeft = Math.min(Math.max(0, startLeft + deltaX), Math.max(0, vw - effW))
+            const newTop = Math.min(Math.max(0, startTop + deltaY), Math.max(0, vh - effH))
             setPosition({ top: Math.round(newTop), left: Math.round(newLeft) })
         }
 
@@ -177,10 +179,12 @@ export default function DraggableDidAgent() {
         function clamp() {
             if (!position) return
             const rect = wrapper!.getBoundingClientRect()
+            const effW = Math.max(rect.width, 360)
+            const effH = Math.max(rect.height, 360)
             const vw = window.innerWidth
             const vh = window.innerHeight
-            const left = Math.min(Math.max(0, position.left), Math.max(0, vw - rect.width))
-            const top = Math.min(Math.max(0, position.top), Math.max(0, vh - rect.height))
+            const left = Math.min(Math.max(0, position.left), Math.max(0, vw - effW))
+            const top = Math.min(Math.max(0, position.top), Math.max(0, vh - effH))
             if (left !== position.left || top !== position.top) setPosition({ top, left })
         }
         window.addEventListener('resize', clamp)
