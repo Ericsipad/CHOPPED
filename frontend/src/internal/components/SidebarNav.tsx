@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import '../styles/sidebar.css'
 
 type NavItem = {
 	label: string
 	path: string
-	icon: JSX.Element
+	icon: ReactNode
 }
 
 function usePathname(): string {
