@@ -19,6 +19,7 @@ import GiftsInboxModal from '../components/GiftsInboxModal'
 import { fetchPendingMatchedMeCount } from '../lib/matchedMe'
 import { fetchUnwithdrawnGiftsCount } from '../lib/gifts'
 import DraggableDidAgent from '../components/DraggableDidAgent'
+import AIMeFooter from '../components/AIMeFooter'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -45,6 +46,7 @@ export default function ChoppingBoardPage() {
     const [giftsCount, setGiftsCount] = useState<number>(0)
     const [aiModalOpen, setAiModalOpen] = useState(false)
     const [aiEnabled, setAiEnabled] = useState<boolean>(true)
+    const [isDidAgentDocked, setIsDidAgentDocked] = useState<boolean>(true)
 	const statusBarRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
@@ -514,8 +516,21 @@ export default function ChoppingBoardPage() {
 					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
-                {/* Desktop-only floating D-ID agent (hidden on PWA/mobile by component guard) */}
-                {!isMobile && <DraggableDidAgent />}
+                {/* Desktop-only floating D-ID agent when not docked (hidden on PWA/mobile by component guard) */}
+                {!isMobile && !isDidAgentDocked && <DraggableDidAgent />}
+                
+                {/* AI-me Footer with docked D-ID agent */}
+                {!isMobile && isDidAgentDocked && (
+                    <AIMeFooter
+                        onPopOutDidAgent={() => setIsDidAgentDocked(false)}
+                        didAgentComponent={
+                            <DraggableDidAgent
+                                docked={true}
+                                onUndock={() => setIsDidAgentDocked(false)}
+                            />
+                        }
+                    />
+                )}
                 <ValidationModal
                     isOpen={aiModalOpen}
                     title="AI Personality Matching"
