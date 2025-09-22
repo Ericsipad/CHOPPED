@@ -1,69 +1,38 @@
-import { useState } from 'react'
-
 interface AIMeFooterProps {
     onPopOutDidAgent: () => void
-    didAgentComponent?: React.ReactNode
 }
 
-export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMeFooterProps) {
-    const [isVisible, setIsVisible] = useState(true)
-
-    if (!isVisible) return null
-
+export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
     return (
         <div
             style={{
                 position: 'fixed',
-                bottom: '20px',
+                bottom: '0px',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                width: 'min(90vw, 800px)',
-                height: '400px',
+                width: '75vw',
+                height: '200px',
                 background: 'rgba(255, 255, 255, 0.15)',
                 backdropFilter: 'blur(12px)',
-                borderRadius: '20px',
+                borderRadius: '20px 20px 0 0',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                borderBottom: 'none',
+                boxShadow: '0 -4px 32px rgba(0, 0, 0, 0.1)',
                 zIndex: 1000,
                 display: 'flex',
                 overflow: 'hidden'
             }}
         >
-            {/* Close button */}
-            <button
-                type="button"
-                onClick={() => setIsVisible(false)}
-                style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    width: '28px',
-                    height: '28px',
-                    borderRadius: '50%',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    background: 'rgba(255, 255, 255, 0.2)',
-                    color: '#ffffff',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '14px',
-                    zIndex: 2
-                }}
-                aria-label="Close footer"
-            >
-                ×
-            </button>
-
-            {/* Left side: D-ID Agent */}
+            {/* Left side: Dynamic content placeholder */}
             <div
                 style={{
                     width: '300px',
                     height: '100%',
-                    borderRadius: '20px 0 0 20px',
+                    borderRadius: '20px 0 0 0',
                     overflow: 'hidden',
                     position: 'relative',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    background: 'rgba(0, 0, 0, 0.05)'
                 }}
                 onClick={onPopOutDidAgent}
             >
@@ -91,10 +60,10 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                     }}
                     aria-label="Pop out D-ID agent"
                 >
-                    Pop Out
+                    Pop Out AI-me
                 </button>
 
-                {/* D-ID Agent container */}
+                {/* Placeholder for dynamic content */}
                 <div
                     style={{
                         width: '100%',
@@ -102,26 +71,23 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        background: 'rgba(0, 0, 0, 0.1)',
-                        borderRadius: '20px 0 0 20px'
+                        borderRadius: '20px 0 0 0'
                     }}
                 >
-                    {didAgentComponent || (
-                        <div
-                            style={{
-                                color: 'rgba(255, 255, 255, 0.7)',
-                                textAlign: 'center',
-                                padding: '20px'
-                            }}
-                        >
-                            <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
-                                AI-me Agent
-                            </div>
-                            <div style={{ fontSize: '12px' }}>
-                                Click to activate
-                            </div>
+                    <div
+                        style={{
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            textAlign: 'center',
+                            padding: '20px'
+                        }}
+                    >
+                        <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
+                            AI-me Agent
                         </div>
-                    )}
+                        <div style={{ fontSize: '12px' }}>
+                            Dynamic content area
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -129,7 +95,7 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
             <div
                 style={{
                     flex: 1,
-                    padding: '24px',
+                    padding: '20px',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center'
@@ -138,9 +104,9 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                 <h2
                     style={{
                         color: '#ffffff',
-                        fontSize: '24px',
+                        fontSize: '20px',
                         fontWeight: '700',
-                        margin: '0 0 16px 0',
+                        margin: '0 0 12px 0',
                         textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
                     }}
                 >
@@ -149,8 +115,8 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                 <p
                     style={{
                         color: 'rgba(255, 255, 255, 0.9)',
-                        fontSize: '14px',
-                        lineHeight: '1.6',
+                        fontSize: '13px',
+                        lineHeight: '1.5',
                         margin: 0,
                         textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
                     }}

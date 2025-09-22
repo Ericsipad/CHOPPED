@@ -15,12 +15,7 @@ function isStandalonePWA(): boolean {
     } catch { return false }
 }
 
-interface DraggableDidAgentProps {
-    docked?: boolean
-    onUndock?: () => void
-}
-
-export default function DraggableDidAgent({ docked = false, onUndock }: DraggableDidAgentProps) {
+export default function DraggableDidAgent() {
     const containerRef = useRef<HTMLDivElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     // no-op state removed; script load state not needed
@@ -40,8 +35,8 @@ export default function DraggableDidAgent({ docked = false, onUndock }: Draggabl
     })
     const draggingRef = useRef<{ startX: number; startY: number; startTop: number; startLeft: number } | null>(null)
 
-    // Guard: only render on desktop and not in standalone PWA (unless docked)
-    const shouldRender = docked || (typeof window !== 'undefined' && isDesktop() && !isStandalonePWA())
+    // Guard: only render on desktop and not in standalone PWA
+    const shouldRender = typeof window !== 'undefined' && isDesktop() && !isStandalonePWA()
 
     // Load saved position
     useEffect(() => {
@@ -87,12 +82,8 @@ export default function DraggableDidAgent({ docked = false, onUndock }: Draggabl
         const container = containerRef.current
         if (!container) return
 
-        // Use different target IDs for docked vs floating modes
-        const targetId = docked ? 'did-agent-container-docked' : 'did-agent-container'
-        const scriptName = docked ? 'did-agent-docked' : 'did-agent'
-
-        // Avoid duplicate injection for the same mode
-        const existing = document.querySelector(`script[data-name="${scriptName}"]`) as HTMLScriptElement | null
+        // Avoid duplicate injection
+        const existing = document.querySelector('script[data-name="did-agent"]') as HTMLScriptElement | null
         if (existing) { return }
 
         // Use provided D-ID configuration (domain-restricted client key and agent id)
@@ -105,9 +96,9 @@ export default function DraggableDidAgent({ docked = false, onUndock }: Draggabl
         script.setAttribute('data-mode', 'full')
         script.setAttribute('data-client-key', clientKey)
         script.setAttribute('data-agent-id', agentId)
-        script.setAttribute('data-name', scriptName)
+        script.setAttribute('data-name', 'did-agent')
         script.setAttribute('data-monitor', 'true')
-        script.setAttribute('data-target-id', targetId)
+        script.setAttribute('data-target-id', 'did-agent-container')
 
         // load event not required for our flow
         document.body.appendChild(script)
@@ -120,7 +111,7 @@ export default function DraggableDidAgent({ docked = false, onUndock }: Draggabl
             // Clear container content in case library left elements inside
             try { container.innerHTML = '' } catch { /* noop */ }
         }
-    }, [shouldRender, docked])
+    }, [shouldRender])
 
     // Detect when the DID widget populates the container so we can drop the placeholder styling
     useEffect(() => {
@@ -219,66 +210,6 @@ export default function DraggableDidAgent({ docked = false, onUndock }: Draggabl
 
     if (!shouldRender) return null
 
-    // Docked mode: render for footer embedding
-    if (docked) {
-        return (
-            <div
-                ref={wrapperRef}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}
-            >
-                {/* Undock button */}
-                {onUndock && (
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            onUndock()
-                        }}
-                        style={{
-                            position: 'absolute',
-                            top: '8px',
-                            right: '8px',
-                            background: 'rgba(0, 0, 0, 0.7)',
-                            color: '#ffffff',
-                            border: 'none',
-                            borderRadius: '6px',
-                            padding: '4px 8px',
-                            fontSize: '11px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            zIndex: 2,
-                            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)'
-                        }}
-                        aria-label="Pop out agent"
-                    >
-                        Pop Out
-                    </button>
-                )}
-                
-                <div
-                    id="did-agent-container-docked"
-                    ref={containerRef}
-                    style={{
-                        width: '280px',
-                        height: '360px',
-                        background: hasEmbeddedContent ? 'transparent' : 'rgba(0,0,0,0.1)',
-                        border: hasEmbeddedContent ? 'none' : '1px solid rgba(255,255,255,0.2)',
-                        borderRadius: 12,
-                        boxShadow: hasEmbeddedContent ? 'none' : '0 4px 16px rgba(0,0,0,0.2)'
-                    }}
-                />
-            </div>
-        )
-    }
-
-    // Floating mode: original draggable behavior
     return (
         <div
             ref={wrapperRef}

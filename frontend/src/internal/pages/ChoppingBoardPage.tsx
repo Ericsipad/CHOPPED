@@ -46,7 +46,6 @@ export default function ChoppingBoardPage() {
     const [giftsCount, setGiftsCount] = useState<number>(0)
     const [aiModalOpen, setAiModalOpen] = useState(false)
     const [aiEnabled, setAiEnabled] = useState<boolean>(true)
-    const [isDidAgentDocked, setIsDidAgentDocked] = useState<boolean>(true)
 	const statusBarRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
@@ -436,7 +435,7 @@ export default function ChoppingBoardPage() {
 				<Container className="chopping-page-root with-bottom-nav">
 					<div style={{ position: 'relative' }}>
 						<HeroImage />
-						<div style={{ position: 'absolute', top: 52, left: 0, right: 0, bottom: 0, zIndex: 9 }}>
+						<div style={{ position: 'absolute', top: 52, left: 0, right: 0, bottom: !isMobile ? '220px' : 0, zIndex: 9 }}>
 							<div style={{ position: 'relative', width: '100%', height: '100%' }}>
 								{!isMobile && (
                     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, display: 'flex', justifyContent: 'center', padding: '8px 0', zIndex: 10 }}>
@@ -516,19 +515,17 @@ export default function ChoppingBoardPage() {
 					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
-                {/* Desktop-only floating D-ID agent when not docked (hidden on PWA/mobile by component guard) */}
-                {!isMobile && !isDidAgentDocked && <DraggableDidAgent />}
+                {/* Desktop-only floating D-ID agent (hidden on PWA/mobile by component guard) */}
+                {!isMobile && <DraggableDidAgent />}
                 
-                {/* AI-me Footer with docked D-ID agent */}
-                {!isMobile && isDidAgentDocked && (
+                {/* AI-me Footer - always visible on desktop */}
+                {!isMobile && (
                     <AIMeFooter
-                        onPopOutDidAgent={() => setIsDidAgentDocked(false)}
-                        didAgentComponent={
-                            <DraggableDidAgent
-                                docked={true}
-                                onUndock={() => setIsDidAgentDocked(false)}
-                            />
-                        }
+                        onPopOutDidAgent={() => {
+                            // Just a visual cue - the floating agent is already available
+                            // Could add animation or highlight effect to the floating agent here
+                            console.log('Pop out clicked - floating D-ID agent is already available')
+                        }}
                     />
                 )}
                 <ValidationModal
