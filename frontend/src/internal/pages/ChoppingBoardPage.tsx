@@ -522,21 +522,12 @@ export default function ChoppingBoardPage() {
                             onModeChange={setDidAgentMode}
                         />
                         
-                        {/* AI-me Footer - always visible with dynamic content */}
+                        {/* AI-me Footer - embed the D-ID agent directly in docked mode */}
                         <AIMeFooter
                             onPopOutDidAgent={() => setDidAgentMode('floating')}
                             didAgentComponent={
-                                didAgentMode === 'floating' ? (
-                                    <div style={{ 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center',
-                                        height: '100%',
-                                        color: 'rgba(255, 255, 255, 0.7)',
-                                        fontSize: '14px'
-                                    }}>
-                                        Agent popped out
-                                    </div>
+                                didAgentMode === 'docked' ? (
+                                    <DidAgentManager mode="docked" onModeChange={setDidAgentMode} renderTarget="embedded" />
                                 ) : (
                                     <div style={{ 
                                         display: 'flex', 
@@ -546,7 +537,7 @@ export default function ChoppingBoardPage() {
                                         color: 'rgba(255, 255, 255, 0.7)',
                                         fontSize: '14px'
                                     }}>
-                                        AI-me Agent Active
+                                        Agent popped out
                                     </div>
                                 )
                             }

@@ -18,9 +18,14 @@ function isStandalonePWA(): boolean {
 interface DidAgentManagerProps {
     mode: 'docked' | 'floating'
     onModeChange: (mode: 'docked' | 'floating') => void
+    /**
+     * Where to render the agent. 'standalone' = fixed positioned wrapper managed here.
+     * 'embedded' = return only the inner container so a parent can lay it out (e.g., inside footer).
+     */
+    renderTarget?: 'standalone' | 'embedded'
 }
 
-export default function DidAgentManager({ mode, onModeChange }: DidAgentManagerProps) {
+export default function DidAgentManager({ mode, onModeChange, renderTarget = 'standalone' }: DidAgentManagerProps) {
     const containerRef = useRef<HTMLDivElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     const [position, setPosition] = useState<Point | null>(null)
@@ -208,8 +213,20 @@ export default function DidAgentManager({ mode, onModeChange }: DidAgentManagerP
 
     if (!shouldRender) return null
 
-    // Docked mode: render for footer embedding
+    // Docked mode: either embed into parent (footer) or render as standalone fixed widget
     if (mode === 'docked') {
+        if (renderTarget === 'embedded') {
+            return (
+                <div
+                    id="did-agent-container-single"
+                    ref={containerRef}
+                    style={{
+                        width: '100%',
+                        height: '100%'
+                    }}
+                />
+            )
+        }
         return (
             <div
                 ref={wrapperRef}

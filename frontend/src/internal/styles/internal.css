@@ -59,9 +59,9 @@ html, body, #root {
     align-items: center;
 }
 
-/* Left spacer to account for desktop sidebar so header center stays centered */
-.internal-header-left-spacer { display: none; width: 240px; }
-@media (min-width: 1025px) { .internal-header-left-spacer { display: block; } }
+/* Header left spacer - only used on mobile; desktop header is already offset by sidebar */
+.internal-header-left-spacer { display: none; width: 0; }
+@media (max-width: 1024px) { .internal-header-left-spacer { display: block; width: 0; } }
 
 /* Desktop: anchor header to content area (right of fixed 240px sidebar) */
 @media (min-width: 1025px) {
