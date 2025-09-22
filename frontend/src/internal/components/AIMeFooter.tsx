@@ -1,40 +1,37 @@
 interface AIMeFooterProps {
     onPopOutDidAgent: () => void
+    didAgentComponent: React.ReactNode
 }
 
-export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
+export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMeFooterProps) {
     return (
         <div
             style={{
                 position: 'fixed',
-                bottom: '0px',
+                bottom: '20px',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 width: '75vw',
                 height: '200px',
                 background: 'rgba(255, 255, 255, 0.15)',
                 backdropFilter: 'blur(12px)',
-                borderRadius: '20px 20px 0 0',
+                borderRadius: '20px',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderBottom: 'none',
-                boxShadow: '0 -4px 32px rgba(0, 0, 0, 0.1)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
                 zIndex: 1000,
                 display: 'flex',
                 overflow: 'hidden'
             }}
         >
-            {/* Left side: Dynamic content placeholder */}
+            {/* Left side: AI-me D-ID Agent (permanent) */}
             <div
                 style={{
                     width: '300px',
                     height: '100%',
-                    borderRadius: '20px 0 0 0',
+                    borderRadius: '20px 0 0 20px',
                     overflow: 'hidden',
-                    position: 'relative',
-                    cursor: 'pointer',
-                    background: 'rgba(0, 0, 0, 0.05)'
+                    position: 'relative'
                 }}
-                onClick={onPopOutDidAgent}
             >
                 {/* Pop out button overlay */}
                 <button
@@ -60,38 +57,22 @@ export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
                     }}
                     aria-label="Pop out D-ID agent"
                 >
-                    Pop Out AI-me
+                    Pop Out
                 </button>
 
-                {/* Placeholder for dynamic content */}
+                {/* D-ID Agent container */}
                 <div
                     style={{
                         width: '100%',
                         height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: '20px 0 0 0'
+                        borderRadius: '20px 0 0 20px'
                     }}
                 >
-                    <div
-                        style={{
-                            color: 'rgba(255, 255, 255, 0.7)',
-                            textAlign: 'center',
-                            padding: '20px'
-                        }}
-                    >
-                        <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
-                            AI-me Agent
-                        </div>
-                        <div style={{ fontSize: '12px' }}>
-                            Dynamic content area
-                        </div>
-                    </div>
+                    {didAgentComponent}
                 </div>
             </div>
 
-            {/* Right side: Text content */}
+            {/* Right side: Dynamic content area */}
             <div
                 style={{
                     flex: 1,
@@ -123,6 +104,16 @@ export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
                 >
                     AI-me is your guide to dating and relationships. She is here to walk you through our proprietary 500 point matching system with normal conversation instead of boring forms. Over time she will ask questions and build your profile to help match you with the best available personalities hand picked for you. So please share Chopped on your social media so your perfect partner signs up and we can find them.
                 </p>
+                <div
+                    style={{
+                        marginTop: '8px',
+                        fontSize: '11px',
+                        color: 'rgba(255, 255, 255, 0.5)',
+                        fontStyle: 'italic'
+                    }}
+                >
+                    • Dynamic content area •
+                </div>
             </div>
         </div>
     )
