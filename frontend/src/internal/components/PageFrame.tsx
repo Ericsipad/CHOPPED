@@ -8,15 +8,16 @@ import '../styles/sidebar.css'
 type PageFrameProps = {
     children?: ReactNode
     headerContent?: ReactNode
+    headerLeftContent?: ReactNode
 }
 
 export default function PageFrame(props: PageFrameProps) {
-    const { children, headerContent } = props
+    const { children, headerContent, headerLeftContent } = props
     return (
         <div className="internal-app-shell">
             <SidebarNav />
             <div className="internal-app-content">
-                <TopHeader>
+                <TopHeader leftContent={headerLeftContent}>
                     {headerContent}
                 </TopHeader>
                 <div className="with-bottom-nav">

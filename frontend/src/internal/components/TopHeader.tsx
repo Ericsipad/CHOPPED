@@ -4,15 +4,20 @@ import UserIndicator from './UserIndicator'
 import PointsBadge from './PointsBadge'
 import '../styles/internal.css'
 
-type TopHeaderProps = { children?: ReactNode }
+type TopHeaderProps = { 
+    children?: ReactNode
+    leftContent?: ReactNode
+}
 
 export default function TopHeader(props: TopHeaderProps) {
-    const { children } = props
+    const { children, leftContent } = props
     return (
         <header className="internal-top-header">
             <Container>
                 <div className="internal-top-header-inner">
-                    <div className="internal-header-left-spacer" />
+                    <div className="internal-header-left-spacer" style={{ display: 'flex', alignItems: 'center' }}>
+                        {leftContent}
+                    </div>
                     {children ? (
                         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
                             {children}

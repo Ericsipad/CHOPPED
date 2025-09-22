@@ -18,8 +18,8 @@ import GiftModal from '../components/GiftModal'
 import GiftsInboxModal from '../components/GiftsInboxModal'
 import { fetchPendingMatchedMeCount } from '../lib/matchedMe'
 import { fetchUnwithdrawnGiftsCount } from '../lib/gifts'
-import DraggableDidAgent from '../components/DraggableDidAgent'
 import AIMeFooter from '../components/AIMeFooter'
+import DidAgentManager from '../components/DidAgentManager'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -46,7 +46,7 @@ export default function ChoppingBoardPage() {
     const [giftsCount, setGiftsCount] = useState<number>(0)
     const [aiModalOpen, setAiModalOpen] = useState(false)
     const [aiEnabled, setAiEnabled] = useState<boolean>(true)
-    const [showFloatingDidAgent, setShowFloatingDidAgent] = useState<boolean>(false)
+    const [didAgentMode, setDidAgentMode] = useState<'docked' | 'floating'>('docked')
 	const statusBarRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
@@ -431,6 +431,9 @@ export default function ChoppingBoardPage() {
 					</div>
 				</div>
 			) : null}
+			headerLeftContent={!isMobile ? (
+				<ViewCountDesktop value={viewCount} onChange={setViewCount} />
+			) : null}
 		>
 			<div>
 				<Container className="chopping-page-root with-bottom-nav">
@@ -443,13 +446,8 @@ export default function ChoppingBoardPage() {
                                         <StatusBar giftsCount={giftsCount} matchedMeCount={matchedMePendingCount} onGiftsClick={() => setGiftsInboxOpen(true)} onCenterClick={() => setAiModalOpen(true)} />
 									</div>
 								)}
-								{!isMobile && (
-									<div style={{ position: 'absolute', top: 0, left: 0, padding: '8px 12px', zIndex: 10 }}>
-										<ViewCountDesktop value={viewCount} onChange={setViewCount} />
-									</div>
-								)}
-								{/* Grid: align to top; provide extra space for desktop overlays (+15px below status bar) */}
-								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: isMobile ? 22 : 91 }}>
+								{/* Grid: align to top; reduced top padding since buttons moved to header */}
+								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: isMobile ? 22 : 60 }}>
 									<ProfileGrid
 										images={images}
 										viewCount={viewCount}
@@ -516,21 +514,44 @@ export default function ChoppingBoardPage() {
 					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
-                {/* Desktop-only floating D-ID agent - only when enabled (hidden on PWA/mobile by component guard) */}
-                {!isMobile && showFloatingDidAgent && <DraggableDidAgent />}
-                
-                {/* AI-me Footer - always visible on desktop with docked D-ID agent */}
+                {/* Single D-ID Agent Manager - handles both docked and floating modes */}
                 {!isMobile && (
-                    <AIMeFooter
-                        onPopOutDidAgent={() => {
-                            setShowFloatingDidAgent(true)
-                        }}
-                        didAgentComponent={
-                            <DraggableDidAgent
-                                docked={true}
-                            />
-                        }
-                    />
+                    <>
+                        <DidAgentManager 
+                            mode={didAgentMode}
+                            onModeChange={setDidAgentMode}
+                        />
+                        
+                        {/* AI-me Footer - always visible with dynamic content */}
+                        <AIMeFooter
+                            onPopOutDidAgent={() => setDidAgentMode('floating')}
+                            didAgentComponent={
+                                didAgentMode === 'floating' ? (
+                                    <div style={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center',
+                                        height: '100%',
+                                        color: 'rgba(255, 255, 255, 0.7)',
+                                        fontSize: '14px'
+                                    }}>
+                                        Agent popped out
+                                    </div>
+                                ) : (
+                                    <div style={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center',
+                                        height: '100%',
+                                        color: 'rgba(255, 255, 255, 0.7)',
+                                        fontSize: '14px'
+                                    }}>
+                                        AI-me Agent Active
+                                    </div>
+                                )
+                            }
+                        />
+                    </>
                 )}
                 <ValidationModal
                     isOpen={aiModalOpen}
