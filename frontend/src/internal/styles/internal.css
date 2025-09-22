@@ -63,6 +63,15 @@ html, body, #root {
 .internal-header-left-spacer { display: none; width: 240px; }
 @media (min-width: 1025px) { .internal-header-left-spacer { display: block; } }
 
+/* Desktop: anchor header to content area (right of fixed 240px sidebar) */
+@media (min-width: 1025px) {
+    .internal-app-content .internal-top-header {
+        left: 0; /* relative to .internal-app-content which is positioned in sidebar.css */
+        right: auto;
+        width: 100%;
+    }
+}
+
 /* Light mode header color */
 #root.internal-bg--light .internal-top-header { background-color: #F2995A; }
 #root.internal-bg--light .internal-top-header-inner { background: #F2995A; }
@@ -1256,4 +1265,13 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 /* Mobile: keep display name full row; age + height as two columns */
 .profile-page-root .profile-public-panel__inputs { grid-template-columns: 1fr; }
 	.profile-page-root .profile-iam__grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ===== DESKTOP: CENTER AI-ME FOOTER TO CONTENT AREA ===== */
+@media (min-width: 1025px) {
+    /* Place footer at the horizontal center of the content column (right of 240px sidebar) */
+    .ai-me-footer {
+        left: calc(240px + (100vw - 240px) / 2);
+        transform: translateX(-50%);
+    }
 }

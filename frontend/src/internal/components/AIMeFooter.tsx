@@ -6,14 +6,15 @@ interface AIMeFooterProps {
 export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMeFooterProps) {
     return (
         <div
+            className="ai-me-footer"
             style={{
                 position: 'fixed',
                 bottom: '20px',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 width: 'fit-content',
-                minWidth: '800px',
-                maxWidth: '75vw',
+                minWidth: 'min(800px, calc(100vw - 280px))',
+                maxWidth: 'min(75vw, calc(100vw - 280px))',
                 height: '200px',
                 background: 'rgba(255, 255, 255, 0.15)',
                 backdropFilter: 'blur(12px)',
