@@ -56,18 +56,19 @@ html, body, #root {
     z-index: 10;
 }
 
-/* Desktop: position header relative to viewport to align with sidebar */
+/* Desktop: position the view count controls directly to attach to sidebar */
 @media (min-width: 1025px) {
-    .internal-top-header {
-        position: fixed; /* Fixed to viewport, not content area */
+    /* Position the ViewCountDesktop component (profile-tabs__nav) to align with sidebar */
+    .internal-header-left-spacer .profile-tabs__nav {
+        position: fixed;
+        top: 8px;
         left: 240px; /* Align with expanded sidebar */
-        right: 0; /* Extend to right edge */
-        width: auto; /* Let it fill the space */
+        z-index: 1001; /* Above header */
         transition: left 180ms ease; /* Match sidebar timing */
     }
     
-    /* When sidebar collapses, move header to align with collapsed sidebar */
-    body.sidebar-collapsed .internal-top-header {
+    /* When sidebar collapses, move view count controls to align with collapsed sidebar */
+    body.sidebar-collapsed .internal-header-left-spacer .profile-tabs__nav {
         left: 72px; /* Align with collapsed sidebar */
     }
 }
