@@ -3,7 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 type Point = { top: number; left: number }
 
 function isDesktop(): boolean {
-    try { return window.matchMedia('(min-width: 1024px)').matches } catch { return true }
+    try { return window.matchMedia('(min-width: 1025px)').matches } catch { return true }
 }
 
 function isStandalonePWA(): boolean {
@@ -85,13 +85,24 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
 
     // Inject the DID script (only once)
     useEffect(() => {
-        if (!shouldRender) return
+        if (!shouldRender) {
+            console.log('D-ID Agent: shouldRender is false')
+            return
+        }
         const container = containerRef.current
-        if (!container) return
+        if (!container) {
+            console.log('D-ID Agent: container not found')
+            return
+        }
 
         // Avoid duplicate injection
         const existing = document.querySelector('script[data-name="did-agent-manager"]') as HTMLScriptElement | null
-        if (existing) { return }
+        if (existing) { 
+            console.log('D-ID Agent: script already exists')
+            return 
+        }
+
+        console.log('D-ID Agent: injecting script for container', container.id)
 
         // Use provided D-ID configuration
         const clientKey = 'Z29vZ2xlLW9hdXRoMnwxMDc5NTgwNzg3NjI5Nzc2NjE3Mjc6RXBaWnNzeWwxVVVLUldFRHZFbVRX'
@@ -108,10 +119,12 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
         script.setAttribute('data-target-id', 'did-agent-container-single')
 
         document.body.appendChild(script)
+        console.log('D-ID Agent: script injected successfully')
 
         return () => {
             try {
                 script.remove()
+                console.log('D-ID Agent: script removed')
             } catch { /* noop */ }
             try { container.innerHTML = '' } catch { /* noop */ }
         }
