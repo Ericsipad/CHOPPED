@@ -61,15 +61,16 @@ html, body, #root {
     /* Position the ViewCountDesktop component (profile-tabs__nav) to align with sidebar */
     .internal-header-left-spacer .profile-tabs__nav {
         position: fixed;
-        top: 8px;
-        left: 240px; /* Align with expanded sidebar */
+        top: 50%; /* Center vertically */
+        transform: translateY(-50%); /* Center vertically */
+        left: calc(240px + 16px); /* Sidebar width + 16px padding */
         z-index: 1001; /* Above header */
         transition: left 180ms ease; /* Match sidebar timing */
     }
     
     /* When sidebar collapses, move view count controls to align with collapsed sidebar */
     body.sidebar-collapsed .internal-header-left-spacer .profile-tabs__nav {
-        left: 72px; /* Align with collapsed sidebar */
+        left: calc(72px + 16px); /* Collapsed sidebar width + 16px padding */
     }
 }
 
