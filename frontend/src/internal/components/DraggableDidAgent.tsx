@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 interface DraggableDidAgentProps {
     onDock?: () => void
@@ -15,7 +15,7 @@ export default function DraggableDidAgent({ onDock }: DraggableDidAgentProps) {
         const existing = document.querySelector('script[data-name="did-agent-floating"]')
         if (existing) return
 
-        // D-ID configuration - same as working version
+        // D-ID configuration - simple working version
         const clientKey = 'Z29vZ2xlLW9hdXRoMnwxMDc5NTgwNzg3NjI5Nzc2NjE3Mjc6RXBaWnNzeWwxVVVLUldFRHZFbVRX'
         const agentId = 'v2_agt_lEvnXilr'
 
