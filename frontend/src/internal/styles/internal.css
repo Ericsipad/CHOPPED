@@ -76,6 +76,7 @@ html, body, #root {
         left: 0; /* relative to .internal-app-content which is positioned in sidebar.css */
         right: auto;
         width: 100%;
+        transition: left 180ms ease, width 180ms ease; /* Match sidebar collapse animation timing */
     }
 }
 
