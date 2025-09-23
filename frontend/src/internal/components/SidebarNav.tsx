@@ -28,6 +28,12 @@ export default function SidebarNav() {
 
 	useEffect(() => {
 		try { localStorage.setItem('sidebar_collapsed', collapsed ? '1' : '0') } catch { /* noop */ }
+		// Update body class to communicate sidebar state to CSS
+		try {
+			if (typeof document !== 'undefined') {
+				document.body.classList.toggle('sidebar-collapsed', collapsed)
+			}
+		} catch { /* noop */ }
 	}, [collapsed])
 
 	const items: NavItem[] = [

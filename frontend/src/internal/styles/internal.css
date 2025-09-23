@@ -8,6 +8,13 @@ html, body, #root {
 	background-color: #000000;
 }
 
+/* Prevent horizontal scroll on desktop */
+@media (min-width: 1025px) {
+	html, body {
+		overflow-x: hidden;
+	}
+}
+
 /* Light background for internal pages when enabled */
 #root.internal-bg--light {
 	background-color: #ffffff;
@@ -144,6 +151,14 @@ html, body, #root {
 	margin: 0 auto;
 	padding: 0 16px;
 	position: relative;
+}
+
+/* Desktop: remove container padding for chopping board to ensure perfect centering */
+@media (min-width: 1025px) {
+	.chopping-page-root.internal-container {
+		padding-left: 0;
+		padding-right: 0;
+	}
 }
 
 .internal-hero {
@@ -1269,9 +1284,14 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 
 /* ===== DESKTOP: CENTER AI-ME FOOTER TO CONTENT AREA ===== */
 @media (min-width: 1025px) {
-    /* Place footer at the horizontal center of the content column (right of 240px sidebar) */
+    /* Place footer at the horizontal center of the content column (right of sidebar) */
     .ai-me-footer {
         left: calc(240px + (100vw - 240px) / 2);
+        transform: translateX(-50%);
+    }
+    /* When sidebar is collapsed, adjust footer position */
+    body.sidebar-collapsed .ai-me-footer {
+        left: calc(72px + (100vw - 72px) / 2);
         transform: translateX(-50%);
     }
 }

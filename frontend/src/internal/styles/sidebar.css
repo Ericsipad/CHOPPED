@@ -78,7 +78,8 @@
 	.internal-app-shell { display: flex; }
 	/* When the sidebar is present, offset content by expanded width by default */
     .internal-app-content { margin-left: 240px; width: calc(100% - 240px); position: relative; }
-	/* If the sidebar is collapsed, we cannot target sibling, so provide an optional body class hook if needed later. */
+	/* When sidebar is collapsed, adjust content offset */
+	body.sidebar-collapsed .internal-app-content { margin-left: 72px; width: calc(100% - 72px); }
 }
 
 /* Light mode adjustments */
