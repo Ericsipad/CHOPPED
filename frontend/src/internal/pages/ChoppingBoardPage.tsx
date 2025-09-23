@@ -19,7 +19,8 @@ import GiftsInboxModal from '../components/GiftsInboxModal'
 import { fetchPendingMatchedMeCount } from '../lib/matchedMe'
 import { fetchUnwithdrawnGiftsCount } from '../lib/gifts'
 import AIMeFooter from '../components/AIMeFooter'
-import DidAgentManager from '../components/DidAgentManager'
+import FooterDidAgent from '../components/FooterDidAgent'
+import FloatingDidAgent from '../components/FloatingDidAgent'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -519,21 +520,20 @@ export default function ChoppingBoardPage() {
 					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
-                {/* D-ID Agent Manager - only render standalone for floating mode */}
-                {!isMobile && didAgentMode === 'floating' && (
-                    <DidAgentManager 
-                        mode={didAgentMode}
-                        onModeChange={handleDidAgentModeChange}
-                    />
-                )}
-                
-                {/* AI-me Footer - embed the D-ID agent directly in docked mode */}
+                {/* Simple D-ID agents */}
                 {!isMobile && (
+                    <>
+                        {/* Floating D-ID agent - only when popped out */}
+                        {didAgentMode === 'floating' && (
+                            <FloatingDidAgent onDock={() => handleDidAgentModeChange('docked')} />
+                        )}
+                        
+                        {/* AI-me Footer with embedded D-ID agent */}
                         <AIMeFooter
                             onPopOutDidAgent={() => handleDidAgentModeChange('floating')}
                             didAgentComponent={
                                 didAgentMode === 'docked' ? (
-                                    <DidAgentManager mode="docked" onModeChange={handleDidAgentModeChange} renderTarget="embedded" />
+                                    <FooterDidAgent />
                                 ) : (
                                     <div style={{ 
                                         display: 'flex', 
@@ -548,6 +548,7 @@ export default function ChoppingBoardPage() {
                                 )
                             }
                         />
+                    </>
                 )}
                 <ValidationModal
                     isOpen={aiModalOpen}
