@@ -118,7 +118,10 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
         script.setAttribute('data-agent-id', agentId)
         script.setAttribute('data-name', 'did-agent-manager')
         script.setAttribute('data-monitor', 'true')
-        script.setAttribute('data-target-id', 'did-agent-container-single')
+        const targetId = mode === 'docked' && renderTarget === 'embedded' 
+            ? 'did-agent-container-docked' 
+            : 'did-agent-container-floating'
+        script.setAttribute('data-target-id', targetId)
 
         document.body.appendChild(script)
         console.log('D-ID Agent: script injected successfully')
@@ -238,7 +241,7 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
         if (renderTarget === 'embedded') {
             return (
                 <div
-                    id="did-agent-container-single"
+                    id="did-agent-container-docked"
                     ref={containerRef}
                     style={{
                         width: '100%',
@@ -269,7 +272,7 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
                 }}
             >
                 <div
-                    id="did-agent-container-single"
+                    id="did-agent-container-floating"
                     ref={containerRef}
                     style={{
                         width: '280px',
@@ -318,7 +321,7 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
             </button>
 
             <div
-                id="did-agent-container-single"
+                id="did-agent-container-floating"
                 ref={containerRef}
                 style={{
                     width: BASE_W,
