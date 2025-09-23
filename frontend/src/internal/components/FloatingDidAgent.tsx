@@ -10,12 +10,26 @@ export default function FloatingDidAgent({ onDock }: FloatingDidAgentProps) {
     const [position] = useState({ top: 100, left: 100 })
 
     useEffect(() => {
-        const container = containerRef.current
-        if (!container) return
+        // Wait a bit for the container to be properly mounted and visible
+        const timer = setTimeout(() => {
+            const container = containerRef.current
+            if (!container) {
+                console.log('Floating D-ID Agent: container not found')
+                return
+            }
 
-        // Check if script already exists
-        const existing = document.querySelector('script[data-name="floating-did-agent"]')
-        if (existing) return
+            // Check if container is visible and has dimensions
+            if (container.offsetWidth === 0 || container.offsetHeight === 0) {
+                console.log('Floating D-ID Agent: container not visible', container.offsetWidth, 'x', container.offsetHeight)
+                return
+            }
+
+            // Check if script already exists
+            const existing = document.querySelector('script[data-name="floating-did-agent"]')
+            if (existing) {
+                console.log('Floating D-ID Agent: script already exists')
+                return
+            }
 
         // D-ID configuration
         const clientKey = 'Z29vZ2xlLW9hdXRoMnwxMDc5NTgwNzg3NjI5Nzc2NjE3Mjc6RXBaWnNzeWwxVVVLUldFRHZFbVRX'
@@ -39,14 +53,12 @@ export default function FloatingDidAgent({ onDock }: FloatingDidAgentProps) {
             console.error('Floating D-ID Agent: script failed', e)
         })
 
-        document.body.appendChild(script)
-        console.log('Floating D-ID Agent: script injected')
+            document.body.appendChild(script)
+            console.log('Floating D-ID Agent: script injected')
+        }, 500) // Wait 500ms for container to be ready
 
         return () => {
-            try {
-                script.remove()
-                console.log('Floating D-ID Agent: script removed')
-            } catch { /* noop */ }
+            clearTimeout(timer)
         }
     }, [])
 
