@@ -1291,14 +1291,15 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	.profile-page-root .profile-iam__grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ===== DESKTOP: CENTER AI-ME FOOTER TO CONTENT AREA ===== */
+/* ===== DESKTOP: CENTER AI-ME FOOTER TO MATCH STATUS BAR AND TILES ===== */
 @media (min-width: 1025px) {
-    /* Place footer at the horizontal center of the content column (right of sidebar) */
+    /* Place footer at the exact center of content area to match StatusBar and ProfileGrid */
     .ai-me-footer {
         left: calc(240px + (100vw - 240px) / 2);
         transform: translateX(-50%);
+        /* Ensure it aligns with the centered StatusBar and ProfileGrid */
     }
-    /* When sidebar is collapsed, adjust footer position */
+    /* When sidebar is collapsed, adjust footer position to match */
     body.sidebar-collapsed .ai-me-footer {
         left: calc(72px + (100vw - 72px) / 2);
         transform: translateX(-50%);
