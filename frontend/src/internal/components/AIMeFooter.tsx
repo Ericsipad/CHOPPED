@@ -10,8 +10,7 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
             style={{
                 position: 'fixed',
                 bottom: '20px',
-                left: '50%',
-                transform: 'translateX(-50%)',
+                // left and transform handled by CSS for proper sidebar-aware centering
                 width: 'fit-content',
                 minWidth: '800px',
                 maxWidth: 'min(1200px, calc(100vw - 280px))',

@@ -1293,11 +1293,11 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 
 /* ===== DESKTOP: CENTER AI-ME FOOTER TO MATCH STATUS BAR AND TILES ===== */
 @media (min-width: 1025px) {
-    /* Place footer at the exact center of content area to match StatusBar and ProfileGrid */
+    /* Center footer in content area to align with StatusBar and ProfileGrid */
     .ai-me-footer {
         left: calc(240px + (100vw - 240px) / 2);
         transform: translateX(-50%);
-        /* Ensure it aligns with the centered StatusBar and ProfileGrid */
+        /* Now properly controlled by CSS without inline style conflicts */
     }
     /* When sidebar is collapsed, adjust footer position to match */
     body.sidebar-collapsed .ai-me-footer {
