@@ -84,16 +84,25 @@ export default function DraggableDidAgent({ docked = false, onDock }: DraggableD
     // Inject the DID script
     useEffect(() => {
         if (!shouldRender) return
-        const container = containerRef.current
-        if (!container) return
+        
+        // Wait for container to be ready
+        const timer = setTimeout(() => {
+            const container = containerRef.current
+            if (!container) {
+                console.log('DraggableDidAgent: container not found')
+                return
+            }
 
-        // Use different target IDs for docked vs floating modes
-        const targetId = docked ? 'did-agent-container-docked' : 'did-agent-container'
-        const scriptName = docked ? 'did-agent-docked' : 'did-agent'
+            // Use different target IDs for docked vs floating modes
+            const targetId = docked ? 'did-agent-container-docked' : 'did-agent-container'
+            const scriptName = docked ? 'did-agent-docked' : 'did-agent'
 
-        // Avoid duplicate injection for the same mode
-        const existing = document.querySelector(`script[data-name="${scriptName}"]`) as HTMLScriptElement | null
-        if (existing) { return }
+            // Avoid duplicate injection for the same mode
+            const existing = document.querySelector(`script[data-name="${scriptName}"]`) as HTMLScriptElement | null
+            if (existing) { 
+                console.log('DraggableDidAgent: script already exists:', scriptName)
+                return 
+            }
 
         // Use provided D-ID configuration (domain-restricted client key and agent id)
         const clientKey = 'Z29vZ2xlLW9hdXRoMnwxMDc5NTgwNzg3NjI5Nzc2NjE3Mjc6RXBaWnNzeWwxVVVLUldFRHZFbVRX'
@@ -109,16 +118,20 @@ export default function DraggableDidAgent({ docked = false, onDock }: DraggableD
         script.setAttribute('data-monitor', 'true')
         script.setAttribute('data-target-id', targetId)
 
-        // load event not required for our flow
-        document.body.appendChild(script)
+            // Add event listeners
+            script.addEventListener('load', () => {
+                console.log('DraggableDidAgent: script loaded successfully')
+            })
+            script.addEventListener('error', (e) => {
+                console.error('DraggableDidAgent: script failed to load', e)
+            })
+
+            document.body.appendChild(script)
+            console.log('DraggableDidAgent: script injected for', scriptName)
+        }, 500) // Wait 500ms for container to be ready
 
         return () => {
-            try {
-                // Remove the script tag
-                script.remove()
-            } catch { /* noop */ }
-            // Clear container content in case library left elements inside
-            try { container.innerHTML = '' } catch { /* noop */ }
+            clearTimeout(timer)
         }
     }, [shouldRender, docked])
 
