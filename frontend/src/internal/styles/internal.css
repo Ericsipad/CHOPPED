@@ -56,6 +56,14 @@ html, body, #root {
     z-index: 10;
 }
 
+/* Desktop: remove viewport spanning so header can be positioned relative to content area */
+@media (min-width: 1025px) {
+    .internal-top-header {
+        right: auto; /* Don't span to viewport edge */
+        width: 100%; /* Take full width of parent container */
+    }
+}
+
 /* Gradient bar constrained to the container width */
 .internal-top-header-inner {
     height: 100%;
@@ -74,9 +82,6 @@ html, body, #root {
 @media (min-width: 1025px) {
     .internal-app-content .internal-top-header {
         left: 0; /* relative to .internal-app-content which is positioned in sidebar.css */
-        right: auto;
-        width: 100%;
-        transition: left 180ms ease, width 180ms ease; /* Match sidebar collapse animation timing */
     }
 }
 
