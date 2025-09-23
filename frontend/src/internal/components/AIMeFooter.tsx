@@ -41,6 +41,7 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                     type="button"
                     onClick={(e) => {
                         e.stopPropagation()
+                        console.log('Pop Out button clicked')
                         onPopOutDidAgent()
                     }}
                     style={{

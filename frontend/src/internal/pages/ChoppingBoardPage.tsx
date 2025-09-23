@@ -47,6 +47,11 @@ export default function ChoppingBoardPage() {
     const [aiModalOpen, setAiModalOpen] = useState(false)
     const [aiEnabled, setAiEnabled] = useState<boolean>(true)
     const [didAgentMode, setDidAgentMode] = useState<'docked' | 'floating'>('docked')
+    
+    const handleDidAgentModeChange = (mode: 'docked' | 'floating') => {
+        console.log('D-ID Agent mode changing from', didAgentMode, 'to', mode)
+        setDidAgentMode(mode)
+    }
 	const statusBarRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
@@ -518,17 +523,17 @@ export default function ChoppingBoardPage() {
                 {!isMobile && didAgentMode === 'floating' && (
                     <DidAgentManager 
                         mode={didAgentMode}
-                        onModeChange={setDidAgentMode}
+                        onModeChange={handleDidAgentModeChange}
                     />
                 )}
                 
                 {/* AI-me Footer - embed the D-ID agent directly in docked mode */}
                 {!isMobile && (
                         <AIMeFooter
-                            onPopOutDidAgent={() => setDidAgentMode('floating')}
+                            onPopOutDidAgent={() => handleDidAgentModeChange('floating')}
                             didAgentComponent={
                                 didAgentMode === 'docked' ? (
-                                    <DidAgentManager mode="docked" onModeChange={setDidAgentMode} renderTarget="embedded" />
+                                    <DidAgentManager mode="docked" onModeChange={handleDidAgentModeChange} renderTarget="embedded" />
                                 ) : (
                                     <div style={{ 
                                         display: 'flex', 

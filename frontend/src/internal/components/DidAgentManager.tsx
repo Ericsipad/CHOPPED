@@ -102,7 +102,9 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
             return 
         }
 
-        console.log('D-ID Agent: injecting script for container', container.id)
+        console.log('D-ID Agent: injecting script for container', container.id, 'mode:', mode, 'renderTarget:', renderTarget)
+        console.log('D-ID Agent: container dimensions:', container.offsetWidth, 'x', container.offsetHeight)
+        console.log('D-ID Agent: container visible:', container.offsetParent !== null)
 
         // Use provided D-ID configuration
         const clientKey = 'Z29vZ2xlLW9hdXRoMnwxMDc5NTgwNzg3NjI5Nzc2NjE3Mjc6RXBaWnNzeWwxVVVLUldFRHZFbVRX'
@@ -135,9 +137,14 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
         if (!shouldRender) return
         const el = containerRef.current
         if (!el) return
+        console.log('D-ID Agent: setting up mutation observer for', el.id)
         const observer = new MutationObserver(() => {
             try {
-                if (el.childNodes.length > 0) setHasEmbeddedContent(true)
+                console.log('D-ID Agent: container mutation detected, childNodes:', el.childNodes.length)
+                if (el.childNodes.length > 0) {
+                    console.log('D-ID Agent: content detected, setting hasEmbeddedContent to true')
+                    setHasEmbeddedContent(true)
+                }
             } catch { /* noop */ }
         })
         observer.observe(el, { childList: true, subtree: false })
@@ -235,7 +242,13 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
                     ref={containerRef}
                     style={{
                         width: '100%',
-                        height: '100%'
+                        height: '100%',
+                        background: hasEmbeddedContent ? 'transparent' : 'rgba(0,0,0,0.1)',
+                        border: hasEmbeddedContent ? 'none' : '1px solid rgba(255,255,255,0.2)',
+                        borderRadius: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                     }}
                 />
             )
@@ -294,7 +307,7 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
             {/* Right: dock button (changes to dock/minimize based on mode) */}
             <button
                 type="button"
-                onClick={(e) => { e.stopPropagation(); onModeChange('docked'); }}
+                onClick={(e) => { e.stopPropagation(); console.log('Dock button clicked, changing to docked mode'); onModeChange('docked'); }}
                 className="did-agent-drag-handle"
                 style={{ position: 'absolute', top: -18, right: -6, zIndex: 3, background: '#ffffff', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 8, padding: '4px 10px', boxShadow: '0 4px 10px rgba(0,0,0,0.12)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                 aria-label="Dock to footer"
