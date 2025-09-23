@@ -17,9 +17,10 @@ function isStandalonePWA(): boolean {
 
 interface DraggableDidAgentProps {
     docked?: boolean
+    onDock?: () => void
 }
 
-export default function DraggableDidAgent({ docked = false }: DraggableDidAgentProps) {
+export default function DraggableDidAgent({ docked = false, onDock }: DraggableDidAgentProps) {
     const containerRef = useRef<HTMLDivElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     // no-op state removed; script load state not needed
@@ -268,16 +269,16 @@ export default function DraggableDidAgent({ docked = false }: DraggableDidAgentP
                 <span aria-hidden="true" style={{ fontSize: 12 }}>↕↔</span>
             </button>
 
-            {/* Right: drag handle button (only this starts dragging) */}
+            {/* Right: dock button */}
             <button
                 type="button"
-                className="did-agent-drag-handle"
-                style={{ position: 'absolute', top: -18, right: -6, zIndex: 3, background: '#ffffff', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 8, padding: '4px 10px', boxShadow: '0 4px 10px rgba(0,0,0,0.12)', cursor: 'move', display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                aria-label="Drag to move"
-                title="Drag"
+                onClick={(e) => { e.stopPropagation(); onDock?.(); }}
+                style={{ position: 'absolute', top: -18, right: -6, zIndex: 3, background: '#ffffff', color: '#111111', border: '1px solid rgba(0,0,0,0.15)', borderRadius: 8, padding: '4px 10px', boxShadow: '0 4px 10px rgba(0,0,0,0.12)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                aria-label="Dock to footer"
+                title="Dock"
             >
-                <span style={{ fontSize: 12, fontWeight: 700 }}>Drag</span>
-                <span aria-hidden="true" style={{ fontSize: 12 }}>⠿</span>
+                <span style={{ fontSize: 12, fontWeight: 700 }}>Dock</span>
+                <span aria-hidden="true" style={{ fontSize: 12 }}>⤓</span>
             </button>
             <div
                 id="did-agent-container"

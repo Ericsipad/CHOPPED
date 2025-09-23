@@ -20,7 +20,7 @@ import { fetchPendingMatchedMeCount } from '../lib/matchedMe'
 import { fetchUnwithdrawnGiftsCount } from '../lib/gifts'
 import AIMeFooter from '../components/AIMeFooter'
 import FooterDidAgent from '../components/FooterDidAgent'
-import FloatingDidAgent from '../components/FloatingDidAgent'
+import DraggableDidAgent from '../components/DraggableDidAgent'
 
 export default function ChoppingBoardPage() {
     const [modalOpen, setModalOpen] = useState(false)
@@ -523,9 +523,9 @@ export default function ChoppingBoardPage() {
                 {/* Simple D-ID agents */}
                 {!isMobile && (
                     <>
-                        {/* Floating D-ID agent - only when popped out */}
+                        {/* Floating D-ID agent - only when popped out (using working DraggableDidAgent) */}
                         {didAgentMode === 'floating' && (
-                            <FloatingDidAgent onDock={() => handleDidAgentModeChange('docked')} />
+                            <DraggableDidAgent onDock={() => handleDidAgentModeChange('docked')} />
                         )}
                         
                         {/* AI-me Footer with embedded D-ID agent */}
