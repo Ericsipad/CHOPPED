@@ -19,7 +19,6 @@ import GiftsInboxModal from '../components/GiftsInboxModal'
 import { fetchPendingMatchedMeCount } from '../lib/matchedMe'
 import { fetchUnwithdrawnGiftsCount } from '../lib/gifts'
 import AIMeFooter from '../components/AIMeFooter'
-import FooterDidAgent from '../components/FooterDidAgent'
 import DraggableDidAgent from '../components/DraggableDidAgent'
 
 export default function ChoppingBoardPage() {
@@ -47,12 +46,6 @@ export default function ChoppingBoardPage() {
     const [giftsCount, setGiftsCount] = useState<number>(0)
     const [aiModalOpen, setAiModalOpen] = useState(false)
     const [aiEnabled, setAiEnabled] = useState<boolean>(true)
-    const [didAgentMode, setDidAgentMode] = useState<'docked' | 'floating'>('docked')
-    
-    const handleDidAgentModeChange = (mode: 'docked' | 'floating') => {
-        console.log('D-ID Agent mode changing from', didAgentMode, 'to', mode)
-        setDidAgentMode(mode)
-    }
 	const statusBarRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
@@ -520,35 +513,28 @@ export default function ChoppingBoardPage() {
 					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
-                {/* Simple D-ID agents */}
+                {/* Original working DraggableDidAgent - always rendered */}
                 {!isMobile && (
-                    <>
-                        {/* Floating D-ID agent - only when popped out (using working DraggableDidAgent) */}
-                        {didAgentMode === 'floating' && (
-                            <DraggableDidAgent onDock={() => handleDidAgentModeChange('docked')} />
-                        )}
-                        
-                        {/* AI-me Footer with embedded D-ID agent */}
-                        <AIMeFooter
-                            onPopOutDidAgent={() => handleDidAgentModeChange('floating')}
-                            didAgentComponent={
-                                didAgentMode === 'docked' ? (
-                                    <FooterDidAgent />
-                                ) : (
-                                    <div style={{ 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center',
-                                        height: '100%',
-                                        color: 'rgba(255, 255, 255, 0.7)',
-                                        fontSize: '14px'
-                                    }}>
-                                        Agent popped out
-                                    </div>
-                                )
-                            }
-                        />
-                    </>
+                    <DraggableDidAgent />
+                )}
+                
+                {/* AI-me Footer - simple version */}
+                {!isMobile && (
+                    <AIMeFooter
+                        onPopOutDidAgent={() => {}}
+                        didAgentComponent={
+                            <div style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                height: '100%',
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                fontSize: '14px'
+                            }}>
+                                D-ID Agent above
+                            </div>
+                        }
+                    />
                 )}
                 <ValidationModal
                     isOpen={aiModalOpen}
