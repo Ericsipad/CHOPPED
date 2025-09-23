@@ -514,15 +514,16 @@ export default function ChoppingBoardPage() {
 					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
-                {/* Single D-ID Agent Manager - handles both docked and floating modes */}
+                {/* D-ID Agent Manager - only render standalone for floating mode */}
+                {!isMobile && didAgentMode === 'floating' && (
+                    <DidAgentManager 
+                        mode={didAgentMode}
+                        onModeChange={setDidAgentMode}
+                    />
+                )}
+                
+                {/* AI-me Footer - embed the D-ID agent directly in docked mode */}
                 {!isMobile && (
-                    <>
-                        <DidAgentManager 
-                            mode={didAgentMode}
-                            onModeChange={setDidAgentMode}
-                        />
-                        
-                        {/* AI-me Footer - embed the D-ID agent directly in docked mode */}
                         <AIMeFooter
                             onPopOutDidAgent={() => setDidAgentMode('floating')}
                             didAgentComponent={
@@ -542,7 +543,6 @@ export default function ChoppingBoardPage() {
                                 )
                             }
                         />
-                    </>
                 )}
                 <ValidationModal
                     isOpen={aiModalOpen}
