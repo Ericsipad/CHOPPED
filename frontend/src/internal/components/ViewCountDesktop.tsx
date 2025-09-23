@@ -37,7 +37,7 @@ export default function ViewCountDesktop(props: Props) {
     if (!isDesktop) return null
 
     return (
-        <div className="profile-tabs__nav" style={{ margin: 0, alignItems: 'center' }}>
+        <div className="profile-tabs__nav" style={{ margin: 0, alignItems: 'center', paddingTop: '6px', paddingBottom: '6px' }}>
             <button
                 className={["profile-tabs__btn", value === 10 ? 'is-active' : ''].filter(Boolean).join(' ')}
                 onClick={() => onChange(10)}

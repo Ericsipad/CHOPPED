@@ -447,7 +447,7 @@ export default function ChoppingBoardPage() {
 									</div>
 								)}
 								{/* Grid: align to top; reduced top padding since buttons moved to header */}
-								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: isMobile ? 22 : 60 }}>
+								<div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', paddingTop: isMobile ? 22 : 100 }}>
 									<ProfileGrid
 										images={images}
 										viewCount={viewCount}
