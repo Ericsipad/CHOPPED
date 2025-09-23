@@ -56,12 +56,19 @@ html, body, #root {
     z-index: 10;
 }
 
-/* Desktop: header follows parent container which is already positioned by sidebar */
+/* Desktop: position header relative to viewport to align with sidebar */
 @media (min-width: 1025px) {
     .internal-top-header {
-        left: 0; /* Relative to parent .internal-app-content */
-        right: 0; /* Fill parent width */
-        width: 100%; /* Full width of parent container */
+        position: fixed; /* Fixed to viewport, not content area */
+        left: 240px; /* Align with expanded sidebar */
+        right: 0; /* Extend to right edge */
+        width: auto; /* Let it fill the space */
+        transition: left 180ms ease; /* Match sidebar timing */
+    }
+    
+    /* When sidebar collapses, move header to align with collapsed sidebar */
+    body.sidebar-collapsed .internal-top-header {
+        left: 72px; /* Align with collapsed sidebar */
     }
 }
 
