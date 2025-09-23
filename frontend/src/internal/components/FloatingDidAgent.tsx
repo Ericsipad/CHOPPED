@@ -7,7 +7,7 @@ type FloatingDidAgentProps = {
 export default function FloatingDidAgent({ onDock }: FloatingDidAgentProps) {
     const containerRef = useRef<HTMLDivElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
-    const [position, setPosition] = useState({ top: 100, left: 100 })
+    const [position] = useState({ top: 100, left: 100 })
 
     useEffect(() => {
         const container = containerRef.current
