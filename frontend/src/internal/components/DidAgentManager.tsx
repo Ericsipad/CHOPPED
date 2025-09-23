@@ -95,10 +95,15 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
             return
         }
 
+        // Use different script names for different modes to avoid conflicts
+        const scriptName = mode === 'docked' && renderTarget === 'embedded' 
+            ? 'did-agent-manager-docked' 
+            : 'did-agent-manager-floating'
+            
         // Avoid duplicate injection
-        const existing = document.querySelector('script[data-name="did-agent-manager"]') as HTMLScriptElement | null
+        const existing = document.querySelector(`script[data-name="${scriptName}"]`) as HTMLScriptElement | null
         if (existing) { 
-            console.log('D-ID Agent: script already exists')
+            console.log('D-ID Agent: script already exists:', scriptName)
             return 
         }
 
@@ -116,17 +121,33 @@ export default function DidAgentManager({ mode, onModeChange, renderTarget = 'st
         script.setAttribute('data-mode', 'full')
         script.setAttribute('data-client-key', clientKey)
         script.setAttribute('data-agent-id', agentId)
-        script.setAttribute('data-name', 'did-agent-manager')
+        script.setAttribute('data-name', scriptName)
         script.setAttribute('data-monitor', 'true')
         const targetId = mode === 'docked' && renderTarget === 'embedded' 
             ? 'did-agent-container-docked' 
             : 'did-agent-container-floating'
         script.setAttribute('data-target-id', targetId)
 
+        // Add error handling
+        script.addEventListener('load', () => {
+            console.log('D-ID Agent: script loaded successfully')
+        })
+        script.addEventListener('error', (e) => {
+            console.error('D-ID Agent: script failed to load', e)
+        })
+
         document.body.appendChild(script)
-        console.log('D-ID Agent: script injected successfully')
+        console.log('D-ID Agent: script injected successfully, target:', targetId)
+        
+        // Set a timeout to check if D-ID loads within 10 seconds
+        const timeoutId = setTimeout(() => {
+            if (!hasEmbeddedContent) {
+                console.warn('D-ID Agent: No content loaded after 10 seconds. Check network tab for errors.')
+            }
+        }, 10000)
 
         return () => {
+            clearTimeout(timeoutId)
             try {
                 script.remove()
                 console.log('D-ID Agent: script removed')
