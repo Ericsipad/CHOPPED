@@ -60,7 +60,7 @@ export async function POST(req: Request) {
 
     // Always return generic success to avoid user enumeration
     return NextResponse.json({ ok: true }, { headers })
-  } catch (e: unknown) {
+  } catch (_e: unknown) {
     // Still return 200 to avoid enumeration, but include CORS headers
     return NextResponse.json({ ok: true }, { headers })
   }
