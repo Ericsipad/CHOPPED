@@ -1308,9 +1308,9 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 
 /* Light mode: make footer text dark for better readability */
 #root.internal-bg--light .ai-me-footer h2 {
-    color: #111111 !important;
+    color: #444444 !important;
 }
 
 #root.internal-bg--light .ai-me-footer p {
-    color: rgba(0, 0, 0, 0.8) !important;
+    color: rgba(0, 0, 0, 0.65) !important;
 }
