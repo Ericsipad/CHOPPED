@@ -47,6 +47,8 @@ export default function ViewCountDesktop(props: Props) {
                     padding: '10px 14px',
                     fontSize: '14px',
                     borderRadius: '10px',
+                    // Dark mode: white text, Light mode: dark text  
+                    color: typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light') ? '#333333' : '#ffffff',
                     // Apply active state styling
                     ...(value === 10 && {
                         background: 'rgba(0,0,0,0.45)',
@@ -64,6 +66,8 @@ export default function ViewCountDesktop(props: Props) {
                     padding: '10px 14px',
                     fontSize: '14px',
                     borderRadius: '10px',
+                    // Dark mode: white text, Light mode: dark text
+                    color: typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light') ? '#333333' : '#ffffff',
                     // Apply active state styling
                     ...(value === 20 && {
                         background: 'rgba(0,0,0,0.45)',
@@ -81,6 +85,8 @@ export default function ViewCountDesktop(props: Props) {
                     padding: '10px 14px',
                     fontSize: '14px',
                     borderRadius: '10px',
+                    // Dark mode: white text, Light mode: dark text
+                    color: typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light') ? '#333333' : '#ffffff',
                     // Apply active state styling
                     ...(value === 50 && {
                         background: 'rgba(0,0,0,0.45)',
@@ -102,7 +108,9 @@ export default function ViewCountDesktop(props: Props) {
                     gap: '8px',
                     padding: '10px 14px',
                     fontSize: '14px',
-                    borderRadius: '10px'
+                    borderRadius: '10px',
+                    // Dark mode: white text, Light mode: dark text
+                    color: typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light') ? '#333333' : '#ffffff'
                 }}
             >
                 {mode === 'light' ? (

@@ -96,7 +96,9 @@ export default function SidebarNav() {
 						alignItems: 'center',
 						justifyContent: 'center',
 						// Remove the original CSS backgrounds to let glass show through
-						background: 'transparent'
+						background: 'transparent',
+						// Dark mode: white arrow, Light mode: very dark grey arrow
+						color: typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light') ? '#333333' : '#ffffff'
 					}}
 				>
 					{/* chevron */}
@@ -127,23 +129,35 @@ export default function SidebarNav() {
 									href={item.path}
 									style={{
 										display: 'grid',
-										gridTemplateColumns: collapsed ? '24px' : '24px 1fr',
+										gridTemplateColumns: collapsed ? '1fr' : '24px 1fr',
 										alignItems: 'center',
 										justifyItems: collapsed ? 'center' : 'start',
-										gap: '10px',
+										gap: collapsed ? '0' : '10px',
 										padding: '10px 12px',
-										color: '#ffffff',
 										textDecoration: 'none',
 										width: '100%',
 										height: '100%',
 										// Remove any backgrounds - let glass container handle it
-										background: 'transparent'
+										background: 'transparent',
+										// Dark mode: white text/icons, Light mode: very dark grey
+										color: typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light') ? '#333333' : '#ffffff'
 									}}
 									aria-current={isActive ? 'page' : undefined}
 									aria-label={collapsed ? item.label : undefined}
 								>
-									<span className="internal-sidebar__icon" aria-hidden="true">{item.icon}</span>
-									{!collapsed && <span className="internal-sidebar__label">{item.label}</span>}
+									<span 
+										style={{ 
+											display: 'inline-flex', 
+											alignItems: 'center', 
+											justifyContent: 'center',
+											width: '24px',
+											height: '24px'
+										}} 
+										aria-hidden="true"
+									>
+										{item.icon}
+									</span>
+									{!collapsed && <span style={{ color: 'inherit' }}>{item.label}</span>}
 								</a>
 							</GlassContainer>
 						)
