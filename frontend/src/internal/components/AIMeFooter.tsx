@@ -1,10 +1,12 @@
 import aimeStillImage from '../../assets/Aime_image_still.png'
+import { useState } from 'react'
 
 interface AIMeFooterProps {
     onPopOutDidAgent: () => void
 }
 
 export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
+    const [isRotated, setIsRotated] = useState(false)
     return (
         <div
             className="ai-me-footer"
@@ -41,6 +43,7 @@ export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
                     type="button"
                     onClick={(e) => {
                         e.stopPropagation()
+                        setIsRotated(!isRotated)
                         onPopOutDidAgent()
                     }}
                     style={{
@@ -61,16 +64,17 @@ export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
                         cursor: 'pointer',
                         zIndex: 2,
                         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                        transition: 'all 0.2s ease'
+                        transition: 'all 0.2s ease, transform 0.3s ease',
+                        transform: `rotate(${isRotated ? 180 : 0}deg)`
                     }}
                     aria-label="Toggle D-ID agent visibility"
                     onMouseEnter={(e) => {
                         e.currentTarget.style.background = 'rgba(0, 0, 0, 0.85)'
-                        e.currentTarget.style.transform = 'scale(1.05)'
+                        e.currentTarget.style.transform = `rotate(${isRotated ? 180 : 0}deg) scale(1.05)`
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)'
-                        e.currentTarget.style.transform = 'scale(1)'
+                        e.currentTarget.style.transform = `rotate(${isRotated ? 180 : 0}deg) scale(1)`
                     }}
                 >
                     ⬈
