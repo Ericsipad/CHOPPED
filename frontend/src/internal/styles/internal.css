@@ -18,7 +18,7 @@ html, body, #root {
 /* Light background for internal pages when enabled */
 #root.internal-bg--light {
 	background-color: #ffffff;
-	background-image: linear-gradient(rgba(255,255,255,0.5), rgba(255,255,255,0.5)), url('/paper-tile.png');
+	background-image: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('/paper-tile.png');
 	background-repeat: repeat;
 	background-position: center center;
 	background-size: calc(100vw / 3) calc(100vh / 3);
