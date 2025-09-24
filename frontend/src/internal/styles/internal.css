@@ -1314,3 +1314,20 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 #root.internal-bg--light .ai-me-footer p {
     color: rgba(0, 0, 0, 0.65) !important;
 }
+
+/* Light mode: make ViewCountDesktop buttons white glass effect */
+#root.internal-bg--light .profile-tabs__btn {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #333333;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+
+#root.internal-bg--light .profile-tabs__btn.is-active {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+#root.internal-bg--light .profile-tabs__btn:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.4);
+}
