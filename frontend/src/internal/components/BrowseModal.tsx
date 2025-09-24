@@ -183,7 +183,13 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 	return (
 		<>
 		<div onKeyDownCapture={(e) => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); e.stopPropagation() } }} style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)' }}>
-			<GlassContainer variant="modal" style={{ width: isMobile ? '100%' : 'min(1100px, 92vw)', height: isMobile ? '100%' : '60vh', position: 'relative', borderRadius: isMobile ? 0 : 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.12)' }}>
+			<GlassContainer variant="modal" style={{ 
+				width: isMobile ? '100%' : 'min(1100px, 92vw)', 
+				height: isMobile ? '100%' : '60vh', 
+				position: 'relative', 
+				borderRadius: isMobile ? 0 : '12px', 
+				overflow: 'hidden'
+			}}>
 				{/* Header actions - mobile only */}
 				{isMobile ? (
 					<button onClick={() => openBio(activeIdx)} aria-label="More info" style={{ position: 'absolute', top: 8, left: 10, zIndex: 6, background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 10px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -266,14 +272,43 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 												})()}
 											</div>
 							<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
-								<GlassButton variant="action" onClick={() => handleAction('chat', index)} aria-label="Chat" disabled={loadingIndex === index} style={{ background: '#16a34a', color: '#fff', height: 42, fontWeight: 700, opacity: loadingIndex === index ? 0.7 : 1 }}>Chat</GlassButton>
-							<GlassButton variant="action" onClick={() => handleAction('chop', index)} aria-label="Chop" disabled={loadingIndex === index} style={{ background: '#dc2626', color: '#fff', height: 42, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-													{loadingIndex === index ? (
-														<div aria-hidden style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.5)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-													) : null}
-													<span>{loadingIndex === index ? 'Chopping…' : 'Chop'}</span>
-												</GlassButton>
-											</div>
+								<GlassButton 
+									variant="action" 
+									onClick={() => handleAction('chat', index)} 
+									aria-label="Chat" 
+									disabled={loadingIndex === index} 
+									style={{ 
+										height: '42px', 
+										fontWeight: 700, 
+										opacity: loadingIndex === index ? 0.7 : 1,
+										color: '#fff',
+										background: 'rgba(22, 163, 74, 0.8)', // Green with transparency
+									}}
+								>
+									Chat
+								</GlassButton>
+								<GlassButton 
+									variant="action" 
+									onClick={() => handleAction('chop', index)} 
+									aria-label="Chop" 
+									disabled={loadingIndex === index} 
+									style={{ 
+										height: '42px', 
+										fontWeight: 700, 
+										display: 'inline-flex', 
+										alignItems: 'center', 
+										justifyContent: 'center', 
+										gap: '8px',
+										color: '#fff',
+										background: 'rgba(220, 38, 38, 0.8)', // Red with transparency
+									}}
+								>
+									{loadingIndex === index ? (
+										<div aria-hidden style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.5)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+									) : null}
+									<span>{loadingIndex === index ? 'Chopping…' : 'Chop'}</span>
+								</GlassButton>
+							</div>
 										</div>
 
 									{/* Desktop-only in-image Info button (unchanged) */}

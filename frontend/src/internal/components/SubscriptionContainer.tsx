@@ -63,7 +63,14 @@ export default function SubscriptionContainer({ currentSubscription, onlyPaid, c
           <GlassContainer
             key={plan.slots}
             variant="card"
-            className={["subscription-container", isCurrent ? "is-selected" : "", compact ? "subscription-container--compact" : ""].filter(Boolean).join(" ")}
+            className={[isCurrent ? "is-selected" : "", compact ? "subscription-container--compact" : ""].filter(Boolean).join(" ")}
+            style={{ 
+              // Remove existing glass backgrounds to let our glass effect show
+              background: 'transparent',
+              backdropFilter: 'none',
+              border: isCurrent ? '2px solid rgba(76, 255, 137, 0.9)' : 'none',
+              boxShadow: isCurrent ? '0 0 0 2px rgba(76, 255, 137, 0.5), 0 0 18px rgba(76, 255, 137, 0.45)' : undefined
+            }}
           >
             <div className="subscription-content">
               <div className="subscription-number">{plan.slots}</div>
@@ -81,9 +88,18 @@ export default function SubscriptionContainer({ currentSubscription, onlyPaid, c
             <div className="subscription-button-container">
               <GlassButton
                 variant="primary"
-                className="subscription-button"
                 onClick={() => handleSubscribe(plan.slots)}
                 disabled={loading === plan.slots || isCurrent}
+                style={{
+                  // Override existing button styles
+                  background: 'transparent',
+                  minWidth: compact ? 'auto' : '100px',
+                  padding: compact ? '8px 12px' : '10px 16px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  opacity: loading === plan.slots || isCurrent ? 0.6 : 1,
+                  cursor: loading === plan.slots || isCurrent ? 'default' : 'pointer'
+                }}
               >
                 {loading === plan.slots ? 'Processing...' : isCurrent ? 'Current Plan' : 'Subscribe'}
               </GlassButton>

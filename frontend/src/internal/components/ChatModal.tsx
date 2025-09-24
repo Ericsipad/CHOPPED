@@ -356,12 +356,22 @@ export default function ChatModal(props: ChatModalProps) {
       <GlassContainer 
         variant="modal"
         style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
-          ...styles.card,
           width: '100%',
           height: '100%',
           maxWidth: 'none',
           borderRadius: 0,
-        } : styles.card} 
+          // Remove existing backgrounds
+          background: 'transparent',
+          backdropFilter: 'none'
+        } : {
+          width: '60vw', 
+          height: '80vh', 
+          maxWidth: '1000px', 
+          borderRadius: '12px',
+          // Remove existing backgrounds  
+          background: 'transparent',
+          backdropFilter: 'none'
+        }} 
         onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
         <div ref={dialogRef} style={{ width: '100%', height: '100%' }}>
@@ -388,7 +398,20 @@ export default function ChatModal(props: ChatModalProps) {
           ) : (
             <div style={styles.list}>
               <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0' }}>
-                <GlassButton variant="secondary" onClick={handleLoadOlder} disabled={loadingOlder || !threadId} style={{ ...styles.sendBtn, opacity: (loadingOlder || !threadId) ? 0.6 : 1 }}>Load older</GlassButton>
+                <GlassButton 
+                  variant="secondary" 
+                  onClick={handleLoadOlder} 
+                  disabled={loadingOlder || !threadId} 
+                  style={{ 
+                    background: 'rgba(22, 163, 74, 0.7)',
+                    color: '#fff',
+                    padding: '8px 14px',
+                    fontWeight: 700,
+                    opacity: (loadingOlder || !threadId) ? 0.6 : 1 
+                  }}
+                >
+                  Load older
+                </GlassButton>
               </div>
               {messages.map((msg) => (
                 <MessageBubble
@@ -414,7 +437,18 @@ export default function ChatModal(props: ChatModalProps) {
             rows={1}
             style={styles.textarea}
           />
-          <GlassButton variant="primary" onClick={handleSend} disabled={isSending || pendingText.trim().length === 0} style={{ ...styles.sendBtn, opacity: (isSending || pendingText.trim().length === 0) ? 0.6 : 1 }}>
+          <GlassButton 
+            variant="primary" 
+            onClick={handleSend} 
+            disabled={isSending || pendingText.trim().length === 0} 
+            style={{ 
+              background: 'rgba(22, 163, 74, 0.8)',
+              color: '#fff',
+              padding: '8px 14px',
+              fontWeight: 700,
+              opacity: (isSending || pendingText.trim().length === 0) ? 0.6 : 1 
+            }}
+          >
             Send
           </GlassButton>
         </div>

@@ -1,4 +1,3 @@
-import LiquidGlass from 'liquid-glass-react'
 import type { ReactNode } from 'react'
 
 interface GlassContainerProps {
@@ -16,36 +15,77 @@ export function GlassContainer({
   style,
   onClick
 }: GlassContainerProps) {
-  // Advanced settings as requested - adjust corner radius based on variant
-  const cornerRadius = variant === 'button' ? 6 : variant === 'nav' ? 10 : 8
-  
-  const glassProps = {
-    displacementScale: 100,
-    blurAmount: 0.5,
-    saturation: 150,
-    elasticity: 0.5, // Interpreted 50 as 0.5 (normal range)
-    cornerRadius,
-    mode: 'standard' as const
-  }
-  
-  // Combine any existing styles with glass container
-  const combinedStyle: React.CSSProperties = {
-    ...style,
-    // Dark tint on light mode as requested
-    ...(document.documentElement.classList.contains('internal-bg--light') && {
+  // Advanced glassmorphism CSS with your requested settings
+  const glassStyle: React.CSSProperties = {
+    // Base glassmorphism effect
+    background: 'rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(10px) saturate(150%)',
+    WebkitBackdropFilter: 'blur(10px) saturate(150%)', // Safari support
+    
+    // Enhanced glass effect with displacement simulation
+    boxShadow: `
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+      0 20px 40px rgba(0, 0, 0, 0.3),
+      0 10px 20px rgba(0, 0, 0, 0.2)
+    `,
+    
+    // Borders and radius
+    border: '1px solid rgba(255, 255, 255, 0.18)',
+    borderRadius: variant === 'button' ? '6px' : variant === 'nav' ? '10px' : '8px',
+    
+    // Your advanced settings simulated in CSS
+    filter: 'brightness(1.1) contrast(1.1)',
+    
+    // Dark tint on light mode
+    ...(typeof document !== 'undefined' && 
+        document.documentElement.classList.contains('internal-bg--light') && {
       background: 'rgba(0, 0, 0, 0.1)',
-    })
+      backdropFilter: 'blur(10px) saturate(150%) brightness(0.9)',
+      WebkitBackdropFilter: 'blur(10px) saturate(150%) brightness(0.9)',
+    }),
+    
+    // Hover effects and elasticity simulation
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    
+    // Apply user styles on top
+    ...style,
+    
+    // Ensure proper positioning
+    position: style?.position || 'relative',
+    overflow: 'hidden',
   }
 
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.transform = 'scale(1.02) translateY(-1px)'
+      e.currentTarget.style.boxShadow = `
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.2),
+        0 25px 50px rgba(0, 0, 0, 0.4),
+        0 15px 30px rgba(0, 0, 0, 0.3)
+      `
+    }
+  }
+
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.transform = 'scale(1) translateY(0)'
+      e.currentTarget.style.boxShadow = glassStyle.boxShadow as string
+    }
+  }
+
+  const combinedClassName = ['glass-container', className].filter(Boolean).join(' ')
+
   return (
-    <div onClick={onClick} style={{ width: '100%', height: '100%' }}>
-      <LiquidGlass 
-        {...glassProps} 
-        className={className}
-        style={combinedStyle}
-      >
-        {children}
-      </LiquidGlass>
+    <div 
+      className={combinedClassName}
+      style={glassStyle}
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {children}
     </div>
   )
 }
