@@ -12,8 +12,8 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                 bottom: '20px',
                 // left and transform handled by CSS for proper sidebar-aware centering
                 width: 'fit-content',
-                minWidth: '880px',
-                maxWidth: 'min(1280px, calc(100vw - 280px))',
+                minWidth: '1030px',
+                maxWidth: 'min(1430px, calc(100vw - 280px))',
                 height: '185px',
                 background: 'rgba(255, 255, 255, 0.15)',
                 backdropFilter: 'blur(12px)',
