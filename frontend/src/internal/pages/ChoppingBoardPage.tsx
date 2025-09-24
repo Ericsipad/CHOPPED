@@ -47,6 +47,7 @@ export default function ChoppingBoardPage() {
     const [giftsCount, setGiftsCount] = useState<number>(0)
     const [aiModalOpen, setAiModalOpen] = useState(false)
     const [aiEnabled, setAiEnabled] = useState<boolean>(true)
+    const [didAgentVisible, setDidAgentVisible] = useState<boolean>(true)
 	const statusBarRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
@@ -514,15 +515,15 @@ export default function ChoppingBoardPage() {
 					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
-                {/* Original working DraggableDidAgent - always rendered */}
-                {!isMobile && (
+                {/* DraggableDidAgent - conditionally rendered */}
+                {!isMobile && didAgentVisible && (
                     <DraggableDidAgent />
                 )}
                 
                 {/* AI-me Footer - with Aime still image */}
                 {!isMobile && (
                     <AIMeFooter
-                        onPopOutDidAgent={() => {}}
+                        onPopOutDidAgent={() => setDidAgentVisible(!didAgentVisible)}
                     />
                 )}
                 <ValidationModal

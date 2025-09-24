@@ -36,12 +36,11 @@ export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
                     position: 'relative'
                 }}
             >
-                {/* Pop out button overlay */}
+                {/* Toggle arrow overlay */}
                 <button
                     type="button"
                     onClick={(e) => {
                         e.stopPropagation()
-                        console.log('Pop Out button clicked')
                         onPopOutDidAgent()
                     }}
                     style={{
@@ -51,17 +50,29 @@ export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
                         background: 'rgba(0, 0, 0, 0.7)',
                         color: '#ffffff',
                         border: 'none',
-                        borderRadius: '8px',
-                        padding: '6px 12px',
-                        fontSize: '12px',
-                        fontWeight: '600',
+                        borderRadius: '50%',
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '16px',
                         cursor: 'pointer',
                         zIndex: 2,
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                        transition: 'all 0.2s ease'
                     }}
-                    aria-label="Pop out D-ID agent"
+                    aria-label="Toggle D-ID agent visibility"
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.85)'
+                        e.currentTarget.style.transform = 'scale(1.05)'
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.7)'
+                        e.currentTarget.style.transform = 'scale(1)'
+                    }}
                 >
-                    Pop Out
+                    ↗
                 </button>
 
                 {/* AI-me Still Image */}
