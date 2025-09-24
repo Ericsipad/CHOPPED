@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { DollarSign, Heart, Plus, User } from 'lucide-react'
 import { fetchAvailableGiftsAmountCents } from '../lib/gifts'
 import { useAuth } from '../hooks/useAuth'
+import { GlassContainer } from '../../shared/components/GlassContainer'
+import { GlassButton } from '../../shared/components/GlassButton'
 
 export default function BottomNav() {
 	const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
@@ -68,46 +70,52 @@ export default function BottomNav() {
     }
 
     return (
-		<nav className="pwa-bottom-nav" aria-label="Primary">
+		<GlassContainer variant="nav" className="pwa-bottom-nav" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 			<div className="pwa-bottom-nav__group pwa-bottom-nav__group--left">
-				<a
-					href="/profile.html"
-					className={["pwa-bottom-nav__btn", isProfile ? 'is-active' : ''].filter(Boolean).join(' ')}
-					aria-current={isProfile ? 'page' : undefined}
-					aria-label="Profile"
-                    onMouseDown={handleClickSound}
-                    onTouchStart={handleClickSound as any}
-				>
-					<User size={24} aria-hidden="true" />
-				</a>
-				<a
-					href="/chopping-board.html"
-					className={["pwa-bottom-nav__btn", isChoppingBoard ? 'is-active' : ''].filter(Boolean).join(' ')}
-					aria-current={isChoppingBoard ? 'page' : undefined}
-					aria-label="Chopping Board"
-                    onMouseDown={handleClickSound}
-                    onTouchStart={handleClickSound as any}
-				>
-					<span className="pwa-bottom-nav__icon-stack" aria-hidden="true">
-						<Heart size={24} />
-						<Plus size={14} className="pwa-bottom-nav__icon-plus" />
-					</span>
-				</a>
+				<GlassButton variant="nav" style={{ background: 'transparent' }}>
+					<a
+						href="/profile.html"
+						className={["pwa-bottom-nav__btn", isProfile ? 'is-active' : ''].filter(Boolean).join(' ')}
+						aria-current={isProfile ? 'page' : undefined}
+						aria-label="Profile"
+						onMouseDown={handleClickSound}
+						onTouchStart={handleClickSound as any}
+					>
+						<User size={24} aria-hidden="true" />
+					</a>
+				</GlassButton>
+				<GlassButton variant="nav" style={{ background: 'transparent' }}>
+					<a
+						href="/chopping-board.html"
+						className={["pwa-bottom-nav__btn", isChoppingBoard ? 'is-active' : ''].filter(Boolean).join(' ')}
+						aria-current={isChoppingBoard ? 'page' : undefined}
+						aria-label="Chopping Board"
+						onMouseDown={handleClickSound}
+						onTouchStart={handleClickSound as any}
+					>
+						<span className="pwa-bottom-nav__icon-stack" aria-hidden="true">
+							<Heart size={24} />
+							<Plus size={14} className="pwa-bottom-nav__icon-plus" />
+						</span>
+					</a>
+				</GlassButton>
 			</div>
 			<div className="pwa-bottom-nav__group pwa-bottom-nav__group--right">
-				<a
-					href="/account.html"
-					className={["pwa-bottom-nav__btn", isAccount ? 'is-active' : ''].filter(Boolean).join(' ')}
-					aria-current={isAccount ? 'page' : undefined}
-					aria-label="Account"
-                    onMouseDown={handleClickSound}
-                    onTouchStart={handleClickSound as any}
-				>
-					<DollarSign size={24} aria-hidden="true" />
-				</a>
+				<GlassButton variant="nav" style={{ background: 'transparent' }}>
+					<a
+						href="/account.html"
+						className={["pwa-bottom-nav__btn", isAccount ? 'is-active' : ''].filter(Boolean).join(' ')}
+						aria-current={isAccount ? 'page' : undefined}
+						aria-label="Account"
+						onMouseDown={handleClickSound}
+						onTouchStart={handleClickSound as any}
+					>
+						<DollarSign size={24} aria-hidden="true" />
+					</a>
+				</GlassButton>
 				<div className="pwa-bottom-nav__value" aria-live="polite">{availableCents}</div>
 			</div>
-		</nav>
+		</GlassContainer>
 	)
 }
 

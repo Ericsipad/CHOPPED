@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { GlassContainer } from './GlassContainer';
+import { GlassButton } from './GlassButton';
 
 interface PWAInstallPromptProps {
   isVisible: boolean;
@@ -41,7 +43,8 @@ export default function PWAInstallPrompt({ isVisible, onInstall, onDismiss }: PW
       />
       
       {/* Slide-up panel */}
-      <div
+      <GlassContainer
+        variant="modal"
         style={{
           position: 'fixed',
           bottom: 0,
@@ -148,55 +151,39 @@ export default function PWAInstallPrompt({ isVisible, onInstall, onDismiss }: PW
             gap: '12px',
           }}
         >
-          <button
+          <GlassButton
+            variant="secondary"
             onClick={onDismiss}
             style={{
               flex: '0 0 auto',
               padding: '12px 24px',
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
               color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
               fontSize: '14px',
               fontWeight: '500',
-              cursor: 'pointer',
               transition: 'background-color 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
             }}
           >
             Not Now
-          </button>
+          </GlassButton>
           
-          <button
+          <GlassButton
+            variant="primary"
             onClick={onInstall}
             style={{
               flex: 1,
               padding: '12px 24px',
               backgroundColor: '#1e90ff',
               color: '#ffffff',
-              border: 'none',
-              borderRadius: '8px',
               fontSize: '14px',
               fontWeight: '600',
-              cursor: 'pointer',
               transition: 'background-color 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              (e.target as HTMLButtonElement).style.backgroundColor = '#0066cc';
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLButtonElement).style.backgroundColor = '#1e90ff';
             }}
           >
             Install App
-          </button>
+          </GlassButton>
         </div>
-      </div>
+      </GlassContainer>
     </>
   );
 }

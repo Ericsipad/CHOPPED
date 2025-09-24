@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { getBackendApi } from '../../lib/config'
+import { GlassContainer } from '../../shared/components/GlassContainer'
+import { GlassButton } from '../../shared/components/GlassButton'
 
 type SubscriptionPlan = {
   slots: number
@@ -58,8 +60,9 @@ export default function SubscriptionContainer({ currentSubscription, onlyPaid, c
         const isCurrent = currentSubscription === plan.slots
 
         return (
-          <div
+          <GlassContainer
             key={plan.slots}
+            variant="card"
             className={["subscription-container", isCurrent ? "is-selected" : "", compact ? "subscription-container--compact" : ""].filter(Boolean).join(" ")}
           >
             <div className="subscription-content">
@@ -76,15 +79,16 @@ export default function SubscriptionContainer({ currentSubscription, onlyPaid, c
               </div>
             </div>
             <div className="subscription-button-container">
-              <button
+              <GlassButton
+                variant="primary"
                 className="subscription-button"
                 onClick={() => handleSubscribe(plan.slots)}
                 disabled={loading === plan.slots || isCurrent}
               >
                 {loading === plan.slots ? 'Processing...' : isCurrent ? 'Current Plan' : 'Subscribe'}
-              </button>
+              </GlassButton>
             </div>
-          </div>
+          </GlassContainer>
         )
       })}
     </div>

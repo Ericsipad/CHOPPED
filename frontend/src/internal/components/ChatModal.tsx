@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { getSupabaseClient, authorizeFromBackend, getCurrentAccessToken } from '../../lib/supabase'
 import { getBackendApi } from '../../lib/config'
 import { fetchLatestMessages, fetchOlderMessages, insertMessage, type DbChatMessage } from '../../lib/chat'
+import { GlassContainer } from '../../shared/components/GlassContainer'
+import { GlassButton } from '../../shared/components/GlassButton'
 
 type ChatMessage = {
   id: string
@@ -351,13 +353,18 @@ export default function ChatModal(props: ChatModalProps) {
         justifyContent: 'stretch',
       } : styles.overlay}
     >
-      <div ref={dialogRef} style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
-        ...styles.card,
-        width: '100%',
-        height: '100%',
-        maxWidth: 'none',
-        borderRadius: 0,
-      } : styles.card} onClick={(e) => e.stopPropagation()}>
+      <GlassContainer 
+        variant="modal"
+        style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
+          ...styles.card,
+          width: '100%',
+          height: '100%',
+          maxWidth: 'none',
+          borderRadius: 0,
+        } : styles.card} 
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+      >
+        <div ref={dialogRef} style={{ width: '100%', height: '100%' }}>
         <div style={styles.header}>
           <div style={styles.headerTitle}>{otherUserLabel || 'Chat'}</div>
           <button type="button" onClick={onClose} aria-label="Close" style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
@@ -381,7 +388,7 @@ export default function ChatModal(props: ChatModalProps) {
           ) : (
             <div style={styles.list}>
               <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0' }}>
-                <button type="button" onClick={handleLoadOlder} disabled={loadingOlder || !threadId} style={{ ...styles.sendBtn, opacity: (loadingOlder || !threadId) ? 0.6 : 1 }}>Load older</button>
+                <GlassButton variant="secondary" onClick={handleLoadOlder} disabled={loadingOlder || !threadId} style={{ ...styles.sendBtn, opacity: (loadingOlder || !threadId) ? 0.6 : 1 }}>Load older</GlassButton>
               </div>
               {messages.map((msg) => (
                 <MessageBubble
@@ -407,11 +414,12 @@ export default function ChatModal(props: ChatModalProps) {
             rows={1}
             style={styles.textarea}
           />
-          <button type="button" onClick={handleSend} disabled={isSending || pendingText.trim().length === 0} style={{ ...styles.sendBtn, opacity: (isSending || pendingText.trim().length === 0) ? 0.6 : 1 }}>
+          <GlassButton variant="primary" onClick={handleSend} disabled={isSending || pendingText.trim().length === 0} style={{ ...styles.sendBtn, opacity: (isSending || pendingText.trim().length === 0) ? 0.6 : 1 }}>
             Send
-          </button>
+          </GlassButton>
         </div>
-      </div>
+        </div>
+      </GlassContainer>
     </div>
   )
 }

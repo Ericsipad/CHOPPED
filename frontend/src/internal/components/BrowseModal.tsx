@@ -8,6 +8,8 @@ import type { Swiper as SwiperClass } from 'swiper/types'
 
 import { useRef } from 'react'
 import ValidationModal from './ValidationModal'
+import { GlassContainer } from '../../shared/components/GlassContainer'
+import { GlassButton } from '../../shared/components/GlassButton'
 
 type PendingItem = { userId: string; imageUrl: string }
 type ProfilePublic = { displayName: string | null; age: number | null; heightCm?: number | null; bio: string | null }
@@ -181,7 +183,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 	return (
 		<>
 		<div onKeyDownCapture={(e) => { if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); e.stopPropagation() } }} style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)' }}>
-			<div style={{ width: isMobile ? '100%' : 'min(1100px, 92vw)', height: isMobile ? '100%' : '60vh', position: 'relative', borderRadius: isMobile ? 0 : 12, overflow: 'hidden', background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)' }}>
+			<GlassContainer variant="modal" style={{ width: isMobile ? '100%' : 'min(1100px, 92vw)', height: isMobile ? '100%' : '60vh', position: 'relative', borderRadius: isMobile ? 0 : 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.12)' }}>
 				{/* Header actions - mobile only */}
 				{isMobile ? (
 					<button onClick={() => openBio(activeIdx)} aria-label="More info" style={{ position: 'absolute', top: 8, left: 10, zIndex: 6, background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 10px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -263,14 +265,14 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 													)
 												})()}
 											</div>
-											<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
-												<button onClick={() => handleAction('chat', index)} aria-label="Chat" disabled={loadingIndex === index} style={{ background: '#16a34a', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: loadingIndex === index ? 'not-allowed' : 'pointer', fontWeight: 700, opacity: loadingIndex === index ? 0.7 : 1 }}>Chat</button>
-											<button onClick={() => handleAction('chop', index)} aria-label="Chop" disabled={loadingIndex === index} style={{ background: '#dc2626', color: '#fff', height: 42, border: 'none', borderRadius: 6, cursor: loadingIndex === index ? 'not-allowed' : 'pointer', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+							<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 16 }}>
+								<GlassButton variant="action" onClick={() => handleAction('chat', index)} aria-label="Chat" disabled={loadingIndex === index} style={{ background: '#16a34a', color: '#fff', height: 42, fontWeight: 700, opacity: loadingIndex === index ? 0.7 : 1 }}>Chat</GlassButton>
+							<GlassButton variant="action" onClick={() => handleAction('chop', index)} aria-label="Chop" disabled={loadingIndex === index} style={{ background: '#dc2626', color: '#fff', height: 42, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
 													{loadingIndex === index ? (
 														<div aria-hidden style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.5)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
 													) : null}
 													<span>{loadingIndex === index ? 'Chopping…' : 'Chop'}</span>
-												</button>
+												</GlassButton>
 											</div>
 										</div>
 
@@ -291,7 +293,7 @@ export default function BrowseModal({ isOpen, onClose }: { isOpen: boolean; onCl
 						})}
 					</Swiper>
 				)}
-			</div>
+			</GlassContainer>
 			<style>{`
 				@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 				/* Show mobile haze overlay only on small screens; hide desktop button there */
