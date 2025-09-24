@@ -12,8 +12,8 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                 bottom: '20px',
                 // left and transform handled by CSS for proper sidebar-aware centering
                 width: 'fit-content',
-                minWidth: '1030px',
-                maxWidth: 'min(1430px, calc(100vw - 280px))',
+                minWidth: '1080px',
+                maxWidth: 'min(1480px, calc(100vw - 280px))',
                 height: '185px',
                 background: 'rgba(255, 255, 255, 0.15)',
                 backdropFilter: 'blur(12px)',
@@ -111,16 +111,6 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                     <br />
                     ✨ Want to help us find your perfect partner? Share Chopped on social media so they can sign up too — and let AI-me do the rest.
                 </p>
-                <div
-                    style={{
-                        marginTop: '8px',
-                        fontSize: '11px',
-                        color: 'rgba(255, 255, 255, 0.5)',
-                        fontStyle: 'italic'
-                    }}
-                >
-                    • Dynamic content area •
-                </div>
             </div>
         </div>
     )
