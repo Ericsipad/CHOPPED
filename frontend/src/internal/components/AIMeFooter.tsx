@@ -94,7 +94,7 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                         textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
                     }}
                 >
-                    ASK AI-me!
+                    Meet AI-me — Your Personal Matchmaking Guide 💘
                 </h2>
                 <p
                     style={{
@@ -105,7 +105,13 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                         textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
                     }}
                 >
-                    AI-me is your guide to dating and relationships. She is here to walk you through our proprietary 500 point matching system with normal conversation instead of boring forms. Over time she will ask questions and build your profile to help match you with the best available personalities hand picked for you. So please share Chopped on your social media so your perfect partner signs up and we can find them.
+                    AI-me isn't just another chatbot. She's your smart, intuitive companion on the journey to meaningful connection. Instead of tedious forms, AI-me uses natural conversation to guide you through our proprietary 500-point matching system — designed to uncover what truly matters to you.
+                    <br /><br />
+                    As you chat, she learns your preferences and builds a personalized profile to match you with handpicked personalities who align with your vibe. The more you share, the better your matches become.
+                    <br /><br />
+                    ✨ Want to help us find your perfect partner?
+                    <br />
+                    Share Chopped on social media so they can sign up too — and let AI-me do the rest.
                 </p>
                 <div
                     style={{
