@@ -15,7 +15,11 @@ function isStandalonePWA(): boolean {
     } catch { return false }
 }
 
-export default function DraggableDidAgent() {
+interface DraggableDidAgentProps {
+    isVisible?: boolean
+}
+
+export default function DraggableDidAgent({ isVisible = true }: DraggableDidAgentProps) {
     const containerRef = useRef<HTMLDivElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     // no-op state removed; script load state not needed
@@ -31,7 +35,7 @@ export default function DraggableDidAgent() {
                 if (!Number.isNaN(v) && v > 0) return v
             }
         } catch { /* noop */ }
-        return 1
+        return 1 // Always start expanded
     })
     const draggingRef = useRef<{ startX: number; startY: number; startTop: number; startLeft: number } | null>(null)
 
@@ -214,7 +218,17 @@ export default function DraggableDidAgent() {
         <div
             ref={wrapperRef}
             className="did-agent-draggable"
-            style={{ position: 'fixed', top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 1100, width: BASE_W * scale, height: BASE_H * scale }}
+            style={{ 
+                position: 'fixed', 
+                top: position?.top ?? 0, 
+                left: position?.left ?? 0, 
+                zIndex: 1100, 
+                width: BASE_W * scale, 
+                height: BASE_H * scale,
+                visibility: isVisible ? 'visible' : 'hidden',
+                opacity: isVisible ? 1 : 0,
+                transition: 'opacity 0.3s ease'
+            }}
         >
             {/* Left: size toggle button */}
             <button

@@ -515,9 +515,9 @@ export default function ChoppingBoardPage() {
 					onChat={(uid, label) => { if (uid) { setSelectedUserId(uid); setChatDisplayName(label || null); setChatOpen(true) } }}
 					onChop={(uid) => { if (uid) handleChop(uid) }}
 				/>
-                {/* DraggableDidAgent - conditionally rendered */}
-                {!isMobile && didAgentVisible && (
-                    <DraggableDidAgent />
+                {/* DraggableDidAgent - always rendered, visibility controlled by CSS */}
+                {!isMobile && (
+                    <DraggableDidAgent isVisible={didAgentVisible} />
                 )}
                 
                 {/* AI-me Footer - with Aime still image */}
