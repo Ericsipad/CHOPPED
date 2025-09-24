@@ -3,7 +3,6 @@ import { DollarSign, Heart, Plus, User } from 'lucide-react'
 import { fetchAvailableGiftsAmountCents } from '../lib/gifts'
 import { useAuth } from '../hooks/useAuth'
 import { GlassContainer } from '../../shared/components/GlassContainer'
-import { GlassButton } from '../../shared/components/GlassButton'
 
 export default function BottomNav() {
 	const pathname = typeof window !== 'undefined' ? window.location.pathname : ''

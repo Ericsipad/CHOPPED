@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import '../styles/internal.css'
+import { GlassButton } from '../../shared/components/GlassButton'
 
 type Props = {
     value: 10 | 20 | 50
@@ -38,34 +39,71 @@ export default function ViewCountDesktop(props: Props) {
 
     return (
         <div className="profile-tabs__nav" style={{ margin: 0, alignItems: 'center', paddingTop: '6px', paddingBottom: '6px' }}>
-            <button
-                className={["profile-tabs__btn", value === 10 ? 'is-active' : ''].filter(Boolean).join(' ')}
+            <GlassButton
+                variant="nav"
                 onClick={() => onChange(10)}
                 aria-pressed={value === 10}
+                style={{
+                    padding: '10px 14px',
+                    fontSize: '14px',
+                    borderRadius: '10px',
+                    // Apply active state styling
+                    ...(value === 10 && {
+                        background: 'rgba(0,0,0,0.45)',
+                        borderColor: 'rgba(255,255,255,0.2)'
+                    })
+                }}
             >
                 10
-            </button>
-            <button
-                className={["profile-tabs__btn", value === 20 ? 'is-active' : ''].filter(Boolean).join(' ')}
+            </GlassButton>
+            <GlassButton
+                variant="nav"
                 onClick={() => onChange(20)}
                 aria-pressed={value === 20}
+                style={{
+                    padding: '10px 14px',
+                    fontSize: '14px',
+                    borderRadius: '10px',
+                    // Apply active state styling
+                    ...(value === 20 && {
+                        background: 'rgba(0,0,0,0.45)',
+                        borderColor: 'rgba(255,255,255,0.2)'
+                    })
+                }}
             >
                 20
-            </button>
-            <button
-                className={["profile-tabs__btn", value === 50 ? 'is-active' : ''].filter(Boolean).join(' ')}
+            </GlassButton>
+            <GlassButton
+                variant="nav"
                 onClick={() => onChange(50)}
                 aria-pressed={value === 50}
+                style={{
+                    padding: '10px 14px',
+                    fontSize: '14px',
+                    borderRadius: '10px',
+                    // Apply active state styling
+                    ...(value === 50 && {
+                        background: 'rgba(0,0,0,0.45)',
+                        borderColor: 'rgba(255,255,255,0.2)'
+                    })
+                }}
             >
                 50
-            </button>
-            <button
-                className="profile-tabs__btn"
+            </GlassButton>
+            <GlassButton
+                variant="nav"
                 onClick={toggleMode}
                 aria-pressed={mode === 'light'}
                 aria-label={mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
                 title={mode === 'light' ? 'Light' : 'Dark'}
+                style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 14px',
+                    fontSize: '14px',
+                    borderRadius: '10px'
+                }}
             >
                 {mode === 'light' ? (
                     // Sun icon
@@ -79,7 +117,7 @@ export default function ViewCountDesktop(props: Props) {
                     </svg>
                 )}
                 {mode === 'light' ? 'Light' : 'Dark'}
-            </button>
+            </GlassButton>
         </div>
     )
 }

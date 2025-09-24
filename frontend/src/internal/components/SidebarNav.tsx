@@ -1,5 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import '../styles/sidebar.css'
+import { GlassButton } from '../../shared/components/GlassButton'
+import { GlassContainer } from '../../shared/components/GlassContainer'
 
 type NavItem = {
 	label: string
@@ -80,35 +82,70 @@ export default function SidebarNav() {
 			collapsed ? 'internal-sidebar--collapsed' : ''
 		].filter(Boolean).join(' ')} aria-label="Primary navigation">
 			<div className="internal-sidebar__inner">
-				<button
-					className="internal-sidebar__toggle"
+				<GlassButton
+					variant="nav"
 					type="button"
 					aria-pressed={collapsed}
 					aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
 					onClick={() => setCollapsed(v => !v)}
+					style={{
+						width: '44px',
+						height: '44px',
+						borderRadius: '10px',
+						display: 'inline-flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						// Remove the original CSS backgrounds to let glass show through
+						background: 'transparent'
+					}}
 				>
 					{/* chevron */}
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={collapsed ? 'is-collapsed' : ''}>
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={collapsed ? 'is-collapsed' : ''} style={{ transition: 'transform 160ms ease', transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}>
 						<path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 					</svg>
-				</button>
+				</GlassButton>
 				<nav className="internal-sidebar__nav">
 					{items.map(item => {
 						const isActive = pathname.endsWith(item.path) || pathname === item.path
 						return (
-							<a
+							<GlassContainer
 								key={item.path}
-								href={item.path}
-								className={[
-									'internal-sidebar__link',
-									isActive ? 'is-active' : ''
-								].filter(Boolean).join(' ')}
-								aria-current={isActive ? 'page' : undefined}
-								aria-label={collapsed ? item.label : undefined}
+								variant="nav"
+								style={{
+									// Remove original backgrounds to let glass show through
+									background: 'transparent',
+									backdropFilter: 'none',
+									borderRadius: '12px',
+									// Apply active state styling when needed
+									...(isActive && {
+										border: '2px solid rgba(76, 255, 137, 0.9)',
+										boxShadow: '0 0 0 2px rgba(76, 255, 137, 0.45), 0 10px 24px rgba(0,0,0,0.4)'
+									})
+								}}
 							>
-								<span className="internal-sidebar__icon" aria-hidden="true">{item.icon}</span>
-								<span className="internal-sidebar__label">{item.label}</span>
-							</a>
+								<a
+									href={item.path}
+									style={{
+										display: 'grid',
+										gridTemplateColumns: collapsed ? '24px' : '24px 1fr',
+										alignItems: 'center',
+										justifyItems: collapsed ? 'center' : 'start',
+										gap: '10px',
+										padding: '10px 12px',
+										color: '#ffffff',
+										textDecoration: 'none',
+										width: '100%',
+										height: '100%',
+										// Remove any backgrounds - let glass container handle it
+										background: 'transparent'
+									}}
+									aria-current={isActive ? 'page' : undefined}
+									aria-label={collapsed ? item.label : undefined}
+								>
+									<span className="internal-sidebar__icon" aria-hidden="true">{item.icon}</span>
+									{!collapsed && <span className="internal-sidebar__label">{item.label}</span>}
+								</a>
+							</GlassContainer>
 						)
 					})}
 				</nav>
