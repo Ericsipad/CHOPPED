@@ -1,3 +1,5 @@
+import aimeStillImage from '../../assets/Aime_image_still.png'
+
 interface AIMeFooterProps {
     onPopOutDidAgent: () => void
     didAgentComponent: React.ReactNode
@@ -63,15 +65,28 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                     Pop Out
                 </button>
 
-                {/* D-ID Agent container */}
+                {/* AI-me Still Image */}
                 <div
                     style={{
                         width: '100%',
                         height: '100%',
-                        borderRadius: '20px 0 0 20px'
+                        borderRadius: '20px 0 0 20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden'
                     }}
                 >
-                    {didAgentComponent}
+                    <img
+                        src={aimeStillImage}
+                        alt="AI-me Assistant"
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            borderRadius: '20px 0 0 20px'
+                        }}
+                    />
                 </div>
             </div>
 
