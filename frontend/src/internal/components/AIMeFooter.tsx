@@ -12,9 +12,9 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                 bottom: '20px',
                 // left and transform handled by CSS for proper sidebar-aware centering
                 width: 'fit-content',
-                minWidth: '800px',
-                maxWidth: 'min(1200px, calc(100vw - 280px))',
-                height: '200px',
+                minWidth: '880px',
+                maxWidth: 'min(1280px, calc(100vw - 280px))',
+                height: '185px',
                 background: 'rgba(255, 255, 255, 0.15)',
                 backdropFilter: 'blur(12px)',
                 borderRadius: '20px',
@@ -106,12 +106,10 @@ export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMe
                     }}
                 >
                     AI-me isn't just another chatbot. She's your smart, intuitive companion on the journey to meaningful connection. Instead of tedious forms, AI-me uses natural conversation to guide you through our proprietary 500-point matching system — designed to uncover what truly matters to you.
-                    <br /><br />
-                    As you chat, she learns your preferences and builds a personalized profile to match you with handpicked personalities who align with your vibe. The more you share, the better your matches become.
-                    <br /><br />
-                    ✨ Want to help us find your perfect partner?
                     <br />
-                    Share Chopped on social media so they can sign up too — and let AI-me do the rest.
+                    As you chat, she learns your preferences and builds a personalized profile to match you with handpicked personalities who align with your vibe. The more you share, the better your matches become.
+                    <br />
+                    ✨ Want to help us find your perfect partner? Share Chopped on social media so they can sign up too — and let AI-me do the rest.
                 </p>
                 <div
                     style={{
