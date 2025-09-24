@@ -56,7 +56,8 @@ export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '16px',
+                        fontSize: '18px',
+                        fontWeight: 'bold',
                         cursor: 'pointer',
                         zIndex: 2,
                         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
@@ -72,7 +73,7 @@ export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
                         e.currentTarget.style.transform = 'scale(1)'
                     }}
                 >
-                    ↗
+                    ⬈
                 </button>
 
                 {/* AI-me Still Image */}

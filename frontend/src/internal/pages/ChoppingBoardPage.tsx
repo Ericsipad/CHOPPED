@@ -47,7 +47,7 @@ export default function ChoppingBoardPage() {
     const [giftsCount, setGiftsCount] = useState<number>(0)
     const [aiModalOpen, setAiModalOpen] = useState(false)
     const [aiEnabled, setAiEnabled] = useState<boolean>(true)
-    const [didAgentVisible, setDidAgentVisible] = useState<boolean>(true)
+    const [didAgentVisible, setDidAgentVisible] = useState<boolean>(false)
 	const statusBarRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
