@@ -2,10 +2,9 @@ import aimeStillImage from '../../assets/Aime_image_still.png'
 
 interface AIMeFooterProps {
     onPopOutDidAgent: () => void
-    didAgentComponent: React.ReactNode
 }
 
-export default function AIMeFooter({ onPopOutDidAgent, didAgentComponent }: AIMeFooterProps) {
+export default function AIMeFooter({ onPopOutDidAgent }: AIMeFooterProps) {
     return (
         <div
             className="ai-me-footer"

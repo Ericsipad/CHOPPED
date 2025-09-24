@@ -519,22 +519,10 @@ export default function ChoppingBoardPage() {
                     <DraggableDidAgent />
                 )}
                 
-                {/* AI-me Footer - simple version */}
+                {/* AI-me Footer - with Aime still image */}
                 {!isMobile && (
                     <AIMeFooter
                         onPopOutDidAgent={() => {}}
-                        didAgentComponent={
-                            <div style={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                justifyContent: 'center',
-                                height: '100%',
-                                color: 'rgba(255, 255, 255, 0.7)',
-                                fontSize: '14px'
-                            }}>
-                                D-ID Agent above
-                            </div>
-                        }
                     />
                 )}
                 <ValidationModal
