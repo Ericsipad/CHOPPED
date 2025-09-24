@@ -3,6 +3,7 @@ import Container from '../components/Container'
 import HeroImage from '../components/HeroImage'
 import ProfileGrid from '../components/ProfileGrid'
 import ValidationModal from '../components/ValidationModal'
+// Trigger DO deployment
 import { fetchReadiness } from '../components/readiness'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import '../styles/internal.css'
