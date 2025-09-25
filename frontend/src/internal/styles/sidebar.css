@@ -4,7 +4,7 @@
 	left: 0;
 	bottom: 0;
 	width: 240px;
-	background: rgba(18, 18, 18, 0.92);
+	background: rgba(180, 82, 29, 0.92); /* Dark orange background */
 	backdrop-filter: blur(12px) saturate(120%);
 	-webkit-backdrop-filter: blur(12px) saturate(120%);
 	border-right: 1px solid rgba(255,255,255,0.08);
