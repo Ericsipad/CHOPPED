@@ -635,7 +635,6 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	margin-bottom: 20px;
 	flex-wrap: wrap;
 	gap: 16px;
-	padding: 0 4px;
 }
 
 .subscription-number {
@@ -684,7 +683,6 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	width: 100%;
 	display: flex;
 	justify-content: flex-end;
-	padding: 0 4px;
 	margin-top: 8px;
 }
 

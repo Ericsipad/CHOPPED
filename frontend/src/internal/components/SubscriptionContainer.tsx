@@ -65,11 +65,13 @@ export default function SubscriptionContainer({ currentSubscription, onlyPaid, c
             variant="card"
             className={[isCurrent ? "is-selected" : "", compact ? "subscription-container--compact" : ""].filter(Boolean).join(" ")}
             style={{ 
-              // Remove existing glass backgrounds to let our glass effect show
-              background: 'transparent',
-              backdropFilter: 'none',
-              border: isCurrent ? '2px solid rgba(76, 255, 137, 0.9)' : 'none',
-              boxShadow: isCurrent ? '0 0 0 2px rgba(76, 255, 137, 0.5), 0 0 18px rgba(76, 255, 137, 0.45)' : undefined
+              // Enhanced glass effects with more blur and better background
+              background: 'rgba(18,18,18,0.6)',
+              backdropFilter: 'blur(20px) saturate(150%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(150%)',
+              padding: compact ? '18px' : '28px',
+              border: isCurrent ? '2px solid rgba(76, 255, 137, 0.9)' : '1px solid rgba(255,255,255,0.08)',
+              boxShadow: isCurrent ? '0 0 0 2px rgba(76, 255, 137, 0.5), 0 0 18px rgba(76, 255, 137, 0.45), 0 24px 60px rgba(0,0,0,0.6)' : '0 24px 60px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05) inset'
             }}
           >
             <div className="subscription-content">
