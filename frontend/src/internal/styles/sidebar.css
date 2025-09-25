@@ -4,7 +4,7 @@
 	left: 0;
 	bottom: 0;
 	width: 240px;
-	background: rgba(180, 82, 29, 0.92); /* Dark orange background */
+	background: rgba(18, 18, 18, 0.92); /* Dark mode: dark grey background */
 	backdrop-filter: blur(12px) saturate(120%);
 	-webkit-backdrop-filter: blur(12px) saturate(120%);
 	border-right: 1px solid rgba(255,255,255,0.08);
@@ -84,7 +84,7 @@
 
 /* Light mode adjustments */
 #root.internal-bg--light .internal-sidebar {
-	background: rgba(255,255,255,0.85);
+	background: rgba(180, 82, 29, 0.92); /* Light mode: dark orange background */
 	border-right: 1px solid rgba(0,0,0,0.08);
 	box-shadow: 0 0 40px rgba(0,0,0,0.12);
 }
