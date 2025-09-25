@@ -120,8 +120,8 @@ export default function SidebarNav() {
 									borderRadius: '12px',
 									// Apply active state styling when needed
 									...(isActive && {
-										border: '2px solid rgba(76, 255, 137, 0.9)',
-										boxShadow: '0 0 0 2px rgba(76, 255, 137, 0.45), 0 10px 24px rgba(0,0,0,0.4)'
+											border: '2px solid rgba(255, 165, 0, 0.9)',
+											boxShadow: '0 0 0 2px rgba(255, 165, 0, 0.45), 0 10px 24px rgba(0,0,0,0.4)'
 									})
 								}}
 							>

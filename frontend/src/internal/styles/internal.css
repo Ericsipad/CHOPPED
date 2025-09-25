@@ -970,8 +970,8 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 /* ===== STATUS BAR ===== */
 .status-bar {
 	background: rgba(0,0,0,0.75);
-	border: 1px solid rgba(76, 255, 137, 0.9);
-	box-shadow: 0 0 0 2px rgba(76, 255, 137, 0.5), 0 0 18px rgba(76, 255, 137, 0.35);
+	border: 1px solid rgba(255, 165, 0, 0.9);
+	box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.5), 0 0 18px rgba(255, 165, 0, 0.35);
 	border-radius: 12px;
 	width: clamp(360px, 42vw, 560px);
 	color: #ffffff;
@@ -1013,7 +1013,7 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	background: rgba(255,255,255,0.06);
 	border: 1px solid rgba(255,255,255,0.12);
 }
-.status-bar__dot--green { box-shadow: 0 0 14px 6px rgba(34,197,94,0.45); }
+.status-bar__dot--green { box-shadow: 0 0 14px 6px rgba(245,158,11,0.45); }
 .status-bar__dot--yellow { box-shadow: 0 0 14px 6px rgba(234,179,8,0.45); }
 .status-bar__dot--red { box-shadow: 0 0 14px 6px rgba(239,68,68,0.45); }
 
