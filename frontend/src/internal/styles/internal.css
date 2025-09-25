@@ -969,14 +969,14 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 
 /* ===== STATUS BAR ===== */
 .status-bar {
-	background: rgba(0,0,0,0.75);
+	background: rgba(18,18,18,0.6);
 	border: 1px solid rgba(255, 165, 0, 0.9);
-	box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.5), 0 0 18px rgba(255, 165, 0, 0.35);
+	box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.5), 0 0 18px rgba(255, 165, 0, 0.35), 0 24px 60px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05) inset;
 	border-radius: 12px;
 	width: clamp(360px, 42vw, 560px);
 	color: #ffffff;
-	backdrop-filter: blur(6px) saturate(120%);
-	-webkit-backdrop-filter: blur(6px) saturate(120%);
+	backdrop-filter: blur(10px) saturate(120%);
+	-webkit-backdrop-filter: blur(10px) saturate(120%);
 }
 
 .status-bar__inner {
@@ -1100,12 +1100,33 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	}
 }
 
-/* Light mode: frosted white StatusBar across desktop and PWA on chopping board */
+/* Dark mode: advanced glass StatusBar styling */
+#root.internal-bg--dark .chopping-page-root .status-bar {
+	background: rgba(18,18,18,0.6);
+	backdrop-filter: blur(10px) saturate(120%);
+	-webkit-backdrop-filter: blur(10px) saturate(120%);
+}
+
+#root.internal-bg--dark .internal-top-header .status-bar {
+	background: rgba(18,18,18,0.6);
+	backdrop-filter: blur(10px) saturate(120%);
+	-webkit-backdrop-filter: blur(10px) saturate(120%);
+}
+
+#root.internal-bg--dark .status-bar--header {
+	background: rgba(18,18,18,0.6);
+	backdrop-filter: blur(10px) saturate(120%);
+	-webkit-backdrop-filter: blur(10px) saturate(120%);
+}
+
+/* Light mode: advanced glass StatusBar across desktop and PWA on chopping board */
 #root.internal-bg--light .chopping-page-root .status-bar {
-	background: rgba(255,255,255,0.72);
+	background: rgba(255,255,255,0.6);
 	color: #111111;
-	border: 1px solid rgba(0,0,0,0.1);
-	box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+	border: 1px solid rgba(255, 165, 0, 0.9);
+	box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.5), 0 0 18px rgba(255, 165, 0, 0.35), 0 24px 60px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.8) inset;
+	backdrop-filter: blur(10px) saturate(120%);
+	-webkit-backdrop-filter: blur(10px) saturate(120%);
 }
 #root.internal-bg--light .chopping-page-root .status-bar__legend-text,
 #root.internal-bg--light .chopping-page-root .status-bar__value {
@@ -1121,13 +1142,15 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	color: #111111;
 }
 
-/* PWA/mobile header: apply same frosted white styling when StatusBar is rendered in TopHeader */
+/* PWA/mobile header: apply same advanced glass styling when StatusBar is rendered in TopHeader */
 @media (max-width: 1024px) {
 	#root.internal-bg--light .internal-top-header .status-bar {
-		background: rgba(255,255,255,0.72);
+		background: rgba(255,255,255,0.6);
 		color: #111111;
-		border: 1px solid rgba(0,0,0,0.1);
-		box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+		border: 1px solid rgba(255, 165, 0, 0.9);
+		box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.5), 0 0 18px rgba(255, 165, 0, 0.35), 0 24px 60px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.8) inset;
+		backdrop-filter: blur(10px) saturate(120%);
+		-webkit-backdrop-filter: blur(10px) saturate(120%);
 	}
 	#root.internal-bg--light .internal-top-header .status-bar__legend-text,
 	#root.internal-bg--light .internal-top-header .status-bar__value {
@@ -1144,12 +1167,14 @@ select.profile-public-panel__input.profile-public-panel__input--error {
 	}
 }
 
-/* Light mode: ensure header variant also picks up frosted white anywhere */
+/* Light mode: ensure header variant also picks up advanced glass styling anywhere */
 #root.internal-bg--light .status-bar--header {
-	background: rgba(255,255,255,0.72);
+	background: rgba(255,255,255,0.6);
 	color: #111111;
-	border: 1px solid rgba(0,0,0,0.1);
-	box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+	border: 1px solid rgba(255, 165, 0, 0.9);
+	box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.5), 0 0 18px rgba(255, 165, 0, 0.35), 0 24px 60px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.8) inset;
+	backdrop-filter: blur(10px) saturate(120%);
+	-webkit-backdrop-filter: blur(10px) saturate(120%);
 }
 #root.internal-bg--light .status-bar--header .status-bar__legend-text,
 #root.internal-bg--light .status-bar--header .status-bar__value { color: #111111; }

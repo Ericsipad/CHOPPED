@@ -84,7 +84,7 @@
 
 /* Light mode adjustments */
 #root.internal-bg--light .internal-sidebar {
-	background: rgba(180, 82, 29, 0.92); /* Light mode: dark orange background */
+	background: rgba(220, 120, 60, 0.88); /* Light mode: lighter orange background */
 	border-right: 1px solid rgba(0,0,0,0.08);
 	box-shadow: 0 0 40px rgba(0,0,0,0.12);
 }
