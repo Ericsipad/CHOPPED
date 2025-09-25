@@ -147,11 +147,12 @@ export default function SidebarNav() {
 								>
 									<span 
 										style={{ 
-											display: 'inline-flex', 
+											display: 'flex', 
 											alignItems: 'center', 
 											justifyContent: 'center',
 											width: '24px',
-											height: '24px'
+											height: '24px',
+											flexShrink: 0
 										}} 
 										aria-hidden="true"
 									>
