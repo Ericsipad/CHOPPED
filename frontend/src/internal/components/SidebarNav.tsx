@@ -150,6 +150,7 @@ export default function SidebarNav() {
 											display: 'flex', 
 											alignItems: 'center', 
 											justifyContent: 'center',
+											justifySelf: 'center',
 											width: '24px',
 											height: '24px',
 											flexShrink: 0
