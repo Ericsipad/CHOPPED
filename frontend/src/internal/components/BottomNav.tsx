@@ -75,7 +75,9 @@ export default function BottomNav() {
 			style={{ 
 				// Don't override display - let CSS media queries control visibility
 				alignItems: 'center', 
-				justifyContent: 'space-between' 
+				justifyContent: 'space-between',
+				// Explicitly set position to prevent GlassContainer from overriding CSS fixed positioning
+				position: 'fixed'
 			}}
 		>
 			<div className="pwa-bottom-nav__group pwa-bottom-nav__group--left">

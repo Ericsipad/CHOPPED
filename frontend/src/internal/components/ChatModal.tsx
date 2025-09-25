@@ -360,17 +360,13 @@ export default function ChatModal(props: ChatModalProps) {
           height: '100%',
           maxWidth: 'none',
           borderRadius: 0,
-          // Remove existing backgrounds
-          background: 'transparent',
-          backdropFilter: 'none'
+          // Let GlassContainer handle theming - removed background overrides
         } : {
           width: '60vw', 
           height: '80vh', 
           maxWidth: '1000px', 
           borderRadius: '12px',
-          // Remove existing backgrounds  
-          background: 'transparent',
-          backdropFilter: 'none'
+          // Let GlassContainer handle theming - removed background overrides
         }} 
         onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
@@ -460,14 +456,18 @@ export default function ChatModal(props: ChatModalProps) {
 
 function MessageBubble({ text, isOwn, status, magenta, electricBlue }: { text: string; isOwn: boolean; status?: ChatMessage['status']; magenta: string; electricBlue: string }) {
   const color = isOwn ? electricBlue : magenta
+  
+  // Theme-aware bubble styling
+  const isLightMode = typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light')
+  
   const bubbleStyle: React.CSSProperties = {
     maxWidth: '70%',
     alignSelf: isOwn ? 'flex-end' : 'flex-start',
     border: `2px solid ${color}`,
     borderRadius: 18,
     padding: '8px 12px',
-    color: '#fff',
-    background: 'rgba(0,0,0,0.25)',
+    color: isLightMode ? '#333333' : '#fff',
+    background: isLightMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.25)',
     boxShadow: `0 0 12px ${toRgba(color, 0.55)}`,
     margin: '6px 0',
     whiteSpace: 'pre-wrap',
@@ -478,7 +478,7 @@ function MessageBubble({ text, isOwn, status, magenta, electricBlue }: { text: s
       <div style={bubbleStyle}>
         <div>{text}</div>
         {status && status !== 'sent' ? (
-          <div style={{ fontSize: 10, opacity: 0.65, marginTop: 4 }}>{status === 'sending' ? 'Sending…' : status}</div>
+          <div style={{ fontSize: 10, opacity: 0.65, marginTop: 4, color: isLightMode ? '#666666' : '#cccccc' }}>{status === 'sending' ? 'Sending…' : status}</div>
         ) : null}
       </div>
     </div>
@@ -521,7 +521,25 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'absolute', top: 6, right: 8, height: 28, width: 28, borderRadius: 6, border: '1px solid rgba(255,255,255,0.18)', background: 'rgba(0,0,0,0.45)', color: '#fff', cursor: 'pointer',
   },
   body: {
-    flex: 1, overflowY: 'auto', padding: '10px 12px', display: 'flex', flexDirection: 'column',
+    flex: 1, 
+    overflowY: 'auto', 
+    padding: '10px 12px', 
+    display: 'flex', 
+    flexDirection: 'column',
+    // Apply paper tile background with theme-aware overlay
+    ...((typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light')) ? {
+      backgroundColor: '#ffffff',
+      backgroundImage: "linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), url('/paper-tile.png')",
+      backgroundRepeat: 'repeat',
+      backgroundPosition: 'center center',
+      backgroundSize: 'calc(100vw / 3) calc(100vh / 3)',
+    } : {
+      backgroundColor: '#000000', 
+      backgroundImage: "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/paper-tile.png')",
+      backgroundRepeat: 'repeat',
+      backgroundPosition: 'center center', 
+      backgroundSize: 'calc(100vw / 3) calc(100vh / 3)',
+    }),
   },
   list: {
     display: 'flex', flexDirection: 'column', gap: 2,
