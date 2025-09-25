@@ -370,7 +370,7 @@ export default function ChatModal(props: ChatModalProps) {
         }} 
         onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
-        <div ref={dialogRef} style={{ width: '100%', height: '100%' }}>
+        <div ref={dialogRef} style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div style={styles.header}>
           <div style={styles.headerTitle}>{otherUserLabel || 'Chat'}</div>
           <button type="button" onClick={onClose} aria-label="Close" style={(typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches) ? {
@@ -512,13 +512,41 @@ const styles: Record<string, React.CSSProperties> = {
     width: '60vw', height: '80vh', maxWidth: 1000, background: 'rgba(10,10,10,0.55)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', color: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column',
   },
   header: {
-    position: 'relative', height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)',
+    position: 'relative', 
+    height: 40, 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    // Theme-aware border  
+    ...((typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light')) ? {
+      borderBottom: '1px solid rgba(0,0,0,0.08)',
+    } : {}),
   },
   headerTitle: {
-    fontSize: 14, fontWeight: 800, letterSpacing: 0.6,
+    fontSize: 14, 
+    fontWeight: 800, 
+    letterSpacing: 0.6,
+    // Theme-aware text color
+    color: (typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light')) ? '#333333' : '#ffffff',
   },
   closeBtn: {
-    position: 'absolute', top: 6, right: 8, height: 28, width: 28, borderRadius: 6, border: '1px solid rgba(255,255,255,0.18)', background: 'rgba(0,0,0,0.45)', color: '#fff', cursor: 'pointer',
+    position: 'absolute', 
+    top: 6, 
+    right: 8, 
+    height: 28, 
+    width: 28, 
+    borderRadius: 6, 
+    border: '1px solid rgba(255,255,255,0.18)', 
+    background: 'rgba(0,0,0,0.45)', 
+    color: '#fff', 
+    cursor: 'pointer',
+    // Theme-aware styling
+    ...((typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light')) ? {
+      border: '1px solid rgba(0,0,0,0.18)',
+      background: 'rgba(255,255,255,0.45)',
+      color: '#333333',
+    } : {}),
   },
   body: {
     flex: 1, 
@@ -548,10 +576,33 @@ const styles: Record<string, React.CSSProperties> = {
     opacity: 0.8, textAlign: 'center', marginTop: 24,
   },
   footer: {
-    borderTop: '1px solid rgba(255,255,255,0.08)', padding: 8, display: 'grid', gridTemplateColumns: '1fr auto', gap: 8, alignItems: 'end',
+    borderTop: '1px solid rgba(255,255,255,0.08)', 
+    padding: 8, 
+    display: 'grid', 
+    gridTemplateColumns: '1fr auto', 
+    gap: 8, 
+    alignItems: 'end',
+    // Theme-aware border
+    ...((typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light')) ? {
+      borderTop: '1px solid rgba(0,0,0,0.08)',
+    } : {}),
   },
   textarea: {
-    resize: 'none', maxHeight: 120, minHeight: 34, padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.18)', background: 'rgba(0,0,0,0.35)', color: '#fff', outline: 'none',
+    resize: 'none', 
+    maxHeight: 120, 
+    minHeight: 34, 
+    padding: '8px 10px', 
+    borderRadius: 8, 
+    border: '1px solid rgba(255,255,255,0.18)', 
+    background: 'rgba(0,0,0,0.35)', 
+    color: '#fff', 
+    outline: 'none',
+    // Theme-aware styling
+    ...((typeof document !== 'undefined' && document.documentElement.classList.contains('internal-bg--light')) ? {
+      background: 'rgba(255,255,255,0.9)',
+      color: '#333333',
+      border: '1px solid rgba(0,0,0,0.18)',
+    } : {}),
   },
   sendBtn: {
     background: '#16a34a', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontWeight: 700,
