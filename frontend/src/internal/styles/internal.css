@@ -26,11 +26,27 @@ html, body, #root {
 	--primary: 25 85% 70%;
 }
 
+/* Dark background for internal pages when enabled */
+#root.internal-bg--dark {
+	background-color: #000000;
+	background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/paper-tile.png');
+	background-repeat: repeat;
+	background-position: center center;
+	background-size: calc(100vw / 3) calc(100vh / 3);
+}
+
 /* Desktop: hide hero image in light mode on internal pages that use it */
 @media (min-width: 1024px) {
     #root.internal-bg--light .chopping-page-root .internal-hero,
     #root.internal-bg--light .profile-page-root .internal-hero,
     #root.internal-bg--light .account-page-root .internal-hero { display: none !important; }
+}
+
+/* Desktop: hide hero image in dark mode on internal pages that use it */
+@media (min-width: 1024px) {
+    #root.internal-bg--dark .chopping-page-root .internal-hero,
+    #root.internal-bg--dark .profile-page-root .internal-hero,
+    #root.internal-bg--dark .account-page-root .internal-hero { display: none !important; }
 }
 
 /* Desktop light-mode: push overlays down below header */
@@ -39,8 +55,17 @@ html, body, #root {
     #root.internal-bg--light .account-page-root .account-page__overlay { top: 75px !important; }
 }
 
+/* Desktop dark-mode: push overlays down below header */
+@media (min-width: 1024px) {
+    #root.internal-bg--dark .profile-page-root .profile-page__overlay { top: 75px !important; }
+    #root.internal-bg--dark .account-page-root .account-page__overlay { top: 75px !important; }
+}
+
 @media (max-width: 1024px) {
 	#root.internal-bg--light {
+		background-size: calc(100vw / 2) calc(100vh / 3);
+	}
+	#root.internal-bg--dark {
 		background-size: calc(100vw / 2) calc(100vh / 3);
 	}
 }

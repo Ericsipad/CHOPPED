@@ -23,7 +23,12 @@ function PWAAwareGate() {
 			localStorage.setItem('internal_background_mode', 'light')
 		}
 		const apply = (mode: string | null) => {
-			root.classList.toggle('internal-bg--light', mode === 'light')
+			root.classList.remove('internal-bg--light', 'internal-bg--dark')
+			if (mode === 'light') {
+				root.classList.add('internal-bg--light')
+			} else if (mode === 'dark') {
+				root.classList.add('internal-bg--dark')
+			}
 		}
 		apply(localStorage.getItem('internal_background_mode'))
 		const onChange = (e: any) => {
