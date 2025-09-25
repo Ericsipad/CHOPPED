@@ -70,6 +70,7 @@ export default function SubscriptionContainer({ currentSubscription, onlyPaid, c
               backdropFilter: 'blur(20px) saturate(150%)',
               WebkitBackdropFilter: 'blur(20px) saturate(150%)',
               padding: compact ? '18px' : '28px',
+              color: '#ffffff',
               border: isCurrent ? '2px solid rgba(76, 255, 137, 0.9)' : '1px solid rgba(255,255,255,0.08)',
               boxShadow: isCurrent ? '0 0 0 2px rgba(76, 255, 137, 0.5), 0 0 18px rgba(76, 255, 137, 0.45), 0 24px 60px rgba(0,0,0,0.6)' : '0 24px 60px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05) inset'
             }}

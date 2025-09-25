@@ -152,7 +152,8 @@ export default function SidebarNav() {
 											justifyContent: 'center',
 											width: '24px',
 											height: '24px',
-											flexShrink: 0
+											flexShrink: 0,
+											justifySelf: 'center'
 										}} 
 										aria-hidden="true"
 									>
