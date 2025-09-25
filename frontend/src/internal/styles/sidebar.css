@@ -64,7 +64,8 @@
 
 .internal-sidebar__icon { display: flex !important; align-items: center !important; justify-content: center !important; width: 24px; height: 24px; flex-shrink: 0; opacity: 0.95; justify-self: center !important; }
 
-/* Force icon centering across all pages */
+/* Force icon centering across all pages - Enhanced with stronger specificity */
+.internal-sidebar .internal-sidebar__nav .internal-sidebar__link > span:first-child,
 .internal-sidebar__link > span:first-child {
 	display: flex !important;
 	align-items: center !important;
@@ -72,12 +73,30 @@
 	justify-self: center !important;
 	width: 24px !important;
 	height: 24px !important;
+	flex-shrink: 0 !important;
+	position: relative !important;
+}
+
+/* Additional centering for nested icon elements */
+.internal-sidebar .internal-sidebar__nav .internal-sidebar__link > span:first-child > *,
+.internal-sidebar__link > span:first-child > * {
+	display: block !important;
+	margin: 0 auto !important;
+	text-align: center !important;
 }
 .internal-sidebar__label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Collapsed state */
+/* Collapsed state - Enhanced with stronger icon centering */
 .internal-sidebar.internal-sidebar--collapsed { width: 72px; }
-.internal-sidebar.internal-sidebar--collapsed .internal-sidebar__link { grid-template-columns: 24px; justify-items: center; }
+.internal-sidebar.internal-sidebar--collapsed .internal-sidebar__link { 
+	grid-template-columns: 24px; 
+	justify-items: center !important;
+	align-items: center !important;
+}
+.internal-sidebar.internal-sidebar--collapsed .internal-sidebar__link > span:first-child {
+	justify-self: center !important;
+	align-self: center !important;
+}
 .internal-sidebar.internal-sidebar--collapsed .internal-sidebar__label { display: none; }
 
 /* Content offset helper when sidebar is visible on desktop */
@@ -105,5 +124,27 @@
 	color: #111111;
 }
 #root.internal-bg--light .internal-sidebar__link.is-active { border-color: rgba(255, 165, 0, 0.9); }
+
+/* Page-agnostic icon centering override - Final defense against page-specific CSS conflicts */
+.chopping-page-root .internal-sidebar__link > span:first-child,
+.profile-page-root .internal-sidebar__link > span:first-child,
+.account-page-root .internal-sidebar__link > span:first-child,
+body .internal-sidebar__link > span:first-child {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	justify-self: center !important;
+	width: 24px !important;
+	height: 24px !important;
+	flex-shrink: 0 !important;
+}
+
+/* Ensure SVG icons are properly centered within spans */
+.internal-sidebar__link > span:first-child > svg {
+	display: block !important;
+	margin: 0 auto !important;
+	width: 20px !important;
+	height: 20px !important;
+}
 
 
